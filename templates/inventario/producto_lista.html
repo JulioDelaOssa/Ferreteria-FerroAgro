@@ -12,10 +12,8 @@
             <h3>Productos</h3>
             <p>Consulta general de productos registrados en el sistema.</p>
         </div>
-
-        <a href="{% url 'producto_crear' %}" class="btn-primary">Nuevo producto</a>
+        <a href="{% url 'producto_crear' %}" class="btn-primary">+ Nuevo producto</a>
     </header>
-
     <section class="table-container">
         <table class="data-table">
             <thead>
@@ -25,9 +23,9 @@
                     <th>Proveedor</th>
                     <th>Precio</th>
                     <th>Stock</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for producto in productos %}
                 <tr>
@@ -36,10 +34,13 @@
                     <td>{{ producto.proveedor|default:"Sin proveedor" }}</td>
                     <td>${{ producto.precio }}</td>
                     <td>{{ producto.stock }}</td>
+                    <td>
+                        <a href="{% url 'producto_editar' producto.id %}" class="table-action">✎ Editar</a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="empty-table">No hay productos registrados.</td>
+                    <td colspan="6" class="empty-table">No hay productos registrados.</td>
                 </tr>
                 {% endfor %}
             </tbody>
