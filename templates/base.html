@@ -1,0 +1,64 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FerroAgro Ayapel</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+
+    <aside class="sidebar" aria-label="Menu principal">
+        <section class="brand" aria-label="Identidad del sistema">
+            <figure class="logo-box">
+                <img src="{% static 'imagenes/logo.png' %}" alt="Logo de FerroAgro Ayapel" class="logo">
+            </figure>
+
+            <h1>FerroAgro</h1>
+            <p>Administracion</p>
+        </section>
+
+        <nav class="menu" aria-label="Navegacion principal">
+            <a href="{% url 'dashboard' %}" class="menu-link active">Dashboard</a>
+            <a href="#" class="menu-link">Productos</a>
+            <a href="#" class="menu-link">Inventario</a>
+            <a href="#" class="menu-link">Reportes</a>
+            <a href="#" class="menu-link">Configuracion</a>
+        </nav>
+    </aside>
+
+    <section class="content">
+
+        <header class="topbar">
+            <section class="page-title">
+                <h2>Dashboard</h2>
+                <p>Resumen general del sistema</p>
+            </section>
+
+            <section class="user-box" aria-label="Informacion de usuario">
+                <p>
+                    <span>Usuario</span>
+                    <strong>Admin</strong>
+                </p>
+
+                <form action="{% url 'logout' %}" method="post" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Cerrar sesion</button>
+                </form>
+            </section>
+        </header>
+
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </section>
+
+</body>
+
+</html>

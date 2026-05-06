@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>Total productos</span>
+        <strong>0</strong>
+        <p>Productos registrados</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Stock disponible</span>
+        <strong>0</strong>
+        <p>Unidades en inventario</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Reportes</span>
+        <strong>0</strong>
+        <p>Reportes generados</p>
+    </article>
+
+    <article class="stat-card">
+        <span>Alertas</span>
+        <strong>0</strong>
+        <p>Productos con stock bajo</p>
+    </article>
+</section>
+
+<section class="panel-grid">
+    <div class="panel-card">
+        <div class="panel-header">
+            <h3>Gestion rapida</h3>
+            <p>Accesos principales del sistema</p>
+        </div>
+
+        <div class="quick-actions">
+            <a href="#" class="action-card">
+                <strong>Productos</strong>
+                <span>Registrar y consultar productos</span>
+            </a>
+
+            <a href="#" class="action-card">
+                <strong>Inventario</strong>
+                <span>Revisar existencias y movimientos</span>
+            </a>
+
+            <a href="#" class="action-card">
+                <strong>Reportes</strong>
+                <span>Consultar y exportar informacion</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-header">
+            <h3>Actividad reciente</h3>
+            <p>Ultimos movimientos del sistema</p>
+        </div>
+
+        <div class="empty-state">
+            <p>No hay actividad registrada por el momento.</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

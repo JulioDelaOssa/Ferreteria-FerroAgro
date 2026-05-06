@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesion - FerroAgro Ayapel</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="login-page">
+
+    <main class="login-container">
+        <section class="login-card">
+            <img src="{% static 'imagenes/logo.png' %}" alt="Logo FerroAgro Ayapel" class="login-logo">
+
+            <h1>FerroAgro</h1>
+            <p>Acceso al panel administrativo</p>
+
+            {% if form.errors %}
+                <div class="login-error">
+                    Usuario o contraseña incorrectos.
+                </div>
+            {% endif %}
+
+            <form method="post" class="login-form">
+                {% csrf_token %}
+
+                <label for="id_username">Usuario</label>
+                <input type="text" name="username" id="id_username" required autofocus>
+
+                <label for="id_password">Contraseña</label>
+                <input type="password" name="password" id="id_password" required>
+
+                <button type="submit">Ingresar</button>
+            </form>
+        </section>
+    </main>
+
+</body>
+</html>
