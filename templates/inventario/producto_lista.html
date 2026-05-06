@@ -1,12 +1,50 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Productos - FerroAgro{% endblock %}
+{% block header_title %}Productos{% endblock %}
+{% block header_description %}Consulta general de productos registrados en el sistema{% endblock %}
+
 {% block content %}
 
 <section class="panel-card">
-    <div class="panel-header">
-        <h3>Productos</h3>
-        <p>Consulta general de productos registrados en el sistema.</p>
-    </div>
+    <header class="section-header">
+        <div>
+            <h3>Productos</h3>
+            <p>Consulta general de productos registrados en el sistema.</p>
+        </div>
+
+        <a href="#" class="btn-primary">Nuevo producto</a>
+    </header>
+
+    <section class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Categoria</th>
+                    <th>Proveedor</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.categoria|default:"Sin categoria" }}</td>
+                    <td>{{ producto.proveedor|default:"Sin proveedor" }}</td>
+                    <td>${{ producto.precio }}</td>
+                    <td>{{ producto.stock }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-table">No hay productos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 </section>
 
 {% endblock %}

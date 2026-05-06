@@ -2,14 +2,12 @@
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FerroAgro Ayapel</title>
+    <title>{% block page_title %}FerroAgro{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-
 <body>
 
     <aside class="sidebar" aria-label="Menu principal">
@@ -23,11 +21,25 @@
         </section>
 
         <nav class="menu" aria-label="Navegacion principal">
-            <a href="{% url 'dashboard' %}" class="menu-link active">Dashboard</a>
-            <a href="#" class="menu-link">Productos</a>
-            <a href="#" class="menu-link">Inventario</a>
-            <a href="#" class="menu-link">Reportes</a>
-            <a href="#" class="menu-link">Configuracion</a>
+            <a href="{% url 'dashboard' %}" class="menu-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                Dashboard
+            </a>
+
+            <a href="{% url 'producto_lista' %}" class="menu-link {% if request.resolver_match.url_name == 'producto_lista' %}active{% endif %}">
+                Productos
+            </a>
+
+            <a href="#" class="menu-link">
+                Inventario
+            </a>
+
+            <a href="#" class="menu-link">
+                Reportes
+            </a>
+
+            <a href="#" class="menu-link">
+                Configuracion
+            </a>
         </nav>
     </aside>
 
@@ -35,14 +47,14 @@
 
         <header class="topbar">
             <section class="page-title">
-                <h2>Dashboard</h2>
-                <p>Resumen general del sistema</p>
+                <h2>{% block header_title %}Dashboard{% endblock %}</h2>
+                <p>{% block header_description %}Resumen general del sistema{% endblock %}</p>
             </section>
 
             <section class="user-box" aria-label="Informacion de usuario">
                 <p>
                     <span>Usuario</span>
-                    <strong>Admin</strong>
+                    <strong>{{ request.user.username|default:"Admin" }}</strong>
                 </p>
 
                 <form action="{% url 'logout' %}" method="post" class="logout-form">
@@ -60,5 +72,4 @@
     </section>
 
 </body>
-
 </html>

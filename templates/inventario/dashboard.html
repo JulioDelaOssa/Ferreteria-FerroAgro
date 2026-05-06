@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Dashboard - FerroAgro{% endblock %}
+{% block header_title %}Dashboard{% endblock %}
+{% block header_description %}Resumen general del sistema{% endblock %}
+
 {% block content %}
 
 <section class="stats-grid">
@@ -36,7 +40,7 @@
         </div>
 
         <div class="quick-actions">
-            <a href="#" class="action-card">
+            <a href="{% url 'producto_lista' %}" class="action-card">
                 <strong>Productos</strong>
                 <span>Registrar y consultar productos</span>
             </a>
