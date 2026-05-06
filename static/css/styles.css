@@ -368,3 +368,66 @@ body {
         align-items: flex-start;
     }
 }
+
+/* Formularios */
+
+.btn-secondary {
+    text-decoration: none;
+    background: #e8eee9;
+    color: #173f2a;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.btn-secondary:hover {
+    background: #d9e5dd;
+}
+
+.product-form {
+    max-width: 760px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    color: #173f2a;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    border: 1px solid #d6ded9;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 15px;
+    outline: none;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: #245f40;
+}
+
+.field-error {
+    margin-top: 6px;
+    color: #b83f3b;
+    font-size: 13px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}

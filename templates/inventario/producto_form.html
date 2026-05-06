@@ -1,12 +1,44 @@
 {% extends 'base.html' %}
 
+{% block page_title %}{{ titulo }} - FerroAgro{% endblock %}
+{% block header_title %}{{ titulo }}{% endblock %}
+{% block header_description %}Registro de informacion de productos{% endblock %}
+
 {% block content %}
 
 <section class="panel-card">
-    <div class="panel-header">
-        <h3>Registro de producto</h3>
-        <p>Formulario para registrar informacion de productos en el sistema.</p>
-    </div>
+    <header class="section-header">
+        <div>
+            <h3>{{ titulo }}</h3>
+            <p>Completa los datos del producto para guardarlo en el sistema.</p>
+        </div>
+
+        <a href="{% url 'producto_lista' %}" class="btn-secondary">Volver</a>
+    </header>
+
+    <form method="post" class="product-form">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <section class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+
+            {% if field.errors %}
+            <div class="field-error">
+                {% for error in field.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+        {% endfor %}
+
+        <section class="form-actions">
+            <button type="submit" class="btn-primary">Guardar producto</button>
+            <a href="{% url 'producto_lista' %}" class="btn-secondary">Cancelar</a>
+        </section>
+    </form>
 </section>
 
 {% endblock %}
