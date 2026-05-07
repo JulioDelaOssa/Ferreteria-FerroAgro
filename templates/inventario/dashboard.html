@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load formato_pesos %}
 
 {% block page_title %}Dashboard - FerroAgro{% endblock %}
 {% block header_title %}Dashboard{% endblock %}
@@ -23,7 +24,7 @@
     </article>
     <article class="stat-card">
         <span>Ingresos</span>
-        <strong>${{ total_ingresos }}</strong>
+        <strong>{{ total_ingresos|pesos_colombianos }}</strong>
         <p>Total generado por ventas</p>
     </article>
 </section>
@@ -118,7 +119,7 @@
                     {% for venta in ultimas_ventas %}
                     <tr>
                         <td>{{ venta.vendedor.username }}</td>
-                        <td>${{ venta.total }}</td>
+                        <td>{{ venta.total|pesos_colombianos }}</td>
                         <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
                     </tr>
                     {% empty %}

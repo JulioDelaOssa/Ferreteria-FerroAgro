@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
+{% load formato_pesos %}
 
 {% block page_title %}Productos - FerroAgro{% endblock %}
 {% block header_title %}Productos{% endblock %}
 {% block header_description %}Consulta general de productos registrados en el sistema{% endblock %}
 
 {% block content %}
-
 <section class="panel-card">
     <header class="section-header">
         <div>
@@ -22,7 +22,6 @@
                     <th>Categoria</th>
                     <th>Proveedor</th>
                     <th>Precio</th>
-                    <th>Stock</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -32,8 +31,7 @@
                     <td>{{ producto.nombre }}</td>
                     <td>{{ producto.categoria|default:"Sin categoria" }}</td>
                     <td>{{ producto.proveedor|default:"Sin proveedor" }}</td>
-                    <td>${{ producto.precio }}</td>
-                    <td>{{ producto.stock }}</td>
+                    <td>{{ producto.precio|pesos_colombianos }}</td>
                     <td>
                         <section class="table-actions">
                             <a href="{% url 'producto_editar' producto.id %}" class="table-action">✎ Editar</a>
@@ -43,12 +41,11 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="empty-table">No hay productos registrados.</td>
+                    <td colspan="5" class="empty-table">No hay productos registrados.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </section>
 </section>
-
 {% endblock %}
