@@ -35,7 +35,10 @@
                     <td>${{ producto.precio }}</td>
                     <td>{{ producto.stock }}</td>
                     <td>
-                        <a href="{% url 'producto_editar' producto.id %}" class="table-action">✎ Editar</a>
+                        <section class="table-actions">
+                            <a href="{% url 'producto_editar' producto.id %}" class="table-action">✎ Editar</a>
+                            <a href="{% url 'producto_eliminar' producto.id %}" class="table-action danger">✕ Eliminar</a>
+                        </section>
                     </td>
                 </tr>
                 {% empty %}

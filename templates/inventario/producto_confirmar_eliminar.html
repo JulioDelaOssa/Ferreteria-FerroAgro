@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Eliminar producto - FerroAgro{% endblock %}
+{% block header_title %}Eliminar producto{% endblock %}
+{% block header_description %}Confirmacion para eliminar un producto del sistema{% endblock %}
+
+{% block content %}
+
+<section class="panel-card delete-card">
+    <header class="panel-header">
+        <h3>Eliminar producto</h3>
+        <p>Estas seguro de eliminar el producto "{{ producto.nombre }}"?</p>
+    </header>
+    <section class="delete-info">
+        <p>Esta accion eliminara el producto del registro principal.</p>
+    </section>
+    <form method="post" class="form-actions">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Eliminar producto</button>
+        <a href="{% url 'producto_lista' %}" class="btn-secondary">Cancelar</a>
+    </form>
+</section>
+
+{% endblock %}

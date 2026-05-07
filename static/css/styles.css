@@ -556,3 +556,48 @@ body {
 .table-action:hover {
     background: #d9e5dd;
 }
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.table-action.danger {
+    background: #fdecea;
+    color: #b83f3b;
+}
+
+.table-action.danger:hover {
+    background: #f8d2cf;
+}
+
+.btn-danger {
+    text-decoration: none;
+    background: #d9534f;
+    color: white;
+    padding: 11px 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background: #b83f3b;
+}
+
+.delete-card {
+    max-width: 680px;
+}
+
+.delete-info {
+    background: #fdecea;
+    color: #8a2f2b;
+    border: 1px solid #f5c2c0;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 22px;
+}

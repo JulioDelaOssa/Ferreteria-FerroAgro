@@ -51,3 +51,15 @@ def producto_editar(request, producto_id):
         'form': form,
         'titulo': 'Editar producto'
     })
+
+@login_required
+def producto_eliminar(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+
+    if request.method == 'POST':
+        producto.delete()
+        return redirect('producto_lista')
+
+    return render(request, 'inventario/producto_confirmar_eliminar.html', {
+        'producto': producto
+    })
