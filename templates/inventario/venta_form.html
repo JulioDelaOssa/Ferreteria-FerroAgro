@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
-{% block page_title %}Ajustar stock - FerroAgro{% endblock %}
-{% block header_title %}Ajustar stock{% endblock %}
-{% block header_description %}Entrada y salida de existencias del inventario{% endblock %}
+{% block page_title %}Registrar venta - FerroAgro{% endblock %}
+{% block header_title %}Registrar venta{% endblock %}
+{% block header_description %}Venta de producto disponible en inventario{% endblock %}
 
 {% block content %}
 <section class="panel-card compact-card">
     <header class="section-header">
         <div>
             <h3>{{ producto.nombre }}</h3>
-            <p>Stock actual: <strong>{{ producto.stock }}</strong></p>
+            <p>Precio: <strong>${{ producto.precio }}</strong> | Stock disponible: <strong>{{ producto.stock }}</strong></p>
         </div>
-        <a href="{% url 'inventario_lista' %}" class="btn-secondary">Volver</a>
+        <a href="{% url 'ventas_panel' %}" class="btn-secondary">Volver</a>
     </header>
     <form method="post" class="product-form">
         {% csrf_token %}
@@ -29,8 +29,8 @@
         </section>
         {% endfor %}
         <section class="form-actions">
-            <button type="submit" class="btn-primary">Guardar ajuste</button>
-            <a href="{% url 'inventario_lista' %}" class="btn-secondary">Cancelar</a>
+            <button type="submit" class="btn-primary">Registrar venta</button>
+            <a href="{% url 'ventas_panel' %}" class="btn-secondary">Cancelar</a>
         </section>
     </form>
 </section>

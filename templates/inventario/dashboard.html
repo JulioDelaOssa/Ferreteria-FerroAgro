@@ -5,68 +5,147 @@
 {% block header_description %}Resumen general del sistema{% endblock %}
 
 {% block content %}
-
 <section class="stats-grid">
     <article class="stat-card">
         <span>Total productos</span>
-        <strong>0</strong>
+        <strong>{{ total_productos }}</strong>
         <p>Productos registrados</p>
     </article>
-
     <article class="stat-card">
         <span>Stock disponible</span>
-        <strong>0</strong>
+        <strong>{{ stock_disponible }}</strong>
         <p>Unidades en inventario</p>
     </article>
-
     <article class="stat-card">
-        <span>Reportes</span>
-        <strong>0</strong>
-        <p>Reportes generados</p>
+        <span>Ventas</span>
+        <strong>{{ total_ventas }}</strong>
+        <p>Ventas registradas</p>
     </article>
-
     <article class="stat-card">
-        <span>Alertas</span>
-        <strong>0</strong>
-        <p>Productos con stock bajo</p>
+        <span>Ingresos</span>
+        <strong>${{ total_ingresos }}</strong>
+        <p>Total generado por ventas</p>
     </article>
 </section>
 
-<section class="panel-grid">
-    <div class="panel-card">
-        <div class="panel-header">
-            <h3>Gestion rapida</h3>
-            <p>Accesos principales del sistema</p>
-        </div>
+<section class="summary-grid">
+    <article class="summary-card">
+        <span>Stock bajo</span>
+        <strong>{{ stock_bajo }}</strong>
+        <p>Productos con pocas unidades</p>
+    </article>
+    <article class="summary-card danger">
+        <span>Agotados</span>
+        <strong>{{ productos_agotados }}</strong>
+        <p>Productos sin existencias</p>
+    </article>
+    <article class="summary-card">
+        <span>Vendedores</span>
+        <strong>{{ total_vendedores }}</strong>
+        <p>Usuarios vendedores registrados</p>
+    </article>
+</section>
 
-        <div class="quick-actions">
+<section class="dashboard-grid">
+    <section class="panel-card">
+        <header class="panel-header">
+            <h3>Gestion rapida</h3>
+            <p>Accesos principales del administrador</p>
+        </header>
+        <section class="quick-actions">
             <a href="{% url 'producto_lista' %}" class="action-card">
                 <strong>Productos</strong>
-                <span>Registrar y consultar productos</span>
+                <span>Registrar, consultar, editar y eliminar productos.</span>
             </a>
-
-            <a href="#" class="action-card">
+            <a href="{% url 'inventario_lista' %}" class="action-card">
                 <strong>Inventario</strong>
-                <span>Revisar existencias y movimientos</span>
+                <span>Revisar existencias y ajustar entradas o salidas.</span>
             </a>
-
-            <a href="#" class="action-card">
-                <strong>Reportes</strong>
-                <span>Consultar y exportar informacion</span>
+            <a href="{% url 'ventas_panel' %}" class="action-card">
+                <strong>Ventas</strong>
+                <span>Consultar ventas registradas en el sistema.</span>
             </a>
-        </div>
-    </div>
+            <a href="{% url 'vendedores_lista' %}" class="action-card">
+                <strong>Vendedores</strong>
+                <span>Crear usuarios vendedores y controlar accesos.</span>
+            </a>
+        </section>
+    </section>
 
-    <div class="panel-card">
-        <div class="panel-header">
-            <h3>Actividad reciente</h3>
-            <p>Ultimos movimientos del sistema</p>
-        </div>
-
-        <div class="empty-state">
-            <p>No hay actividad registrada por el momento.</p>
-        </div>
-    </div>
+    <section class="panel-card">
+        <header class="panel-header">
+            <h3>Productos con alerta</h3>
+            <p>Productos con stock bajo o agotado</p>
+        </header>
+        <section class="mini-list">
+            {% for producto in productos_stock_bajo %}
+            <article class="mini-item">
+                <div>
+                    <strong>{{ producto.nombre }}</strong>
+                    <span>{{ producto.categoria|default:"Sin categoria" }}</span>
+                </div>
+                {% if producto.stock == 0 %}
+                <p class="mini-status danger">Agotado</p>
+                {% else %}
+                <p class="mini-status warning">{{ producto.stock }} unidades</p>
+                {% endif %}
+            </article>
+            {% empty %}
+            <article class="empty-state">
+                <p>No hay productos con alerta de stock.</p>
+            </article>
+            {% endfor %}
+        </section>
+    </section>
 </section>
 
+<section class="dashboard-grid">
+    <section class="panel-card">
+        <header class="panel-header">
+            <h3>Ultimas ventas</h3>
+            <p>Movimientos recientes registrados por vendedores</p>
+        </header>
+        <section class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Vendedor</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in ultimas_ventas %}
+                    <tr>
+                        <td>{{ venta.vendedor.username }}</td>
+                        <td>${{ venta.total }}</td>
+                        <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="empty-table">No hay ventas registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </section>
+
+    <section class="panel-card soft-panel">
+        <header class="panel-header">
+            <h3>Roles del sistema</h3>
+            <p>Control de permisos por tipo de usuario</p>
+        </header>
+        <section class="role-list">
+            <article>
+                <strong>Administrador</strong>
+                <span>Gestiona productos, inventario, vendedores, ventas y reportes.</span>
+            </article>
+            <article>
+                <strong>Vendedor</strong>
+                <span>Registra ventas y consulta productos disponibles sin modificar inventario.</span>
+            </article>
+        </section>
+    </section>
+</section>
 {% endblock %}

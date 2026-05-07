@@ -2,80 +2,66 @@
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block page_title %}FerroAgro{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-
 <body>
-
     <aside class="sidebar" aria-label="Menu principal">
         <section class="brand" aria-label="Identidad del sistema">
             <figure class="logo-box">
                 <img src="{% static 'imagenes/logo.png' %}" alt="Logo de FerroAgro Ayapel" class="logo">
             </figure>
-
             <h1>FerroAgro</h1>
+            {% if request.user.is_staff or request.user.is_superuser %}
             <p>Administracion</p>
+            {% else %}
+            <p>Ventas</p>
+            {% endif %}
         </section>
-
         <nav class="menu" aria-label="Navegacion principal">
-            <a href="{% url 'dashboard' %}"
-                class="menu-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                Dashboard
-            </a>
-
-            <a href="{% url 'producto_lista' %}"
-                class="menu-link {% if request.resolver_match.url_name == 'producto_lista' %}active{% endif %}">
-                Productos
-            </a>
-
-            <a href="{% url 'inventario_lista' %}"
-                class="menu-link {% if request.resolver_match.url_name == 'inventario_lista' or request.resolver_match.url_name == 'ajustar_stock' %}active{% endif %}">
-                Inventario
-            </a>
-
-            <a href="#" class="menu-link">
-                Reportes
-            </a>
-
-            <a href="#" class="menu-link">
-                Configuracion
-            </a>
+            {% if request.user.is_staff or request.user.is_superuser %}
+            <a href="{% url 'dashboard' %}" class="menu-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+            <a href="{% url 'producto_lista' %}" class="menu-link {% if request.resolver_match.url_name == 'producto_lista' or request.resolver_match.url_name == 'producto_crear' or request.resolver_match.url_name == 'producto_editar' or request.resolver_match.url_name == 'producto_eliminar' %}active{% endif %}">Productos</a>
+            <a href="{% url 'inventario_lista' %}" class="menu-link {% if request.resolver_match.url_name == 'inventario_lista' or request.resolver_match.url_name == 'ajustar_stock' %}active{% endif %}">Inventario</a>
+            <a href="{% url 'ventas_panel' %}" class="menu-link {% if request.resolver_match.url_name == 'ventas_panel' or request.resolver_match.url_name == 'venta_crear' %}active{% endif %}">Ventas</a>
+            <a href="{% url 'vendedores_lista' %}" class="menu-link {% if request.resolver_match.url_name == 'vendedores_lista' or request.resolver_match.url_name == 'vendedor_crear' %}active{% endif %}">Vendedores</a>
+            <a href="#" class="menu-link">Reportes</a>
+            {% else %}
+            <a href="{% url 'ventas_panel' %}" class="menu-link {% if request.resolver_match.url_name == 'ventas_panel' or request.resolver_match.url_name == 'venta_crear' %}active{% endif %}">Ventas</a>
+            {% endif %}
         </nav>
     </aside>
-
     <section class="content">
-
         <header class="topbar">
             <section class="page-title">
-                <h2>{% block header_title %}Dashboard{% endblock %}</h2>
-                <p>{% block header_description %}Resumen general del sistema{% endblock %}</p>
+                <h2>{% block header_title %}FerroAgro{% endblock %}</h2>
+                <p>{% block header_description %}Sistema de gestion{% endblock %}</p>
             </section>
-
             <section class="user-box" aria-label="Informacion de usuario">
                 <p>
                     <span>Usuario</span>
-                    <strong>{{ request.user.username|default:"Admin" }}</strong>
+                    <strong>{{ request.user.username|default:"Invitado" }}</strong>
                 </p>
-
                 <form action="{% url 'logout' %}" method="post" class="logout-form">
                     {% csrf_token %}
                     <button type="submit" class="logout-btn">Cerrar sesion</button>
                 </form>
             </section>
         </header>
-
         <main class="main-content">
+            {% if messages %}
+            <section class="messages">
+                {% for message in messages %}
+                <article class="message {{ message.tags }}">{{ message }}</article>
+                {% endfor %}
+            </section>
+            {% endif %}
             {% block content %}
             {% endblock %}
         </main>
-
     </section>
-
 </body>
-
 </html>

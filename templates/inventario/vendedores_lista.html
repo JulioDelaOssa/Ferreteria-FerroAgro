@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Vendedores - FerroAgro{% endblock %}
+{% block header_title %}Vendedores{% endblock %}
+{% block header_description %}Administracion de usuarios vendedores{% endblock %}
+
+{% block content %}
+<section class="panel-card">
+    <header class="section-header">
+        <div>
+            <h3>Vendedores</h3>
+            <p>Usuarios con acceso limitado al registro de ventas.</p>
+        </div>
+        <a href="{% url 'vendedor_crear' %}" class="btn-primary">+ Nuevo vendedor</a>
+    </header>
+    <section class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vendedor in vendedores %}
+                <tr>
+                    <td>{{ vendedor.username }}</td>
+                    <td>{{ vendedor.first_name }} {{ vendedor.last_name }}</td>
+                    <td>{{ vendedor.email|default:"Sin correo" }}</td>
+                    <td>
+                        {% if vendedor.is_active %}
+                        <span class="estado-stock disponible">Activo</span>
+                        {% else %}
+                        <span class="estado-stock agotado">Inactivo</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="empty-table">No hay vendedores registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</section>
+{% endblock %}
