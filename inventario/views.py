@@ -7,7 +7,7 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import AjusteStockForm, ProductoForm, VendedorForm, VentaForm
-from .models import DetalleVenta, Producto, Venta
+from .models import DetalleVenta, Producto, Venta, Movimientos
 
 
 def es_administrador(user):
@@ -140,6 +140,7 @@ def ajustar_stock(request, producto_id):
         if form.is_valid():
             tipo = form.cleaned_data['tipo']
             cantidad = form.cleaned_data['cantidad']
+            motivo = form.cleaned_data['motivo']
 
             if tipo == 'salida' and cantidad > producto.stock:
                 form.add_error('cantidad', 'La salida no puede ser mayor al stock actual.')
@@ -151,6 +152,15 @@ def ajustar_stock(request, producto_id):
                     producto.stock -= cantidad
 
                 producto.save()
+
+                Movimientos.objects.create(
+                    producto=producto,
+                    tipo=tipo,
+                    cantidad=cantidad,
+                    motivo=motivo,
+                    usuario=request.user
+                )
+
                 messages.success(request, 'Stock actualizado correctamente.')
                 return redirect('inventario_lista')
     else:
@@ -161,6 +171,15 @@ def ajustar_stock(request, producto_id):
         'producto': producto
     })
 
+@admin_required
+def inventario_lista(request):
+    productos = Producto.objects.select_related('categoria').all()
+    movimientos = Movimientos.objects.select_related('producto', 'usuario').all()[:8]
+
+    return render(request, 'inventario/inventario_lista.html', {
+        'productos': productos,
+        'movimientos': movimientos
+    })
 
 @login_required
 def ventas_panel(request):
@@ -197,7 +216,12 @@ def venta_crear(request, producto_id):
                         form.add_error('cantidad', 'No hay stock suficiente para realizar la venta.')
                     else:
                         subtotal = producto.precio * cantidad
-                        venta = Venta.objects.create(vendedor=request.user, total=subtotal)
+
+                        venta = Venta.objects.create(
+                            vendedor=request.user,
+                            total=subtotal
+                        )
+
                         DetalleVenta.objects.create(
                             venta=venta,
                             producto=producto,
@@ -206,8 +230,18 @@ def venta_crear(request, producto_id):
                             precio_unitario=producto.precio,
                             subtotal=subtotal
                         )
+
                         producto.stock -= cantidad
                         producto.save()
+
+                        Movimientos.objects.create(
+                            producto=producto,
+                            tipo='salida',
+                            cantidad=cantidad,
+                            motivo='Venta registrada',
+                            usuario=request.user
+                        )
+
                         messages.success(request, 'Venta registrada correctamente.')
                         return redirect('ventas_panel')
     else:

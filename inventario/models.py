@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Categoria(models.Model):
@@ -95,3 +96,25 @@ class DetalleVenta(models.Model):
 
     def __str__(self):
         return self.producto_nombre
+
+class Movimientos(models.Model):
+    TIPO_CHOICES = [
+        ('entrada', 'Entrada'),
+        ('salida', 'Salida')
+    ]
+
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    cantidad = models.IntegerField()
+    motivo = models.TextField(blank=True, null=True)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'movimientos'
+        verbose_name = 'Movimiento'
+        verbose_name_plural = 'Movimientos'
+        ordering = ['-fecha']
+
+    def __str__(self):
+        return f'{self.tipo} - {self.producto.nombre}'

@@ -51,4 +51,49 @@
         </table>
     </section>
 </section>
+
+<section class="panel-card movements-card">
+    <header class="section-header">
+        <div>
+            <h3>Movimientos recientes</h3>
+            <p>Ultimas entradas y salidas registradas en el inventario.</p>
+        </div>
+    </header>
+    <section class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                    <th>Causa</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movimiento in movimientos %}
+                <tr>
+                    <td>{{ movimiento.producto.nombre }}</td>
+                    <td>
+                        {% if movimiento.tipo == 'entrada' %}
+                        <span class="movimiento-tipo entrada">Entrada</span>
+                        {% else %}
+                        <span class="movimiento-tipo salida">Salida</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ movimiento.cantidad }}</td>
+                    <td>{{ movimiento.usuario.username|default:"Sin usuario" }}</td>
+                    <td>{{ movimiento.fecha|date:"d/m/Y H:i" }}</td>
+                    <td>{{ movimiento.motivo|default:"Sin causa" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-table">No hay movimientos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</section>
 {% endblock %}

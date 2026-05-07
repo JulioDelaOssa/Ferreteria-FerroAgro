@@ -74,11 +74,11 @@ class AjusteStockForm(forms.Form):
     )
 
     motivo = forms.CharField(
-        label='Motivo',
+        label='Causa',
         required=False,
         widget=forms.Textarea(attrs={
             'class': 'form-input',
-            'placeholder': 'Motivo del ajuste',
+            'placeholder': 'Causa del ajuste',
             'rows': 3
         })
     )
@@ -141,11 +141,11 @@ class VendedorForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['password1'].widget.attrs.update({
             'class': 'form-input',
-            'placeholder': 'Contrasena'
+            'placeholder': 'Contraseña'
         })
         self.fields['password2'].widget.attrs.update({
             'class': 'form-input',
-            'placeholder': 'Confirmar contrasena'
+            'placeholder': 'Confirmar contraseña'
         })
-        self.fields['password1'].label = 'Contrasena'
-        self.fields['password2'].label = 'Confirmar contrasena'
+        self.fields['password1'].label = 'Contraseña'
+        self.fields['password2'].label = 'Confirmar contraseña'

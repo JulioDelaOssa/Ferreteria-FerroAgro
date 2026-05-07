@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Categoria, DetalleVenta, Producto, Proveedor, Venta
+from .models import Categoria, DetalleVenta, Producto, Proveedor, Venta, Movimientos
 
 @admin.register(Categoria)
 class CategoriaAdmin(admin.ModelAdmin):
@@ -27,3 +27,9 @@ class VentaAdmin(admin.ModelAdmin):
     list_filter = ('fecha', 'vendedor')
     search_fields = ('vendedor__username',)
     inlines = [DetalleVentaInline]
+
+@admin.register(Movimientos)
+class MovimientosAdmin(admin.ModelAdmin):
+    list_display = ('id', 'producto', 'tipo', 'cantidad', 'usuario', 'fecha')
+    list_filter = ('tipo', 'fecha')
+    search_fields = ('producto__nombre', 'motivo', 'usuario__username')
