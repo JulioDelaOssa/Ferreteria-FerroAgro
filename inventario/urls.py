@@ -8,13 +8,13 @@ urlpatterns = [
     path('productos/nuevo/', views.producto_crear, name='producto_crear'),
     path('productos/editar/<int:producto_id>/', views.producto_editar, name='producto_editar'),
     path('productos/eliminar/<int:producto_id>/', views.producto_eliminar, name='producto_eliminar'),
-
+    path('inventario/', views.inventario_lista, name='inventario_lista'),
+    path('inventario/ajustar/<int:producto_id>/', views.ajustar_stock, name='ajustar_stock'),
     path(
         'login/',
         auth_views.LoginView.as_view(template_name='registration/login.html'),
         name='login'
     ),
-
     path(
         'logout/',
         auth_views.LogoutView.as_view(),

@@ -2,12 +2,14 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block page_title %}FerroAgro{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
 
     <aside class="sidebar" aria-label="Menu principal">
@@ -21,15 +23,18 @@
         </section>
 
         <nav class="menu" aria-label="Navegacion principal">
-            <a href="{% url 'dashboard' %}" class="menu-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <a href="{% url 'dashboard' %}"
+                class="menu-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                 Dashboard
             </a>
 
-            <a href="{% url 'producto_lista' %}" class="menu-link {% if request.resolver_match.url_name == 'producto_lista' %}active{% endif %}">
+            <a href="{% url 'producto_lista' %}"
+                class="menu-link {% if request.resolver_match.url_name == 'producto_lista' %}active{% endif %}">
                 Productos
             </a>
 
-            <a href="#" class="menu-link">
+            <a href="{% url 'inventario_lista' %}"
+                class="menu-link {% if request.resolver_match.url_name == 'inventario_lista' or request.resolver_match.url_name == 'ajustar_stock' %}active{% endif %}">
                 Inventario
             </a>
 
@@ -72,4 +77,5 @@
     </section>
 
 </body>
+
 </html>

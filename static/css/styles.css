@@ -601,3 +601,28 @@ body {
     padding: 14px;
     margin-bottom: 22px;
 }
+
+.stock-badge {
+    display: inline-block;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.estado-stock {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.estado-stock.disponible {
+    color: #1f7a3d;
+}
+
+.estado-stock.bajo {
+    color: #b7791f;
+}
+
+.estado-stock.agotado {
+    color: #c0392b;
+}

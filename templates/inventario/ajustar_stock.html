@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Ajustar stock - FerroAgro{% endblock %}
+{% block header_title %}Ajustar stock{% endblock %}
+{% block header_description %}Entrada y salida de existencias del inventario{% endblock %}
+
+{% block content %}
+<section class="panel-card compact-card">
+    <header class="section-header">
+        <div>
+            <h3>{{ producto.nombre }}</h3>
+            <p>Stock actual: <strong>{{ producto.stock }}</strong></p>
+        </div>
+        <a href="{% url 'inventario_lista' %}" class="btn-secondary">Volver</a>
+    </header>
+    <form method="post" class="product-form">
+        {% csrf_token %}
+        {% for field in form %}
+        <section class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <div class="field-error">
+                {% for error in field.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+        {% endfor %}
+        <section class="form-actions">
+            <button type="submit" class="btn-primary">Guardar ajuste</button>
+            <a href="{% url 'inventario_lista' %}" class="btn-secondary">Cancelar</a>
+        </section>
+    </form>
+</section>
+{% endblock %}

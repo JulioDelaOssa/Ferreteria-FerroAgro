@@ -59,3 +59,38 @@ class ProductoForm(forms.ModelForm):
             raise forms.ValidationError('El precio no puede ser negativo.')
 
         return precio
+
+
+class AjusteStockForm(forms.Form):
+    TIPO_CHOICES = [
+        ('entrada', 'Entrada'),
+        ('salida', 'Salida')
+    ]
+
+    tipo = forms.ChoiceField(
+        choices=TIPO_CHOICES,
+        label='Tipo de movimiento',
+        widget=forms.Select(attrs={
+            'class': 'form-input'
+        })
+    )
+
+    cantidad = forms.IntegerField(
+        label='Cantidad',
+        min_value=1,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Cantidad',
+            'min': '1'
+        })
+    )
+
+    motivo = forms.CharField(
+        label='Motivo',
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-input',
+            'placeholder': 'Motivo del ajuste',
+            'rows': 3
+        })
+    )

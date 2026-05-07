@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Inventario - FerroAgro{% endblock %}
+{% block header_title %}Inventario{% endblock %}
+{% block header_description %}Control de stock y existencias de productos{% endblock %}
+
+{% block content %}
+<section class="panel-card">
+    <header class="section-header">
+        <div>
+            <h3>Inventario</h3>
+            <p>Consulta y ajuste de cantidades disponibles.</p>
+        </div>
+    </header>
+    <section class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Categoria</th>
+                    <th>Stock actual</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.categoria|default:"Sin categoria" }}</td>
+                    <td>{{ producto.stock }}</td>
+                    <td>
+                        {% if producto.stock == 0 %}
+                        <span class="estado-stock agotado">Agotado</span>
+                        {% elif producto.stock <= 5 %}
+                        <span class="estado-stock bajo">Stock bajo</span>
+                        {% else %}
+                        <span class="estado-stock disponible">Disponible</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'ajustar_stock' producto.id %}" class="table-action">Ajustar stock</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-table">No hay productos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</section>
+{% endblock %}

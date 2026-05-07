@@ -1,9 +1,8 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import ProductoForm
+from .forms import AjusteStockForm, ProductoForm
 from .models import Producto
-
 
 
 @login_required
@@ -61,5 +60,44 @@ def producto_eliminar(request, producto_id):
         return redirect('producto_lista')
 
     return render(request, 'inventario/producto_confirmar_eliminar.html', {
+        'producto': producto
+    })
+
+@login_required
+def inventario_lista(request):
+    productos = Producto.objects.select_related('categoria').all()
+
+    return render(request, 'inventario/inventario_lista.html', {
+        'productos': productos
+    })
+
+
+@login_required
+def ajustar_stock(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+
+    if request.method == 'POST':
+        form = AjusteStockForm(request.POST)
+
+        if form.is_valid():
+            tipo = form.cleaned_data['tipo']
+            cantidad = form.cleaned_data['cantidad']
+
+            if tipo == 'salida' and cantidad > producto.stock:
+                form.add_error('cantidad', 'La salida no puede ser mayor al stock actual.')
+            else:
+                if tipo == 'entrada':
+                    producto.stock += cantidad
+
+                if tipo == 'salida':
+                    producto.stock -= cantidad
+
+                producto.save()
+                return redirect('inventario_lista')
+    else:
+        form = AjusteStockForm()
+
+    return render(request, 'inventario/ajustar_stock.html', {
+        'form': form,
         'producto': producto
     })
