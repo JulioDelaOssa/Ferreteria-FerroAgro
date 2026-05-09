@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block page_title %}Eliminar {{ tipo }} | FerroAgro Ayapel{% endblock %}
+{% block header_title %}Eliminar {{ tipo }}{% endblock %}
+{% block header_description %}Confirma si deseas eliminar este registro.{% endblock %}
+{% block content %}
+<article class="panel-card compact-card danger-zone">
+    <i class="ri-delete-bin-6-line"></i>
+    <h3>{{ objeto }}</h3>
+    <p>Esta acción eliminará el registro seleccionado.</p>
+    <form method="post" class="form-actions">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger"><i class="ri-delete-bin-6-line"></i> Eliminar</button>
+        <a href="{{ volver_url }}" class="btn-lite">Cancelar</a>
+    </form>
+</article>
+{% endblock %}

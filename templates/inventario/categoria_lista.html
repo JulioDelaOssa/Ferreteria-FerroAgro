@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block page_title %}Categorías | FerroAgro Ayapel{% endblock %}
+{% block header_title %}Categorías{% endblock %}
+{% block header_description %}Crea y organiza categorías sin entrar al panel de administración.{% endblock %}
+{% block header_actions %}<a href="{% url 'categoria_crear' %}" class="btn-primary"><i class="ri-add-line"></i> Nueva categoría</a>{% endblock %}
+{% block content %}
+<article class="panel-card">
+    <div class="table-container">
+        <table class="data-table">
+            <thead><tr><th>Categoría</th><th>Productos</th><th>Acciones</th></tr></thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr><td><strong>{{ categoria.nombre }}</strong></td><td>{{ categoria.total_productos }}</td><td><div class="table-actions"><a class="icon-btn" href="{% url 'categoria_editar' categoria.id %}"><i class="ri-edit-line"></i></a><a class="icon-btn danger" href="{% url 'categoria_eliminar' categoria.id %}"><i class="ri-delete-bin-6-line"></i></a></div></td></tr>
+                {% empty %}
+                <tr><td colspan="3" class="empty-table">No hay categorías registradas.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
+{% endblock %}

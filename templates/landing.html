@@ -1,0 +1,116 @@
+{% load static %}
+{% load formato_pesos %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FerroAgro Ayapel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="landing-body">
+    <header class="landing-nav">
+        <a class="landing-brand" href="{% url 'landing' %}"><img src="{% static 'imagenes/logo.png' %}" alt="FerroAgro"><span>FerroAgro<small>Ayapel</small></span></a>
+        <nav>
+            <a href="#inicio">Inicio</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#productos">Productos</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+        <a class="login-link" href="{% url 'login' %}"><i class="ri-user-line"></i> Iniciar sesión</a>
+    </header>
+    <main>
+        <section id="inicio" class="hero-section">
+            <div class="hero-copy">
+                <span class="eyebrow">Ferretería y agroinsumos en Ayapel</span>
+                <h1>Soluciones en ferretería y agro para <em>Ayapel</em></h1>
+                <p>En FerroAgro Ayapel ofrecemos herramientas, materiales de construcción e insumos agropecuarios de calidad, con atención cercana y procesos organizados para servir mejor a nuestra comunidad.</p>
+                <div class="hero-actions"><a href="#productos" class="btn-primary"><i class="ri-shopping-bag-3-line"></i> Ver productos</a><a href="#contacto" class="btn-outline"><i class="ri-phone-line"></i> Contáctanos</a></div>
+                <div class="hero-badges"><span><i class="ri-shield-check-line"></i> Productos de calidad</span><span><i class="ri-leaf-line"></i> Pensando en el agro</span><span><i class="ri-team-line"></i> Atención cercana</span></div>
+            </div>
+            <div class="hero-visual image-slot">
+                <img src="{% static 'imagenes/placeholder-hero.svg' %}" alt="Espacio para imagen principal de productos">
+            </div>
+        </section>
+        <section id="nosotros" class="about-section">
+            <div class="store-card image-slot"><img src="{% static 'imagenes/placeholder-tienda.svg' %}" alt="Espacio para foto de la ferretería"></div>
+            <div>
+                <span class="eyebrow">¿Quiénes somos?</span>
+                <h2>Una empresa local al servicio del campo y la construcción</h2>
+                <p>FerroAgro Ayapel nace para apoyar a familias, maestros de obra, agricultores y negocios locales con productos confiables, precios justos y una atención responsable.</p>
+                <div class="about-grid">
+                    <article><i class="ri-focus-3-line"></i><strong>Misión</strong><span>Brindar soluciones útiles y oportunas.</span></article>
+                    <article><i class="ri-hand-heart-line"></i><strong>Compromiso</strong><span>Atención personalizada y honesta.</span></article>
+                    <article><i class="ri-shield-check-line"></i><strong>Confianza</strong><span>Inventario organizado y marcas reconocidas.</span></article>
+                    <article><i class="ri-community-line"></i><strong>Comunidad</strong><span>Apoyamos el progreso de Ayapel.</span></article>
+                </div>
+            </div>
+        </section>
+        <section id="servicios" class="landing-section">
+            <header class="center-heading"><span class="eyebrow">Servicios</span><h2>Nuestros servicios</h2></header>
+            <div class="service-grid">
+                <article><i class="ri-box-3-line"></i><strong>Gestión de productos</strong><p>Catálogo organizado para consultar y actualizar.</p></article>
+                <article><i class="ri-archive-stack-line"></i><strong>Control de inventario</strong><p>Entradas, salidas y alertas de stock.</p></article>
+                <article><i class="ri-shopping-cart-2-line"></i><strong>Registro de ventas</strong><p>Ventas tipo carrito con descuento automático.</p></article>
+                <article><i class="ri-customer-service-2-line"></i><strong>Atención al cliente</strong><p>Acompañamiento antes y después de la compra.</p></article>
+                <article><i class="ri-truck-line"></i><strong>Proveedores</strong><p>Gestión de proveedores desde la app.</p></article>
+                <article><i class="ri-file-pdf-2-line"></i><strong>Facturas PDF</strong><p>Factura lista para descargar después de vender.</p></article>
+            </div>
+        </section>
+        <section id="productos" class="landing-section soft">
+            <header class="center-heading"><span class="eyebrow">Productos</span><h2>Productos destacados</h2></header>
+            <div class="product-grid-public">
+                {% for producto in productos_destacados %}
+                <article class="public-product">
+                    <div class="product-photo image-slot"><img src="{% if producto.imagen_url %}{{ producto.imagen_url }}{% else %}{% static 'imagenes/producto-placeholder.svg' %}{% endif %}" alt="{{ producto.nombre }}"></div>
+                    <strong>{{ producto.nombre }}</strong><span>{{ producto.categoria|default:"Ferretería" }}</span><p>{{ producto.precio|pesos_colombianos }}</p>
+                </article>
+                {% empty %}
+                <article class="public-product"><div class="product-photo image-slot"><img src="{% static 'imagenes/producto-martillo.svg' %}" alt="Martillo"></div><strong>Martillo uña 16 oz</strong><span>Herramientas</span><p>$ 28.900</p></article>
+                <article class="public-product"><div class="product-photo image-slot"><img src="{% static 'imagenes/producto-cemento.svg' %}" alt="Cemento"></div><strong>Cemento uso general 50 kg</strong><span>Construcción</span><p>$ 31.900</p></article>
+                <article class="public-product"><div class="product-photo image-slot"><img src="{% static 'imagenes/producto-fertilizante.svg' %}" alt="Fertilizante"></div><strong>Fertilizante 20-20-20</strong><span>Agroinsumos</span><p>$ 89.900</p></article>
+                <article class="public-product"><div class="product-photo image-slot"><img src="{% static 'imagenes/producto-manguera.svg' %}" alt="Manguera"></div><strong>Manguera agrícola</strong><span>Riego</span><p>$ 89.900</p></article>
+                {% endfor %}
+            </div>
+        </section>
+        <section class="stats-band">
+            <article><i class="ri-box-3-line"></i><strong>500+</strong><span>Productos para cada necesidad</span></article>
+            <article><i class="ri-team-line"></i><strong>100+</strong><span>Clientes satisfechos</span></article>
+            <article><i class="ri-time-line"></i><strong>Atención rápida</strong><span>Consultas y pedidos con agilidad</span></article>
+            <article><i class="ri-archive-stack-line"></i><strong>Inventario organizado</strong><span>Disponibilidad clara para servir mejor</span></article>
+        </section>
+        <section id="contacto" class="contact-section">
+            <div>
+                <span class="eyebrow">Contacto</span>
+                <h2>Contáctanos</h2>
+                <ul class="contact-list">
+                    <li><i class="ri-map-pin-line"></i><span><strong>Dirección</strong>Carrera 6 # 8-45, Barrio Centro, Ayapel, Córdoba</span></li>
+                    <li><i class="ri-phone-line"></i><span><strong>Teléfono</strong>+57 300 123 4567</span></li>
+                    <li><i class="ri-mail-line"></i><span><strong>Correo electrónico</strong>info@ferroagroayapel.com</span></li>
+                    <li><i class="ri-time-line"></i><span><strong>Horario</strong>Lunes a viernes 7:30 a. m. a 6:00 p. m.</span></li>
+                </ul>
+            </div>
+            <div class="map-box image-slot"><img src="{% static 'imagenes/placeholder-mapa.svg' %}" alt="Espacio para mapa"></div>
+            <form class="contact-form">
+                <h3>Envíanos un mensaje</h3>
+                <input type="text" placeholder="Nombre completo">
+                <input type="email" placeholder="Correo electrónico">
+                <input type="text" placeholder="Asunto">
+                <textarea placeholder="Mensaje"></textarea>
+                <button type="button" class="btn-primary"><i class="ri-send-plane-line"></i> Enviar mensaje</button>
+            </form>
+        </section>
+    </main>
+    <footer class="landing-footer">
+        <div><img src="{% static 'imagenes/logo.png' %}" alt="FerroAgro"><strong>FerroAgro Ayapel</strong><span>Soluciones en ferretería y agro para nuestra comunidad.</span></div>
+        <div><strong>Enlaces rápidos</strong><a href="#inicio">Inicio</a><a href="#nosotros">Nosotros</a><a href="#productos">Productos</a><a href="#contacto">Contacto</a></div>
+        <div><strong>Servicios</strong><a>Gestión de productos</a><a>Control de inventario</a><a>Registro de ventas</a><a>Facturas PDF</a></div>
+        <div><strong>Medios de pago</strong><span>Pagos seguros para tu tranquilidad.</span><div class="pay-icons"><i class="ri-bank-card-line"></i><i class="ri-wallet-3-line"></i><i class="ri-bank-line"></i></div></div>
+    </footer>
+</body>
+</html>

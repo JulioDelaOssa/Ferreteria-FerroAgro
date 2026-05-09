@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load formato_pesos %}
+{% block page_title %}{{ venta.codigo_factura }} | FerroAgro Ayapel{% endblock %}
+{% block header_title %}{{ venta.codigo_factura }}{% endblock %}
+{% block header_description %}Detalle de factura generada por la venta.{% endblock %}
+{% block header_actions %}<a href="{% url 'venta_pdf' venta.id %}" class="btn-primary"><i class="ri-file-pdf-2-line"></i> Descargar PDF</a><a href="{% url 'ventas_panel' %}" class="btn-lite"><i class="ri-arrow-left-line"></i> Volver</a>{% endblock %}
+{% block content %}
+<section class="invoice-page">
+    <article class="panel-card invoice-card">
+        <div class="invoice-header"><div><h2>FerroAgro Ayapel</h2><p>Factura de venta</p></div><strong>{{ venta.codigo_factura }}</strong></div>
+        <div class="invoice-meta"><span><strong>Fecha</strong>{{ venta.fecha|date:'d/m/Y h:i a' }}</span><span><strong>Cliente</strong>{{ venta.cliente_nombre|default:'Cliente general' }}</span><span><strong>Vendedor</strong>{{ venta.vendedor.get_full_name|default:venta.vendedor.username }}</span><span><strong>Pago</strong>{{ venta.get_metodo_pago_display }}</span></div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead>
+                <tbody>{% for detalle in venta.detalles.all %}<tr><td>{{ detalle.producto_nombre }}</td><td>{{ detalle.cantidad }}</td><td>{{ detalle.precio_unitario|pesos_colombianos }}</td><td>{{ detalle.subtotal|pesos_colombianos }}</td></tr>{% endfor %}</tbody>
+            </table>
+        </div>
+        <div class="invoice-total"><span>Total</span><strong>{{ venta.total|pesos_colombianos }}</strong></div>
+    </article>
+</section>
+{% endblock %}

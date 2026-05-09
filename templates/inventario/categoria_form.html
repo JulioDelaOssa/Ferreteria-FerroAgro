@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block page_title %}{{ titulo }} | FerroAgro Ayapel{% endblock %}
+{% block header_title %}{{ titulo }}{% endblock %}
+{% block header_description %}Completa la información y guarda los cambios desde la aplicación.{% endblock %}
+{% block header_actions %}<a href="{{ volver_url }}" class="btn-lite"><i class="ri-arrow-left-line"></i> Volver</a>{% endblock %}
+{% block content %}
+<section class="form-layout">
+    <article class="panel-card compact-card">
+        <form method="post" class="product-form">
+            {% csrf_token %}
+            {% for field in form %}<div class="form-group">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}
+            <div class="form-actions"><button type="submit" class="btn-primary"><i class="ri-save-3-line"></i> Guardar</button><a href="{{ volver_url }}" class="btn-lite">Cancelar</a></div>
+        </form>
+    </article>
+    <aside class="panel-card preview-card"><i class="{{ icono }} preview-icon"></i><h3>Gestión desde la app</h3><p>Ya no necesitas entrar a la ruta de administración para crear este registro.</p></aside>
+</section>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load formato_pesos %}
+{% block page_title %}Nueva venta | FerroAgro Ayapel{% endblock %}
+{% block header_title %}Registrar venta{% endblock %}
+{% block header_description %}Selecciona uno o varios productos, indica cantidades y genera la factura.{% endblock %}
+{% block header_actions %}<a href="{% url 'ventas_panel' %}" class="btn-lite"><i class="ri-arrow-left-line"></i> Volver</a>{% endblock %}
+{% block content %}
+<form method="post" class="sale-layout" id="saleForm">
+    {% csrf_token %}
+    <section class="panel-card">
+        <div class="section-header"><div><h3>Datos del cliente</h3><p>Puedes dejarlo como cliente general si no tienes datos.</p></div></div>
+        <div class="form-grid two">
+            {% for field in form %}<div class="form-group">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}
+        </div>
+        <div class="section-header cart-title"><div><h3>Carrito de productos</h3><p>Agrega filas y define la cantidad de cada producto.</p></div><button type="button" class="btn-lite" id="addRow"><i class="ri-add-line"></i> Agregar producto</button></div>
+        <div class="cart-table" id="cartRows">
+            <div class="cart-row cart-head"><span>Producto</span><span>Cantidad</span><span>Precio</span><span>Subtotal</span><span></span></div>
+            <div class="cart-row">
+                <select name="producto_id" class="cart-product" required>
+                    <option value="">Seleccionar producto</option>
+                    {% for producto in productos %}<option value="{{ producto.id }}" data-price="{{ producto.precio }}" data-stock="{{ producto.stock }}">{{ producto.nombre }} · Stock {{ producto.stock }} · {{ producto.precio|pesos_colombianos }}</option>{% endfor %}
+                </select>
+                <input type="number" name="cantidad" class="cart-qty" min="1" value="1" required>
+                <strong class="cart-price">$ 0</strong>
+                <strong class="cart-subtotal">$ 0</strong>
+                <button type="button" class="icon-btn danger remove-row"><i class="ri-delete-bin-6-line"></i></button>
+            </div>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn-primary"><i class="ri-save-3-line"></i> Registrar venta</button><a href="{% url 'ventas_panel' %}" class="btn-lite">Cancelar</a></div>
+    </section>
+    <aside class="panel-card invoice-summary">
+        <i class="ri-bill-line preview-icon"></i>
+        <h3>Resumen de factura</h3>
+        <p>Al guardar se descontará el stock y se generará una factura descargable en PDF.</p>
+        <div class="summary-line"><span>Productos</span><strong id="totalItems">1</strong></div>
+        <div class="summary-line total"><span>Total</span><strong id="saleTotal">$ 0</strong></div>
+        <div class="preview-tip"><i class="ri-file-pdf-2-line"></i><span>Después de registrar la venta podrás abrirla y descargar la factura.</span></div>
+    </aside>
+</form>
+<script>
+const cartRows = document.getElementById('cartRows')
+const addRow = document.getElementById('addRow')
+const saleTotal = document.getElementById('saleTotal')
+const totalItems = document.getElementById('totalItems')
+function money(value) {
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value)
+}
+function updateTotals() {
+    let total = 0
+    let items = 0
+    document.querySelectorAll('.cart-row:not(.cart-head)').forEach(row => {
+        const select = row.querySelector('.cart-product')
+        const qty = row.querySelector('.cart-qty')
+        const price = parseFloat(select.selectedOptions[0]?.dataset.price || 0)
+        const quantity = parseInt(qty.value || 0)
+        const subtotal = price * quantity
+        row.querySelector('.cart-price').textContent = money(price)
+        row.querySelector('.cart-subtotal').textContent = money(subtotal)
+        if (select.value && quantity > 0) items += quantity
+        total += subtotal
+    })
+    saleTotal.textContent = money(total)
+    totalItems.textContent = items
+}
+function bindRow(row) {
+    row.querySelector('.cart-product').addEventListener('change', updateTotals)
+    row.querySelector('.cart-qty').addEventListener('input', updateTotals)
+    row.querySelector('.remove-row').addEventListener('click', function () {
+        if (document.querySelectorAll('.cart-row:not(.cart-head)').length > 1) row.remove()
+        updateTotals()
+    })
+}
+addRow.addEventListener('click', function () {
+    const current = document.querySelector('.cart-row:not(.cart-head)')
+    const clone = current.cloneNode(true)
+    clone.querySelector('.cart-product').value = ''
+    clone.querySelector('.cart-qty').value = 1
+    clone.querySelector('.cart-price').textContent = '$ 0'
+    clone.querySelector('.cart-subtotal').textContent = '$ 0'
+    cartRows.appendChild(clone)
+    bindRow(clone)
+})
+document.querySelectorAll('.cart-row:not(.cart-head)').forEach(bindRow)
+updateTotals()
+</script>
+{% endblock %}

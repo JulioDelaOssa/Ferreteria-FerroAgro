@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block page_title %}Proveedores | FerroAgro Ayapel{% endblock %}
+{% block header_title %}Proveedores{% endblock %}
+{% block header_description %}Registra proveedores desde la app y asígnalos a tus productos.{% endblock %}
+{% block header_actions %}<a href="{% url 'proveedor_crear' %}" class="btn-primary"><i class="ri-add-line"></i> Nuevo proveedor</a>{% endblock %}
+{% block content %}
+<article class="panel-card">
+    <div class="table-container">
+        <table class="data-table">
+            <thead><tr><th>Proveedor</th><th>Contacto</th><th>Teléfono</th><th>Correo</th><th>Productos</th><th>Acciones</th></tr></thead>
+            <tbody>
+                {% for proveedor in proveedores %}
+                <tr><td><strong>{{ proveedor.nombre }}</strong></td><td>{{ proveedor.contacto|default:'Sin contacto' }}</td><td>{{ proveedor.telefono|default:'Sin teléfono' }}</td><td>{{ proveedor.email|default:'Sin correo' }}</td><td>{{ proveedor.total_productos }}</td><td><div class="table-actions"><a class="icon-btn" href="{% url 'proveedor_editar' proveedor.id %}"><i class="ri-edit-line"></i></a><a class="icon-btn danger" href="{% url 'proveedor_eliminar' proveedor.id %}"><i class="ri-delete-bin-6-line"></i></a></div></td></tr>
+                {% empty %}
+                <tr><td colspan="6" class="empty-table">No hay proveedores registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
+{% endblock %}
