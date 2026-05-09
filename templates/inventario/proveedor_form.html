@@ -1,0 +1,86 @@
+{% extends base_template|default:'base.html' %}
+
+{% block page_title %}{{ titulo }} | FerroAgro Ayapel{% endblock %}
+{% block header_title %}{{ titulo }}{% endblock %}
+{% block header_description %}Registra proveedores para asociarlos a productos y mantener el negocio organizado.{% endblock %}
+
+{% block header_actions %}
+{% if not popup %}
+<a href="{{ volver_url }}" class="btn-lite">
+    <i class="ri-arrow-left-line"></i>
+    Volver
+</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="module-page">
+    <article class="module-card form-wide-card">
+        <div class="form-card-header">
+            <h2>Información del proveedor</h2>
+            <p>Completa los datos de contacto y estado del proveedor.</p>
+        </div>
+
+        <div class="form-card-body">
+            <form method="post" class="product-form">
+                {% csrf_token %}
+
+                <div class="form-grid">
+                    <section class="form-group">
+                        <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                        {{ form.nombre }}
+                        {{ form.nombre.errors }}
+                    </section>
+
+                    <section class="form-group">
+                        <label for="{{ form.contacto.id_for_label }}">{{ form.contacto.label }}</label>
+                        {{ form.contacto }}
+                        {{ form.contacto.errors }}
+                    </section>
+
+                    <section class="form-group">
+                        <label for="{{ form.telefono.id_for_label }}">{{ form.telefono.label }}</label>
+                        {{ form.telefono }}
+                        {{ form.telefono.errors }}
+                    </section>
+
+                    <section class="form-group">
+                        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </section>
+                </div>
+
+                <section class="form-group">
+                    <label for="{{ form.direccion.id_for_label }}">{{ form.direccion.label }}</label>
+                    {{ form.direccion }}
+                    {{ form.direccion.errors }}
+                </section>
+
+                <section class="form-check-row">
+                    {{ form.activo }}
+                    <label for="{{ form.activo.id_for_label }}">{{ form.activo.label }}</label>
+                    {{ form.activo.errors }}
+                </section>
+
+                <section class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="ri-save-3-line"></i>
+                        Guardar proveedor
+                    </button>
+
+                    {% if popup %}
+                        <button type="button" class="btn-lite" onclick="window.close()">
+                            Cancelar
+                        </button>
+                    {% else %}
+                        <a href="{{ volver_url }}" class="btn-lite">
+                            Cancelar
+                        </a>
+                    {% endif %}
+                </section>
+            </form>
+        </div>
+    </article>
+</section>
+{% endblock %}

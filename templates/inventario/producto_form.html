@@ -1,44 +1,160 @@
 {% extends 'base.html' %}
 
-{% block page_title %}{{ titulo }} - FerroAgro{% endblock %}
+{% block page_title %}{{ titulo }} | FerroAgro Ayapel{% endblock %}
 {% block header_title %}{{ titulo }}{% endblock %}
-{% block header_description %}Registro de informacion de productos{% endblock %}
+{% block header_description %}Registra la información del producto, su inventario inicial, categoría, proveedor e imagen.{% endblock %}
+
+{% block header_actions %}
+<a href="{{ volver_url }}" class="btn-lite">
+    <i class="ri-arrow-left-line"></i>
+    Volver
+</a>
+{% endblock %}
 
 {% block content %}
-
-<section class="panel-card">
-    <header class="section-header">
-        <div>
-            <h3>{{ titulo }}</h3>
-            <p>Completa los datos del producto para guardarlo en el sistema.</p>
+<section class="module-page">
+    <article class="module-card form-wide-card">
+        <div class="form-card-header">
+            <h2>Información del producto</h2>
+            <p>Completa los datos principales para mantener el catálogo organizado.</p>
         </div>
 
-        <a href="{% url 'producto_lista' %}" class="btn-secondary">Volver</a>
-    </header>
+        <div class="form-card-body">
+            <form method="post" enctype="multipart/form-data" class="product-form">
+                {% csrf_token %}
 
-    <form method="post" class="product-form">
-        {% csrf_token %}
+                <div class="form-grid">
+                    <section class="form-group">
+                        <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                        {{ form.nombre }}
+                        {{ form.nombre.errors }}
+                    </section>
 
-        {% for field in form %}
-        <section class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
+                    <section class="form-group">
+                        <label for="{{ form.precio.id_for_label }}">{{ form.precio.label }}</label>
+                        {{ form.precio }}
+                        {{ form.precio.errors }}
+                    </section>
 
-            {% if field.errors %}
-            <div class="field-error">
-                {% for error in field.errors %}
-                <span>{{ error }}</span>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </section>
-        {% endfor %}
+                    <section class="form-group">
+                        <label for="{{ form.stock.id_for_label }}">{{ form.stock.label }}</label>
+                        {{ form.stock }}
+                        {{ form.stock.errors }}
+                    </section>
 
-        <section class="form-actions">
-            <button type="submit" class="btn-primary">Guardar producto</button>
-            <a href="{% url 'producto_lista' %}" class="btn-secondary">Cancelar</a>
-        </section>
-    </form>
+                    <section class="form-group">
+                        <label for="{{ form.stock_minimo.id_for_label }}">{{ form.stock_minimo.label }}</label>
+                        {{ form.stock_minimo }}
+                        <small class="help-text">Cuando el producto llegue a esta cantidad, aparecerá como stock bajo.</small>
+                        {{ form.stock_minimo.errors }}
+                    </section>
+
+                    <section class="form-group">
+                        <div class="field-head">
+                            <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }}</label>
+                            <a href="{% url 'categoria_crear' %}?popup=1" class="field-action-link popup-link">
+                                <i class="ri-add-line"></i>
+                                Agregar categoría
+                            </a>
+                        </div>
+                        {{ form.categoria }}
+                        {{ form.categoria.errors }}
+                    </section>
+
+                    <section class="form-group">
+                        <div class="field-head">
+                            <label for="{{ form.proveedor.id_for_label }}">{{ form.proveedor.label }}</label>
+                            <a href="{% url 'proveedor_crear' %}?popup=1" class="field-action-link popup-link">
+                                <i class="ri-add-line"></i>
+                                Agregar proveedor
+                            </a>
+                        </div>
+                        {{ form.proveedor }}
+                        {{ form.proveedor.errors }}
+                    </section>
+                </div>
+
+                <section class="form-group">
+                    <label for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }}</label>
+                    {{ form.descripcion }}
+                    {{ form.descripcion.errors }}
+                </section>
+
+                <section class="form-group">
+                    <label for="{{ form.imagen.id_for_label }}">{{ form.imagen.label }}</label>
+                    <div class="file-upload-box">
+                        <i class="ri-image-add-line"></i>
+                        <div>
+                            {{ form.imagen }}
+                            <span>Selecciona una imagen para mostrar el producto en el catálogo.</span>
+                        </div>
+                    </div>
+                    {{ form.imagen.errors }}
+                </section>
+
+                <section class="form-check-row">
+                    {{ form.activo }}
+                    <label for="{{ form.activo.id_for_label }}">{{ form.activo.label }}</label>
+                    {{ form.activo.errors }}
+                </section>
+
+                <section class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="ri-save-3-line"></i>
+                        Guardar producto
+                    </button>
+
+                    <a href="{{ volver_url }}" class="btn-lite">
+                        Cancelar
+                    </a>
+                </section>
+            </form>
+        </div>
+    </article>
 </section>
 
+<script>
+    document.querySelectorAll(".popup-link").forEach(function (link) {
+        link.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            window.open(
+                link.href,
+                "popupRegistro",
+                "width=560,height=620,top=90,left=480"
+            );
+        });
+    });
+
+    window.addEventListener("message", function (event) {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+
+        const data = event.data;
+
+        if (!data || !data.tipo || !data.id || !data.nombre) {
+            return;
+        }
+
+        let select = null;
+
+        if (data.tipo === "categoria") {
+            select = document.getElementById("id_categoria");
+        }
+
+        if (data.tipo === "proveedor") {
+            select = document.getElementById("id_proveedor");
+        }
+
+        if (select) {
+            const option = document.createElement("option");
+            option.value = data.id;
+            option.textContent = data.nombre;
+            option.selected = true;
+
+            select.appendChild(option);
+        }
+    });
+</script>
 {% endblock %}

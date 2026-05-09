@@ -11,7 +11,7 @@
             <h3>Nuevo vendedor</h3>
             <p>El vendedor solo podra registrar ventas en el sistema.</p>
         </div>
-        <a href="{% url 'vendedores_lista' %}" class="btn-secondary">Volver</a>
+        <a href="{% url 'vendedor_lista' %}" class="btn-secondary">Volver</a>
     </header>
     <form method="post" class="product-form">
         {% csrf_token %}
@@ -33,7 +33,7 @@
         {% endfor %}
         <section class="form-actions">
             <button type="submit" class="btn-primary">Crear vendedor</button>
-            <a href="{% url 'vendedores_lista' %}" class="btn-secondary">Cancelar</a>
+            <a href="{% url 'vendedor_lista' %}" class="btn-secondary">Cancelar</a>
         </section>
     </form>
 </section>

@@ -1,0 +1,130 @@
+@media (max-width: 1200px) {
+    .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stats-grid,
+    .landing-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid,
+    .dashboard-grid-3,
+    .sale-layout,
+    .form-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 980px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: relative;
+        height: auto;
+        border-radius: 0 0 24px 24px;
+    }
+
+    .sidebar-nav {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .topbar {
+        position: relative;
+        height: auto;
+        padding: 18px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .topbar-user {
+        justify-content: space-between;
+    }
+
+    .page-header {
+        padding: 24px 18px 14px;
+        flex-direction: column;
+    }
+
+    .content-area,
+    .messages {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .login-page {
+        grid-template-columns: 1fr;
+    }
+
+    .login-panel {
+        padding: 42px 24px;
+    }
+
+    .login-visual {
+        display: none;
+    }
+
+    .hero-section,
+    .about-section,
+    .contact-section {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-copy {
+        padding: 64px 6%;
+    }
+
+    .hero-image {
+        min-height: 360px;
+    }
+
+    .landing-nav {
+        display: none;
+    }
+}
+
+@media (max-width: 720px) {
+    .stats-grid,
+    .landing-products-grid,
+    .services-grid,
+    .about-grid,
+    .stats-section,
+    .inventory-summary,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-points {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+        font-size: 27px;
+    }
+
+    .hero-copy h1 {
+        font-size: 42px;
+    }
+
+    .login-brand h1 {
+        font-size: 34px;
+    }
+
+    .login-copy h2 {
+        font-size: 30px;
+    }
+
+    .topbar-user {
+        flex-wrap: wrap;
+    }
+
+    .search-box span {
+        display: none;
+    }
+}

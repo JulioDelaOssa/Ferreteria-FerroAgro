@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block page_title %}FerroAgro Ayapel{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modules.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+</head>
+<body class="popup-body">
+    <main class="popup-page">
+        <section class="popup-header">
+            <div>
+                <h1>{% block header_title %}Formulario{% endblock %}</h1>
+                <p>{% block header_description %}{% endblock %}</p>
+            </div>
+
+            <button type="button" class="popup-close-button" onclick="window.close()">
+                <i class="ri-close-line"></i>
+            </button>
+        </section>
+
+        <section class="popup-content">
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+</body>
+</html>

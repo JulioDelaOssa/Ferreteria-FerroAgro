@@ -1,152 +1,504 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load formato_pesos %}
 
-{% block page_title %}Dashboard - FerroAgro{% endblock %}
-{% block header_title %}Dashboard{% endblock %}
-{% block header_description %}Resumen general del sistema{% endblock %}
+{% block page_title %}Dashboard | FerroAgro Ayapel{% endblock %}
+
+{% block header_title %}{% endblock %}
+{% block header_description %}{% endblock %}
 
 {% block content %}
-<section class="stats-grid">
-    <article class="stat-card">
-        <span>Total productos</span>
-        <strong>{{ total_productos }}</strong>
-        <p>Productos registrados</p>
-    </article>
-    <article class="stat-card">
-        <span>Stock disponible</span>
-        <strong>{{ stock_disponible }}</strong>
-        <p>Unidades en inventario</p>
-    </article>
-    <article class="stat-card">
-        <span>Ventas</span>
-        <strong>{{ total_ventas }}</strong>
-        <p>Ventas registradas</p>
-    </article>
-    <article class="stat-card">
-        <span>Ingresos</span>
-        <strong>{{ total_ingresos|pesos_colombianos }}</strong>
-        <p>Total generado por ventas</p>
-    </article>
-</section>
 
-<section class="summary-grid">
-    <article class="summary-card">
-        <span>Stock bajo</span>
-        <strong>{{ stock_bajo }}</strong>
-        <p>Productos con pocas unidades</p>
-    </article>
-    <article class="summary-card danger">
-        <span>Agotados</span>
-        <strong>{{ productos_agotados }}</strong>
-        <p>Productos sin existencias</p>
-    </article>
-    <article class="summary-card">
-        <span>Vendedores</span>
-        <strong>{{ total_vendedores }}</strong>
-        <p>Usuarios vendedores registrados</p>
-    </article>
-</section>
+<section class="dashboard-page">
 
-<section class="dashboard-grid">
-    <section class="panel-card">
-        <header class="panel-header">
-            <h3>Gestion rapida</h3>
-            <p>Accesos principales del administrador</p>
-        </header>
-        <section class="quick-actions">
-            <a href="{% url 'producto_lista' %}" class="action-card">
-                <strong>Productos</strong>
-                <span>Registrar, consultar, editar y eliminar productos.</span>
-            </a>
-            <a href="{% url 'inventario_lista' %}" class="action-card">
-                <strong>Inventario</strong>
-                <span>Revisar existencias y ajustar entradas o salidas.</span>
-            </a>
-            <a href="{% url 'ventas_panel' %}" class="action-card">
-                <strong>Ventas</strong>
-                <span>Consultar ventas registradas en el sistema.</span>
-            </a>
-            <a href="{% url 'vendedores_lista' %}" class="action-card">
-                <strong>Vendedores</strong>
-                <span>Crear usuarios vendedores y controlar accesos.</span>
-            </a>
-        </section>
+    <section class="dashboard-kpis">
+        <article class="kpi-card">
+            <div class="kpi-icon kpi-green">
+                <i class="ri-box-3-line"></i>
+            </div>
+            <div class="kpi-info">
+                <span>Total productos</span>
+                <strong>{{ total_productos|default:0 }}</strong>
+                <small>{{ productos_nuevos_mes|default:0 }} este mes</small>
+            </div>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-icon kpi-orange">
+                <i class="ri-error-warning-line"></i>
+            </div>
+            <div class="kpi-info">
+                <span>Stock bajo</span>
+                <strong>{{ stock_bajo|default:0 }}</strong>
+                <small>
+                    <a href="{% url 'inventario_lista' %}">Ver productos</a>
+                </small>
+            </div>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-icon kpi-green">
+                <i class="ri-shopping-cart-2-line"></i>
+            </div>
+            <div class="kpi-info">
+                <span>Ventas del día</span>
+                <strong>{{ ventas_dia|default:0 }}</strong>
+                <small>{{ porcentaje_ventas_dia|default:"Sin datos suficientes" }}</small>
+            </div>
+        </article>
+
+        <article class="kpi-card">
+            <div class="kpi-icon kpi-green">
+                <i class="ri-money-dollar-circle-line"></i>
+            </div>
+            <div class="kpi-info">
+                <span>Ingresos del mes</span>
+                <strong>{{ ingresos_mes|pesos }}</strong>
+                <small>{{ porcentaje_ingresos_mes|default:"Sin datos suficientes" }}</small>
+            </div>
+        </article>
     </section>
 
-    <section class="panel-card">
-        <header class="panel-header">
-            <h3>Productos con alerta</h3>
-            <p>Productos con stock bajo o agotado</p>
-        </header>
-        <section class="mini-list">
-            {% for producto in productos_stock_bajo %}
-            <article class="mini-item">
+    <section class="dashboard-top-grid">
+        <article class="dash-card sales-card">
+            <div class="dash-card-header">
                 <div>
-                    <strong>{{ producto.nombre }}</strong>
-                    <span>{{ producto.categoria|default:"Sin categoria" }}</span>
+                    <h2>Ventas de los últimos 7 días</h2>
+                    <div class="chart-legend">
+                        <span><i class="legend-green"></i> Ventas pagadas</span>
+                    </div>
                 </div>
-                {% if producto.stock == 0 %}
-                <p class="mini-status danger">Agotado</p>
-                {% else %}
-                <p class="mini-status warning">{{ producto.stock }} unidades</p>
-                {% endif %}
-            </article>
-            {% empty %}
-            <article class="empty-state">
-                <p>No hay productos con alerta de stock.</p>
-            </article>
-            {% endfor %}
-        </section>
-    </section>
-</section>
+            </div>
 
-<section class="dashboard-grid">
-    <section class="panel-card">
-        <header class="panel-header">
-            <h3>Ultimas ventas</h3>
-            <p>Movimientos recientes registrados por vendedores</p>
-        </header>
-        <section class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Vendedor</th>
-                        <th>Total</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for venta in ultimas_ventas %}
-                    <tr>
-                        <td>{{ venta.vendedor.username }}</td>
-                        <td>{{ venta.total|pesos_colombianos }}</td>
-                        <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="3" class="empty-table">No hay ventas registradas.</td>
-                    </tr>
+            {% if hay_ventas_semana %}
+                <div class="simple-chart">
+                    {% for item in ventas_semana %}
+                        <div class="chart-day">
+                            <div class="chart-bars">
+                                {% if item.total > 0 %}
+                                    <span class="bar-green" style="--bar-height: {{ item.altura_ventas }}%;"></span>
+                                {% else %}
+                                    <span class="bar-empty"></span>
+                                {% endif %}
+                            </div>
+
+                            {% if item.total > 0 %}
+                                <strong>{{ item.total|pesos }}</strong>
+                                <em>{{ item.cantidad }} venta{% if item.cantidad != 1 %}s{% endif %}</em>
+                            {% else %}
+                                <strong>$0</strong>
+                                <em>Sin ventas</em>
+                            {% endif %}
+
+                            <small>{{ item.dia }}</small>
+                        </div>
                     {% endfor %}
-                </tbody>
-            </table>
-        </section>
+                </div>
+            {% else %}
+                <div class="chart-empty">
+                    <i class="ri-bar-chart-grouped-line"></i>
+                    <h3>Sin ventas registradas</h3>
+                    <p>Cuando registres ventas pagadas, aquí se mostrará el resumen de los últimos 7 días.</p>
+                    <a href="{% url 'venta_nueva' %}" class="mini-button">Registrar venta</a>
+                </div>
+            {% endif %}
+        </article>
+
+        <article class="dash-card inventory-status-card">
+            <div class="dash-card-header">
+                <h2>Estado del inventario</h2>
+            </div>
+
+            {% if hay_inventario %}
+                <div class="inventory-status-body">
+                    <div class="donut-placeholder"
+                         style="--stock-end: {{ donut_en_stock_fin }}%; --low-end: {{ donut_stock_bajo_fin }}%; --empty-end: {{ donut_agotado_fin }}%; --inactive-end: {{ donut_sin_movimiento_fin }}%;">
+                        <div>
+                            <strong>{{ total_productos|default:0 }}</strong>
+                            <span>Total</span>
+                        </div>
+                    </div>
+
+                    <ul class="status-list">
+                        <li>
+                            <span><i class="dot-green"></i> En stock</span>
+                            <strong>{{ porcentaje_en_stock }}</strong>
+                        </li>
+                        <li>
+                            <span><i class="dot-orange"></i> Stock bajo</span>
+                            <strong>{{ porcentaje_stock_bajo }}</strong>
+                        </li>
+                        <li>
+                            <span><i class="dot-yellow"></i> Agotado</span>
+                            <strong>{{ porcentaje_agotado }}</strong>
+                        </li>
+                        <li>
+                            <span><i class="dot-gray"></i> Sin movimiento</span>
+                            <strong>{{ porcentaje_sin_movimiento }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <div class="inventory-status-body empty-inventory-state">
+                    <div class="donut-placeholder donut-empty">
+                        <div>
+                            <strong>0</strong>
+                            <span>Total</span>
+                        </div>
+                    </div>
+
+                    <div class="empty-side-text">
+                        <h3>Sin productos registrados</h3>
+                        <p>Cuando agregues productos, aquí se mostrará el estado real del inventario.</p>
+                        <a href="{% url 'producto_crear' %}" class="mini-button">Agregar producto</a>
+                    </div>
+                </div>
+            {% endif %}
+        </article>
+
+        <article class="dash-card quick-actions-card">
+            <div class="dash-card-header">
+                <h2>Acciones rápidas</h2>
+            </div>
+
+            <div class="quick-actions-dashboard">
+                <a href="{% url 'producto_crear' %}" class="quick-action primary">
+                    <i class="ri-add-line"></i>
+                    Agregar producto
+                </a>
+
+                <a href="{% url 'venta_nueva' %}" class="quick-action orange">
+                    <i class="ri-shopping-cart-2-line"></i>
+                    Registrar venta
+                </a>
+
+                <a href="{% url 'inventario_lista' %}" class="quick-action outline">
+                    <i class="ri-refresh-line"></i>
+                    Actualizar inventario
+                </a>
+
+                <a href="{% url 'proveedor_lista' %}" class="quick-action outline">
+                    <i class="ri-truck-line"></i>
+                    Proveedores
+                </a>
+
+                <a href="{% url 'ventas_panel' %}" class="quick-action outline">
+                    <i class="ri-file-chart-line"></i>
+                    Generar reporte
+                </a>
+            </div>
+        </article>
     </section>
 
-    <section class="panel-card soft-panel">
-        <header class="panel-header">
-            <h3>Roles del sistema</h3>
-            <p>Control de permisos por tipo de usuario</p>
-        </header>
-        <section class="role-list">
-            <article>
-                <strong>Administrador</strong>
-                <span>Gestiona productos, inventario, vendedores, ventas y reportes.</span>
-            </article>
-            <article>
-                <strong>Vendedor</strong>
-                <span>Registra ventas y consulta productos disponibles sin modificar inventario.</span>
-            </article>
-        </section>
+    <section class="dashboard-middle-grid">
+        <article class="dash-card recent-sales-card">
+            <div class="dash-card-header">
+                <h2>Ventas recientes</h2>
+                <a href="{% url 'ventas_panel' %}" class="small-link">Ver todas</a>
+            </div>
+
+            <div class="dash-table-wrap">
+                <table class="dash-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Factura</th>
+                            <th>Cliente</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for venta in ventas_recientes %}
+                            <tr>
+                                <td>{{ venta.fecha|date:"d/m/Y h:i a" }}</td>
+                                <td>
+                                    <a href="{% url 'venta_detalle' venta.id %}" class="table-code">
+                                        FAC-{{ venta.id }}
+                                    </a>
+                                </td>
+                                <td>{{ venta.cliente_nombre|default:"Consumidor final" }}</td>
+                                <td>{{ venta.total|pesos }}</td>
+                                <td>
+                                    {% if venta.estado == 'pagada' %}
+                                        <span class="status-pill paid">Pagada</span>
+                                    {% elif venta.estado == 'pendiente' %}
+                                        <span class="status-pill pending">Pendiente</span>
+                                    {% else %}
+                                        <span class="status-pill canceled">Anulada</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="table-empty">No hay ventas recientes.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="dash-card low-stock-card">
+            <div class="dash-card-header">
+                <h2>Productos con stock bajo</h2>
+                <a href="{% url 'inventario_lista' %}" class="small-link">Ver todos</a>
+            </div>
+
+            <div class="dash-table-wrap">
+                <table class="dash-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Stock actual</th>
+                            <th>Mínimo</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for producto in productos_stock_bajo %}
+                            <tr>
+                                <td>
+                                    <div class="dash-product-cell">
+                                        {% if producto.imagen %}
+                                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                                        {% else %}
+                                            <div class="product-placeholder">
+                                                <i class="ri-box-3-line"></i>
+                                            </div>
+                                        {% endif %}
+
+                                        <span>{{ producto.nombre }}</span>
+                                    </div>
+                                </td>
+
+                                <td class="stock-danger">{{ producto.stock }}</td>
+                                <td>{{ producto.stock_minimo }}</td>
+                                <td>
+                                    <a href="{% url 'ajustar_stock' producto.id %}" class="mini-button">Ver</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="table-empty">No hay productos con stock bajo.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="dash-card top-products-card">
+            <div class="dash-card-header">
+                <h2>Productos más vendidos</h2>
+                <a href="{% url 'ventas_panel' %}" class="small-link">Ver reporte</a>
+            </div>
+
+            <div class="top-products-list">
+                {% for item in productos_mas_vendidos %}
+                    <div class="top-product-item">
+                        <span class="rank">{{ forloop.counter }}</span>
+
+                        {% if item.producto.imagen %}
+                            <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}">
+                        {% else %}
+                            <div class="product-placeholder small-placeholder">
+                                <i class="ri-box-3-line"></i>
+                            </div>
+                        {% endif %}
+
+                        <div>
+                            <strong>{{ item.producto.nombre }}</strong>
+                            <small>{{ item.unidades }} unidades</small>
+                        </div>
+
+                        <b>{{ item.total|pesos }}</b>
+                    </div>
+                {% empty %}
+                    <div class="table-empty">No hay datos de productos vendidos.</div>
+                {% endfor %}
+            </div>
+        </article>
     </section>
+
+    <section class="dashboard-bottom-grid">
+        <article class="dash-card activity-card">
+            <div class="dash-card-header">
+                <h2>Actividad reciente</h2>
+                <a href="{% url 'inventario_lista' %}" class="small-link">Ver toda</a>
+            </div>
+
+            <div class="activity-list-dashboard">
+                {% for movimiento in movimientos_recientes %}
+                    <div class="activity-row">
+                        <div class="activity-icon">
+                            {% if movimiento.tipo == 'entrada' %}
+                                <i class="ri-login-box-line"></i>
+                            {% elif movimiento.tipo == 'salida' %}
+                                <i class="ri-logout-box-line"></i>
+                            {% else %}
+                                <i class="ri-refresh-line"></i>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <strong>{{ movimiento.producto.nombre }}</strong>
+                            <span>{{ movimiento.get_tipo_display }} · {{ movimiento.cantidad }} unidades</span>
+                        </div>
+
+                        <small>{{ movimiento.fecha|timesince }}</small>
+                    </div>
+                {% empty %}
+                    <div class="table-empty">No hay actividad reciente.</div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="dash-card inventory-summary-card">
+            <div class="dash-card-header">
+                <h2>Resumen de inventario</h2>
+                <a href="{% url 'inventario_lista' %}" class="small-link">Ver reporte</a>
+            </div>
+
+            <div class="inventory-summary-grid">
+                <div class="summary-box">
+                    <i class="ri-money-dollar-box-line"></i>
+                    <span>Valor total del inventario</span>
+                    <strong>{{ valor_inventario|pesos }}</strong>
+                </div>
+
+                <div class="summary-box orange-box">
+                    <i class="ri-archive-line"></i>
+                    <span>Productos sin movimiento</span>
+                    <strong>{{ productos_sin_movimiento|default:0 }}</strong>
+                </div>
+
+                <div class="summary-box">
+                    <i class="ri-refresh-line"></i>
+                    <span>Rotación promedio</span>
+                    <strong>{{ rotacion_promedio|default:"0" }} veces</strong>
+                </div>
+
+                <div class="summary-box">
+                    <i class="ri-calendar-line"></i>
+                    <span>Última actualización</span>
+                    <strong>{{ ultima_actualizacion|default:"Sin datos" }}</strong>
+                </div>
+            </div>
+        </article>
+
+        <article class="dash-card category-card">
+            <div class="dash-card-header">
+                <h2>Distribución por categoría</h2>
+                <a href="{% url 'categoria_lista' %}" class="small-link">Ver reporte</a>
+            </div>
+
+            <div class="category-distribution">
+                {% if distribucion_categorias %}
+                    <div class="category-donut-wrap">
+                        <div class="category-donut" data-category-donut data-grand-total="{{ total_productos|default:0 }}">
+                            <div>
+                                <strong data-category-main-percent>0%</strong>
+                                <span>Principal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="category-list" data-category-list data-grand-total="{{ total_productos|default:0 }}">
+                        {% for categoria in distribucion_categorias %}
+                            <li class="category-item" data-count="{{ categoria.total }}">
+                                <span>
+                                    <i></i>
+                                    <b>{{ categoria.nombre }}</b>
+                                </span>
+                                <strong data-category-percent>0%</strong>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="category-empty">
+                        <i class="ri-price-tag-3-line"></i>
+                        <h3>Sin categorías con productos</h3>
+                        <p>Cuando agregues productos con categoría, aquí aparecerá la distribución.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </article>
+    </section>
+
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const donut = document.querySelector("[data-category-donut]");
+        const list = document.querySelector("[data-category-list]");
+        const mainPercent = document.querySelector("[data-category-main-percent]");
+
+        if (!donut || !list) {
+            return;
+        }
+
+        const colors = [
+            "#0f766e",
+            "#14b8a6",
+            "#f97316",
+            "#facc15",
+            "#2563eb",
+            "#7c3aed",
+            "#db2777",
+            "#0891b2",
+            "#ca8a04",
+            "#64748b"
+        ];
+
+        const items = Array.from(list.querySelectorAll(".category-item"));
+        const grandTotal = Number(list.dataset.grandTotal || 0);
+
+        if (!grandTotal || grandTotal <= 0) {
+            return;
+        }
+
+        let start = 0;
+        const segments = [];
+
+        items.forEach(function (item, index) {
+            const color = colors[index % colors.length];
+            const count = Number(item.dataset.count || 0);
+            let percentage = (count / grandTotal) * 100;
+
+            percentage = Math.round(percentage * 10) / 10;
+
+            if (index === items.length - 1) {
+                percentage = Math.max(0, Math.round((100 - start) * 10) / 10);
+            }
+
+            const end = Math.min(100, Math.round((start + percentage) * 10) / 10);
+
+            item.style.setProperty("--category-color", color);
+
+            const percentText = item.querySelector("[data-category-percent]");
+            if (percentText) {
+                percentText.textContent = percentage.toFixed(1).replace(".", ",") + "%";
+            }
+
+            if (percentage > 0) {
+                segments.push(color + " " + start + "% " + end + "%");
+            }
+
+            start = end;
+        });
+
+        if (mainPercent && items.length > 0) {
+            const firstPercent = items[0].querySelector("[data-category-percent]");
+            if (firstPercent) {
+                mainPercent.textContent = firstPercent.textContent;
+            }
+        }
+
+        donut.style.background = "conic-gradient(" + segments.join(", ") + ")";
+    });
+</script>
+
 {% endblock %}

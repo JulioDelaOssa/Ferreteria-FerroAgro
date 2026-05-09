@@ -1,99 +1,167 @@
 {% extends 'base.html' %}
 
-{% block page_title %}Inventario - FerroAgro{% endblock %}
+{% block page_title %}Inventario | FerroAgro Ayapel{% endblock %}
 {% block header_title %}Inventario{% endblock %}
-{% block header_description %}Control de stock y existencias de productos{% endblock %}
+{% block header_description %}Control de stock, existencias y movimientos recientes.{% endblock %}
 
 {% block content %}
-<section class="panel-card">
-    <header class="section-header">
-        <div>
-            <h3>Inventario</h3>
-            <p>Consulta y ajuste de cantidades disponibles.</p>
-        </div>
-    </header>
-    <section class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Categoria</th>
-                    <th>Stock actual</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for producto in productos %}
-                <tr>
-                    <td>{{ producto.nombre }}</td>
-                    <td>{{ producto.categoria|default:"Sin categoria" }}</td>
-                    <td>{{ producto.stock }}</td>
-                    <td>
-                        {% if producto.stock == 0 %}
-                        <span class="estado-stock agotado">Agotado</span>
-                        {% elif producto.stock <= 5 %}
-                        <span class="estado-stock bajo">Stock bajo</span>
-                        {% else %}
-                        <span class="estado-stock disponible">Disponible</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'ajustar_stock' producto.id %}" class="table-action">Ajustar stock</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="empty-table">No hay productos registrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-</section>
+<section class="module-page">
 
-<section class="panel-card movements-card">
-    <header class="section-header">
-        <div>
-            <h3>Movimientos recientes</h3>
-            <p>Ultimas entradas y salidas registradas en el inventario.</p>
-        </div>
-    </header>
-    <section class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Tipo</th>
-                    <th>Cantidad</th>
-                    <th>Usuario</th>
-                    <th>Fecha</th>
-                    <th>Causa</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for movimiento in movimientos %}
-                <tr>
-                    <td>{{ movimiento.producto.nombre }}</td>
-                    <td>
-                        {% if movimiento.tipo == 'entrada' %}
-                        <span class="movimiento-tipo entrada">Entrada</span>
-                        {% else %}
-                        <span class="movimiento-tipo salida">Salida</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ movimiento.cantidad }}</td>
-                    <td>{{ movimiento.usuario.username|default:"Sin usuario" }}</td>
-                    <td>{{ movimiento.fecha|date:"d/m/Y H:i" }}</td>
-                    <td>{{ movimiento.motivo|default:"Sin causa" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="empty-table">No hay movimientos registrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <section class="module-stats-grid">
+        <article class="module-stat-card">
+            <i class="ri-box-3-line"></i>
+            <div>
+                <span>Total productos</span>
+                <strong>{{ total_productos }}</strong>
+            </div>
+        </article>
+
+        <article class="module-stat-card warning">
+            <i class="ri-error-warning-line"></i>
+            <div>
+                <span>Stock bajo</span>
+                <strong>{{ stock_bajo }}</strong>
+            </div>
+        </article>
+
+        <article class="module-stat-card danger">
+            <i class="ri-close-circle-line"></i>
+            <div>
+                <span>Agotados</span>
+                <strong>{{ agotados }}</strong>
+            </div>
+        </article>
     </section>
+
+    <article class="module-card">
+        <div class="module-card-header">
+            <div>
+                <h2>Existencias</h2>
+                <p>Consulta el estado actual de cada producto y realiza ajustes de stock.</p>
+            </div>
+            <a href="{% url 'producto_crear' %}" class="btn-primary">
+                <i class="ri-add-line"></i>
+                Nuevo producto
+            </a>
+        </div>
+
+        <div class="module-table-wrap">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Stock actual</th>
+                        <th>Stock mínimo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for producto in productos %}
+                        <tr>
+                            <td>
+                                <div class="module-product-cell">
+                                    {% if producto.imagen %}
+                                        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                                    {% else %}
+                                        <div class="product-placeholder">
+                                            <i class="ri-box-3-line"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ producto.nombre }}</strong>
+                                        <span>{{ producto.proveedor.nombre|default:"Sin proveedor" }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ producto.categoria.nombre|default:"Sin categoría" }}</td>
+                            <td>{{ producto.stock }}</td>
+                            <td>{{ producto.stock_minimo }}</td>
+                            <td>
+                                {% if producto.estado_stock == "En stock" %}
+                                    <span class="status-pill paid">En stock</span>
+                                {% elif producto.estado_stock == "Stock bajo" %}
+                                    <span class="status-pill pending">Stock bajo</span>
+                                {% else %}
+                                    <span class="status-pill canceled">Agotado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'ajustar_stock' producto.id %}" class="action-btn" title="Ajustar stock">
+                                        <i class="ri-edit-2-line"></i>
+                                    </a>
+                                    <a href="{% url 'producto_editar' producto.id %}" class="action-btn" title="Editar producto">
+                                        <i class="ri-box-3-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="module-empty">
+                                    <i class="ri-archive-stack-line"></i>
+                                    <h3>No hay productos en inventario</h3>
+                                    <p>Cuando agregues productos, aparecerán aquí sus existencias.</p>
+                                    <a href="{% url 'producto_crear' %}" class="btn-primary">Agregar producto</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="module-card">
+        <div class="module-card-header">
+            <div>
+                <h2>Movimientos recientes</h2>
+                <p>Últimas entradas, salidas y ajustes registrados.</p>
+            </div>
+        </div>
+
+        <div class="module-table-wrap">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Tipo</th>
+                        <th>Cantidad</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                        <th>Causa</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for movimiento in movimientos %}
+                        <tr>
+                            <td>{{ movimiento.producto.nombre }}</td>
+                            <td>{{ movimiento.get_tipo_display }}</td>
+                            <td>{{ movimiento.cantidad }}</td>
+                            <td>{{ movimiento.usuario.username|default:"Sistema" }}</td>
+                            <td>{{ movimiento.fecha|date:"d/m/Y h:i a" }}</td>
+                            <td>{{ movimiento.motivo|default:"Sin causa" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="module-empty small">
+                                    <i class="ri-history-line"></i>
+                                    <h3>No hay movimientos registrados</h3>
+                                    <p>Los ajustes de inventario aparecerán en esta sección.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
 </section>
 {% endblock %}

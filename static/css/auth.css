@@ -1,0 +1,214 @@
+.login-body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--slate-50);
+    color: var(--slate-900);
+}
+
+.login-page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(420px, 42%) 1fr;
+    background: var(--white);
+}
+
+.login-panel {
+    padding: 64px 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--white);
+}
+
+.login-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 56px;
+}
+
+.brand-mark {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--orange), #84cc16);
+    color: var(--white);
+    display: grid;
+    place-items: center;
+    font-size: 32px;
+    box-shadow: 0 14px 34px rgba(20, 83, 45, 0.22);
+}
+
+.login-brand h1 {
+    margin: 0;
+    font-size: 42px;
+    line-height: 1;
+    color: var(--green-900);
+    font-weight: 900;
+    letter-spacing: -1.5px;
+}
+
+.login-brand h1 span {
+    color: #65a30d;
+}
+
+.login-brand p {
+    margin: 2px 0 0;
+    color: var(--orange);
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.login-copy {
+    margin-bottom: 34px;
+}
+
+.login-copy h2 {
+    margin: 0 0 14px;
+    color: var(--green-900);
+    font-size: 36px;
+    line-height: 1.1;
+    font-weight: 900;
+    letter-spacing: -0.8px;
+}
+
+.login-copy p {
+    max-width: 470px;
+    margin: 0;
+    color: var(--slate-600);
+    font-size: 17px;
+    line-height: 1.65;
+}
+
+.login-form {
+    max-width: 500px;
+    width: 100%;
+}
+
+.input-icon {
+    position: relative;
+}
+
+.input-icon i {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--slate-500);
+    font-size: 20px;
+}
+
+.input-icon input {
+    width: 100%;
+    height: 58px;
+    border: 1px solid var(--slate-300);
+    border-radius: 14px;
+    padding: 0 18px 0 52px;
+    color: var(--slate-900);
+    font-size: 16px;
+    outline: none;
+    background: var(--white);
+    transition: 0.2s ease;
+}
+
+.input-icon input:focus {
+    border-color: var(--green-700);
+    box-shadow: 0 0 0 4px rgba(4, 120, 87, 0.12);
+}
+
+.login-submit {
+    width: 100%;
+    height: 58px;
+    margin-top: 8px;
+    font-size: 17px;
+}
+
+.back-home {
+    margin-top: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    color: var(--green-900);
+    font-weight: 800;
+    transition: 0.2s ease;
+}
+
+.back-home:hover {
+    color: var(--orange);
+    transform: translateX(-4px);
+}
+
+.alert-error {
+    max-width: 500px;
+    padding: 14px 16px;
+    margin-bottom: 22px;
+    border-radius: 14px;
+    background: var(--red-light);
+    color: #991b1b;
+    font-weight: 700;
+    border: 1px solid #fecaca;
+}
+
+.login-visual {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--green-50), #fefce8);
+}
+
+.login-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.04) contrast(1.02);
+}
+
+.login-visual::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(6,78,59,0.12));
+}
+
+.login-visual-card {
+    position: absolute;
+    right: 48px;
+    bottom: 48px;
+    max-width: 360px;
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    border-radius: 22px;
+    background: rgba(6, 78, 59, 0.94);
+    color: var(--white);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    backdrop-filter: blur(12px);
+}
+
+.login-visual-card i {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    background: rgba(255, 122, 0, 0.18);
+    color: #ffb020;
+    font-size: 28px;
+}
+
+.login-visual-card h3 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.login-visual-card p {
+    margin: 0;
+    color: #dcfce7;
+    font-size: 14px;
+    line-height: 1.5;
+}

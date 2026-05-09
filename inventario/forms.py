@@ -2,13 +2,86 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Producto
+from .models import Categoria, Producto, Proveedor
+
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categoria
+        fields = ['nombre', 'descripcion', 'activo']
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Nombre de la categoría'
+            }),
+            'descripcion': forms.Textarea(attrs={
+                'class': 'form-input',
+                'placeholder': 'Descripción de la categoría',
+                'rows': 3
+            }),
+            'activo': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            })
+        }
+        labels = {
+            'nombre': 'Nombre',
+            'descripcion': 'Descripción',
+            'activo': 'Categoría activa'
+        }
+
+
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        fields = ['nombre', 'contacto', 'telefono', 'email', 'direccion', 'activo']
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Nombre del proveedor'
+            }),
+            'contacto': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Persona de contacto'
+            }),
+            'telefono': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Teléfono'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'correo@ejemplo.com'
+            }),
+            'direccion': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Dirección'
+            }),
+            'activo': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            })
+        }
+        labels = {
+            'nombre': 'Nombre',
+            'contacto': 'Contacto',
+            'telefono': 'Teléfono',
+            'email': 'Correo',
+            'direccion': 'Dirección',
+            'activo': 'Proveedor activo'
+        }
 
 
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['nombre', 'descripcion', 'precio', 'categoria', 'proveedor']
+        fields = [
+            'nombre',
+            'descripcion',
+            'precio',
+            'stock',
+            'stock_minimo',
+            'imagen',
+            'categoria',
+            'proveedor',
+            'activo'
+        ]
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-input',
@@ -16,7 +89,7 @@ class ProductoForm(forms.ModelForm):
             }),
             'descripcion': forms.Textarea(attrs={
                 'class': 'form-input',
-                'placeholder': 'Descripcion del producto',
+                'placeholder': 'Descripción del producto',
                 'rows': 3
             }),
             'precio': forms.NumberInput(attrs={
@@ -25,19 +98,40 @@ class ProductoForm(forms.ModelForm):
                 'step': '0.01',
                 'min': '0'
             }),
+            'stock': forms.NumberInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Cantidad inicial',
+                'min': '0'
+            }),
+            'stock_minimo': forms.NumberInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Stock mínimo',
+                'min': '0'
+            }),
+            'imagen': forms.ClearableFileInput(attrs={
+                'class': 'form-input',
+                'accept': 'image/*'
+            }),
             'categoria': forms.Select(attrs={
                 'class': 'form-input'
             }),
             'proveedor': forms.Select(attrs={
                 'class': 'form-input'
+            }),
+            'activo': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
             })
         }
         labels = {
             'nombre': 'Nombre',
-            'descripcion': 'Descripcion',
+            'descripcion': 'Descripción',
             'precio': 'Precio',
-            'categoria': 'Categoria',
-            'proveedor': 'Proveedor'
+            'stock': 'Stock inicial',
+            'stock_minimo': 'Stock mínimo',
+            'imagen': 'Imagen del producto',
+            'categoria': 'Categoría',
+            'proveedor': 'Proveedor',
+            'activo': 'Producto activo'
         }
 
     def clean_precio(self):
@@ -52,7 +146,8 @@ class ProductoForm(forms.ModelForm):
 class AjusteStockForm(forms.Form):
     TIPO_CHOICES = [
         ('entrada', 'Entrada'),
-        ('salida', 'Salida')
+        ('salida', 'Salida'),
+        ('ajuste', 'Ajuste')
     ]
 
     tipo = forms.ChoiceField(
@@ -92,6 +187,71 @@ class VentaForm(forms.Form):
             'class': 'form-input',
             'placeholder': 'Cantidad',
             'min': '1'
+        })
+    )
+
+
+class VentaCarritoForm(forms.Form):
+    cliente_nombre = forms.CharField(
+        label='Cliente',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Nombre del cliente'
+        })
+    )
+
+    cliente_documento = forms.CharField(
+        label='Documento',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Documento o NIT'
+        })
+    )
+
+    cliente_telefono = forms.CharField(
+        label='Teléfono',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Teléfono del cliente'
+        })
+    )
+
+    metodo_pago = forms.ChoiceField(
+        label='Método de pago',
+        choices=[
+            ('efectivo', 'Efectivo'),
+            ('transferencia', 'Transferencia'),
+            ('tarjeta', 'Tarjeta'),
+            ('credito', 'Crédito')
+        ],
+        widget=forms.Select(attrs={
+            'class': 'form-input'
+        })
+    )
+
+    descuento = forms.DecimalField(
+        label='Descuento',
+        required=False,
+        min_value=0,
+        initial=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-input',
+            'placeholder': '0',
+            'step': '0.01',
+            'min': '0'
+        })
+    )
+
+    observaciones = forms.CharField(
+        label='Observaciones',
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-input',
+            'placeholder': 'Observaciones de la venta',
+            'rows': 3
         })
     )
 
@@ -139,6 +299,7 @@ class VendedorForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.fields['password1'].widget.attrs.update({
             'class': 'form-input',
             'placeholder': 'Contraseña'

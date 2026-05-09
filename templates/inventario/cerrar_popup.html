@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro creado</title>
+</head>
+<body>
+    <script>
+        window.opener.postMessage({
+            tipo: "{{ tipo }}",
+            id: "{{ objeto.id }}",
+            nombre: "{{ objeto.nombre|escapejs }}"
+        }, window.location.origin);
+
+        window.close();
+    </script>
+</body>
+</html>

@@ -1,80 +1,125 @@
 {% extends 'base.html' %}
 {% load formato_pesos %}
 
-{% block page_title %}Ventas - FerroAgro{% endblock %}
+{% block page_title %}Ventas | FerroAgro Ayapel{% endblock %}
 {% block header_title %}Ventas{% endblock %}
-{% block header_description %}Registro y consulta de ventas del sistema{% endblock %}
+{% block header_description %}Consulta ventas registradas, revisa facturas y registra nuevas ventas.{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'venta_nueva' %}" class="btn-warning">
+    <i class="ri-shopping-cart-2-line"></i>
+    Registrar venta
+</a>
+{% endblock %}
 
 {% block content %}
-<section class="panel-card">
-    <header class="section-header">
-        <div>
-            <h3>Productos disponibles</h3>
-            <p>Selecciona un producto para registrar una venta.</p>
-        </div>
-    </header>
-    <section class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Categoria</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Accion</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for producto in productos %}
-                <tr>
-                    <td>{{ producto.nombre }}</td>
-                    <td>{{ producto.categoria|default:"Sin categoria" }}</td>
-                    <td>{{ producto.precio|pesos_colombianos }}</td>
-                    <td>{{ producto.stock }}</td>
-                    <td>
-                        <a href="{% url 'venta_crear' producto.id %}" class="table-action">+ Vender</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="empty-table">No hay productos disponibles para vender.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-</section>
+<section class="module-page">
 
-<section class="panel-card movements-card">
-    <header class="section-header">
-        <div>
-            <h3>Ventas recientes</h3>
-            <p>Ultimas ventas registradas en el sistema.</p>
-        </div>
-    </header>
-    <section class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Vendedor</th>
-                    <th>Total</th>
-                    <th>Fecha</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for venta in ventas %}
-                <tr>
-                    <td>{{ venta.vendedor.username }}</td>
-                    <td>{{ venta.total|pesos_colombianos }}</td>
-                    <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="empty-table">No hay ventas registradas.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <section class="module-stats-grid">
+        <article class="module-stat-card">
+            <i class="ri-shopping-cart-2-line"></i>
+            <div>
+                <span>Total ventas</span>
+                <strong>{{ total_ventas }}</strong>
+            </div>
+        </article>
+
+        <article class="module-stat-card">
+            <i class="ri-money-dollar-circle-line"></i>
+            <div>
+                <span>Ingresos pagados</span>
+                <strong>{{ ingresos|pesos }}</strong>
+            </div>
+        </article>
+
+        <article class="module-stat-card warning">
+            <i class="ri-time-line"></i>
+            <div>
+                <span>Pendientes</span>
+                <strong>{{ pendientes }}</strong>
+            </div>
+        </article>
     </section>
+
+    <article class="module-card">
+        <div class="module-card-header">
+            <div>
+                <h2>Historial de ventas</h2>
+                <p>Listado de facturas registradas en el sistema.</p>
+            </div>
+
+            <a href="{% url 'venta_nueva' %}" class="btn-primary">
+                <i class="ri-add-line"></i>
+                Nueva venta
+            </a>
+        </div>
+
+        <div class="module-table-wrap">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Factura</th>
+                        <th>Cliente</th>
+                        <th>Vendedor</th>
+                        <th>Método</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for venta in ventas %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'venta_detalle' venta.id %}" class="table-code">
+                                    FAC-{{ venta.id }}
+                                </a>
+                            </td>
+                            <td>{{ venta.cliente_nombre|default:"Consumidor final" }}</td>
+                            <td>{{ venta.vendedor.get_full_name|default:venta.vendedor.username }}</td>
+                            <td>{{ venta.get_metodo_pago_display }}</td>
+                            <td>{{ venta.total|pesos }}</td>
+                            <td>
+                                {% if venta.estado == 'pagada' %}
+                                    <span class="status-pill paid">Pagada</span>
+                                {% elif venta.estado == 'pendiente' %}
+                                    <span class="status-pill pending">Pendiente</span>
+                                {% else %}
+                                    <span class="status-pill canceled">Anulada</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ venta.fecha|date:"d/m/Y h:i a" }}</td>
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'venta_detalle' venta.id %}" class="action-btn" title="Ver factura">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="{% url 'factura_pdf' venta.id %}" class="action-btn" title="Descargar PDF">
+                                        <i class="ri-file-pdf-2-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8">
+                                <div class="module-empty">
+                                    <i class="ri-shopping-cart-2-line"></i>
+                                    <h3>No hay ventas registradas</h3>
+                                    <p>Cuando registres ventas, aparecerán aquí con su factura y detalle.</p>
+                                    <a href="{% url 'venta_nueva' %}" class="btn-primary">
+                                        Registrar venta
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
 </section>
 {% endblock %}

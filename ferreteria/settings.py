@@ -81,6 +81,9 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'; SET default_storage_engine=INNODB"
+        }
     }
 }
 
@@ -120,9 +123,28 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+
+
+# Media files
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Auth redirects
+
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'dashboard'
+
+LOGIN_REDIRECT_URL = 'post_login'
+
 LOGOUT_REDIRECT_URL = 'login'
+
+
+# Default primary key field type
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

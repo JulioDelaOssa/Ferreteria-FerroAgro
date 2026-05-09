@@ -1,17 +1,66 @@
-{% extends 'base.html' %}
+{% extends base_template|default:'base.html' %}
+
 {% block page_title %}{{ titulo }} | FerroAgro Ayapel{% endblock %}
 {% block header_title %}{{ titulo }}{% endblock %}
-{% block header_description %}Completa la información y guarda los cambios desde la aplicación.{% endblock %}
-{% block header_actions %}<a href="{{ volver_url }}" class="btn-lite"><i class="ri-arrow-left-line"></i> Volver</a>{% endblock %}
+{% block header_description %}Organiza los productos por categorías para facilitar búsquedas, filtros y reportes.{% endblock %}
+
+{% block header_actions %}
+<a href="{{ volver_url }}" class="btn-lite">
+    <i class="ri-arrow-left-line"></i>
+    Volver
+</a>
+{% endblock %}
+
 {% block content %}
 <section class="form-layout">
-    <article class="panel-card compact-card">
-        <form method="post" class="product-form">
-            {% csrf_token %}
-            {% for field in form %}<div class="form-group">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>{% endfor %}
-            <div class="form-actions"><button type="submit" class="btn-primary"><i class="ri-save-3-line"></i> Guardar</button><a href="{{ volver_url }}" class="btn-lite">Cancelar</a></div>
-        </form>
+    <article class="module-card">
+        <div class="form-card-header">
+            <h2>Información de categoría</h2>
+            <p>Completa los datos principales de la categoría.</p>
+        </div>
+
+        <div class="form-card-body">
+            <form method="post" class="product-form">
+                {% csrf_token %}
+
+                <section class="form-group">
+                    <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                    {{ form.nombre }}
+                    {{ form.nombre.errors }}
+                </section>
+
+                <section class="form-group">
+                    <label for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }}</label>
+                    {{ form.descripcion }}
+                    {{ form.descripcion.errors }}
+                </section>
+
+                <section class="form-check-row">
+                    {{ form.activo }}
+                    <label for="{{ form.activo.id_for_label }}">{{ form.activo.label }}</label>
+                    {{ form.activo.errors }}
+                </section>
+
+                <section class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="ri-save-3-line"></i>
+                        Guardar categoría
+                    </button>
+
+                    <a href="{{ volver_url }}" class="btn-lite">
+                        Cancelar
+                    </a>
+                </section>
+            </form>
+        </div>
     </article>
-    <aside class="panel-card preview-card"><i class="{{ icono }} preview-icon"></i><h3>Gestión desde la app</h3><p>Ya no necesitas entrar a la ruta de administración para crear este registro.</p></aside>
+
+    <aside class="form-side-card">
+        <div class="form-side-icon">
+            <i class="ri-price-tag-3-line"></i>
+        </div>
+        <h3>Gestión desde la app</h3>
+        <p>Ya no necesitas entrar al administrador de Django para crear o editar categorías.</p>
+    </aside>
 </section>
 {% endblock %}

@@ -1,67 +1,173 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block page_title %}FerroAgro{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>{% block page_title %}FerroAgro Ayapel{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modules.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
 </head>
+
 <body>
-    <aside class="sidebar" aria-label="Menu principal">
-        <section class="brand" aria-label="Identidad del sistema">
-            <figure class="logo-box">
-                <img src="{% static 'imagenes/logo.png' %}" alt="Logo de FerroAgro Ayapel" class="logo">
-            </figure>
-            <h1>FerroAgro</h1>
-            {% if request.user.is_staff or request.user.is_superuser %}
-            <p>Administracion</p>
-            {% else %}
-            <p>Ventas</p>
-            {% endif %}
-        </section>
-        <nav class="menu" aria-label="Navegacion principal">
-            {% if request.user.is_staff or request.user.is_superuser %}
-            <a href="{% url 'dashboard' %}" class="menu-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
-            <a href="{% url 'producto_lista' %}" class="menu-link {% if request.resolver_match.url_name == 'producto_lista' or request.resolver_match.url_name == 'producto_crear' or request.resolver_match.url_name == 'producto_editar' or request.resolver_match.url_name == 'producto_eliminar' %}active{% endif %}">Productos</a>
-            <a href="{% url 'inventario_lista' %}" class="menu-link {% if request.resolver_match.url_name == 'inventario_lista' or request.resolver_match.url_name == 'ajustar_stock' %}active{% endif %}">Inventario</a>
-            <a href="{% url 'ventas_panel' %}" class="menu-link {% if request.resolver_match.url_name == 'ventas_panel' or request.resolver_match.url_name == 'venta_crear' %}active{% endif %}">Ventas</a>
-            <a href="{% url 'vendedores_lista' %}" class="menu-link {% if request.resolver_match.url_name == 'vendedores_lista' or request.resolver_match.url_name == 'vendedor_crear' %}active{% endif %}">Vendedores</a>
-            <a href="#" class="menu-link">Reportes</a>
-            {% else %}
-            <a href="{% url 'ventas_panel' %}" class="menu-link {% if request.resolver_match.url_name == 'ventas_panel' or request.resolver_match.url_name == 'venta_crear' %}active{% endif %}">Ventas</a>
-            {% endif %}
-        </nav>
-    </aside>
-    <section class="content">
-        <header class="topbar">
-            <section class="page-title">
-                <h2>{% block header_title %}FerroAgro{% endblock %}</h2>
-                <p>{% block header_description %}Sistema de gestion{% endblock %}</p>
-            </section>
-            <section class="user-box" aria-label="Informacion de usuario">
-                <p>
-                    <span>Usuario</span>
-                    <strong>{{ request.user.username|default:"Invitado" }}</strong>
-                </p>
-                <form action="{% url 'logout' %}" method="post" class="logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="logout-btn">Cerrar sesion</button>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a href="{% url 'dashboard' %}" class="brand">
+                <span class="brand-icon">
+                    <i class="ri-leaf-line"></i>
+                </span>
+                <span>
+                    <strong>Ferro<span>Agro</span></strong>
+                    <small>Ayapel</small>
+                </span>
+            </a>
+
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="ri-dashboard-3-line"></i>
+                    Dashboard
+                </a>
+
+                <a href="{% url 'producto_lista' %}" class="{% if request.resolver_match.url_name == 'producto_lista' or request.resolver_match.url_name == 'producto_crear' or request.resolver_match.url_name == 'producto_editar' %}active{% endif %}">
+                    <i class="ri-box-3-line"></i>
+                    Productos
+                </a>
+
+                <a href="{% url 'inventario_lista' %}" class="{% if request.resolver_match.url_name == 'inventario_lista' or request.resolver_match.url_name == 'ajustar_stock' %}active{% endif %}">
+                    <i class="ri-archive-stack-line"></i>
+                    Inventario
+                </a>
+
+                <a href="{% url 'ventas_panel' %}" class="{% if request.resolver_match.url_name == 'ventas_panel' or request.resolver_match.url_name == 'venta_nueva' or request.resolver_match.url_name == 'venta_detalle' %}active{% endif %}">
+                    <i class="ri-shopping-cart-2-line"></i>
+                    Ventas
+                </a>
+
+                <a href="{% url 'categoria_lista' %}" class="{% if request.resolver_match.url_name == 'categoria_lista' or request.resolver_match.url_name == 'categoria_crear' or request.resolver_match.url_name == 'categoria_editar' %}active{% endif %}">
+                    <i class="ri-price-tag-3-line"></i>
+                    Categorías
+                </a>
+
+                <a href="{% url 'proveedor_lista' %}" class="{% if request.resolver_match.url_name == 'proveedor_lista' or request.resolver_match.url_name == 'proveedor_crear' or request.resolver_match.url_name == 'proveedor_editar' %}active{% endif %}">
+                    <i class="ri-truck-line"></i>
+                    Proveedores
+                </a>
+
+                <a href="{% url 'vendedor_lista' %}" class="{% if request.resolver_match.url_name == 'vendedor_lista' or request.resolver_match.url_name == 'vendedor_crear' %}active{% endif %}">
+                    <i class="ri-user-settings-line"></i>
+                    Vendedores
+                </a>
+            </nav>
+
+            <div class="support-card">
+                <i class="ri-customer-service-2-line"></i>
+                <h3>¿Necesitas ayuda?</h3>
+                <p>Administra tu negocio de forma organizada y segura.</p>
+            </div>
+
+            <div class="sidebar-footer">
+                <strong>FerroAgro Ayapel</strong>
+                <span>Sistema de gestión empresarial</span>
+            </div>
+        </aside>
+
+        <main class="main-area">
+            <header class="topbar">
+
+                <form action="{% url 'producto_lista' %}" method="get" class="search-box">
+                    <i class="ri-search-line"></i>
+                    <input type="search" name="q" placeholder="Buscar productos, categorías o proveedores...">
+                    <span>Ctrl + K</span>
                 </form>
+
+                <div class="topbar-user">
+                    <a href="{% url 'landing' %}" class="icon-link" title="Página principal">
+                        <i class="ri-home-5-line"></i>
+                    </a>
+
+                    <div class="notification-wrapper">
+                        <button type="button" class="notification-button" id="notificationButton">
+                            <i class="ri-notification-3-line"></i>
+                            {% if alertas_total and alertas_total > 0 %}
+                                <span class="notification-badge">{{ alertas_total }}</span>
+                            {% endif %}
+                        </button>
+
+                        <div class="notification-menu" id="notificationMenu">
+                            <div class="notification-header">
+                                <strong>Notificaciones</strong>
+                                <span>Alertas</span>
+                            </div>
+
+                            {% if alertas_total and alertas_total > 0 %}
+                                <a href="{% url 'inventario_lista' %}" class="notification-item">
+                                    <i class="ri-error-warning-line"></i>
+                                    <div>
+                                        <strong>Revisar alertas</strong>
+                                        <span>Hay información que requiere atención.</span>
+                                    </div>
+                                </a>
+                            {% else %}
+                                <div class="notification-empty">
+                                    <i class="ri-shield-check-line"></i>
+                                    <strong>Sin notificaciones</strong>
+                                    <span>No hay alertas por ahora.</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="user-info">
+                        <div class="avatar">
+                            <i class="ri-user-line"></i>
+                        </div>
+                        <div>
+                            <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+                            <small>Administrador</small>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'logout' %}" class="logout-link" title="Cerrar sesión">
+                        <i class="ri-logout-box-r-line"></i>
+                    </a>
+                </div>
+            </header>
+
+            <section class="page-header">
+                <div>
+                    <h1>{% block header_title %}Panel de control{% endblock %}</h1>
+                    <p>{% block header_description %}Gestiona la información principal de FerroAgro Ayapel.{% endblock %}</p>
+                </div>
+
+                <div class="page-actions">
+                    {% block header_actions %}{% endblock %}
+                </div>
             </section>
-        </header>
-        <main class="main-content">
+
             {% if messages %}
-            <section class="messages">
-                {% for message in messages %}
-                <article class="message {{ message.tags }}">{{ message }}</article>
-                {% endfor %}
-            </section>
+                <section class="messages">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">
+                            <i class="ri-information-line"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </section>
             {% endif %}
-            {% block content %}
-            {% endblock %}
+
+            <section class="content-area">
+                {% block content %}{% endblock %}
+            </section>
         </main>
-    </section>
+    </div>
+
+    <script src="{% static 'js/base.js' %}"></script>
 </body>
 </html>
