@@ -157,6 +157,29 @@
     transform: translateX(-4px);
 }
 
+.login-contact {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--slate-200);
+    display: grid;
+    gap: 9px;
+    color: var(--slate-600);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.login-contact span {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.login-contact i {
+    color: var(--green-800);
+    font-size: 18px;
+}
+
 /* Error */
 
 .alert-error {

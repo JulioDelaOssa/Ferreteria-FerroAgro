@@ -1,4 +1,5 @@
 from decimal import Decimal, InvalidOperation
+from datetime import datetime, time
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -9,6 +10,8 @@ from django.db.models import Count, F, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
+from django.utils.dateparse import parse_date
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -45,6 +48,42 @@ def formato_pesos_pdf(valor):
 
     numero = int(numero)
     return f'${numero:,}'.replace(',', '.')
+
+
+def crear_documento_pdf(response, titulo, subtitulo):
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=letter,
+        rightMargin=1.6 * cm,
+        leftMargin=1.6 * cm,
+        topMargin=1.6 * cm,
+        bottomMargin=1.6 * cm
+    )
+
+    styles = getSampleStyleSheet()
+    elements = [
+        Paragraph('FerroAgro Ayapel', styles['Title']),
+        Paragraph(titulo, styles['Heading2']),
+        Paragraph(subtitulo, styles['Normal']),
+        Spacer(1, 14),
+    ]
+
+    return doc, styles, elements
+
+
+def aplicar_estilo_tabla(tabla):
+    tabla.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#14532d')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#d1d5db')),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8fafc')),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+    ]))
+
+    return tabla
 
 
 class CustomLoginView(LoginView):
@@ -366,6 +405,12 @@ def proveedor_eliminar(request, pk):
 @login_required
 @admin_required
 def inventario_lista(request):
+    tipo_movimiento = request.GET.get('tipo', '').strip()
+    fecha_desde = request.GET.get('desde', '').strip()
+    fecha_hasta = request.GET.get('hasta', '').strip()
+    fecha_desde_obj = parse_date(fecha_desde) if fecha_desde else None
+    fecha_hasta_obj = parse_date(fecha_hasta) if fecha_hasta else None
+
     productos = Producto.objects.select_related(
         'categoria',
         'proveedor'
@@ -383,7 +428,24 @@ def inventario_lista(request):
     movimientos = Movimientos.objects.select_related(
         'producto',
         'usuario'
-    ).order_by('-fecha')[:50]
+    ).order_by('-fecha')
+
+    if tipo_movimiento:
+        movimientos = movimientos.filter(tipo=tipo_movimiento)
+
+    if fecha_desde_obj:
+        inicio_desde = timezone.make_aware(
+            datetime.combine(fecha_desde_obj, time.min)
+        )
+        movimientos = movimientos.filter(fecha__gte=inicio_desde)
+
+    if fecha_hasta_obj:
+        fin_hasta = timezone.make_aware(
+            datetime.combine(fecha_hasta_obj, time.max)
+        )
+        movimientos = movimientos.filter(fecha__lte=fin_hasta)
+
+    movimientos = movimientos[:120]
 
     return render(request, 'inventario/inventario_lista.html', {
         'productos': productos,
@@ -391,6 +453,10 @@ def inventario_lista(request):
         'stock_bajo': stock_bajo,
         'agotados': agotados,
         'movimientos': movimientos,
+        'tipo_movimiento': tipo_movimiento,
+        'fecha_desde': fecha_desde,
+        'fecha_hasta': fecha_hasta,
+        'tipos_movimiento': Movimientos.TIPO_CHOICES,
     })
 
 
@@ -753,6 +819,121 @@ def factura_pdf(request, pk):
 
     doc.build(elements)
 
+    return response
+
+
+@login_required
+@admin_required
+def reporte_resumen_inventario_pdf(request):
+    productos = Producto.objects.select_related('categoria', 'proveedor')
+    total_productos = productos.count()
+    productos_activos = productos.filter(activo=True).count()
+    stock_bajo = productos.filter(stock__gt=0, stock__lte=F('stock_minimo')).count()
+    agotados = productos.filter(stock=0).count()
+    sin_movimiento = productos.annotate(
+        total_movimientos=Count('movimientos')
+    ).filter(total_movimientos=0).count()
+
+    valor_inventario = Decimal('0')
+    for producto in productos:
+        valor_inventario += producto.precio * producto.stock
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte-resumen-inventario.pdf"'
+
+    fecha = timezone.localtime(timezone.now()).strftime('%d/%m/%Y %I:%M %p')
+    doc, styles, elements = crear_documento_pdf(
+        response,
+        'Reporte de resumen de inventario',
+        f'Generado el {fecha}'
+    )
+
+    resumen = [
+        ['Indicador', 'Valor'],
+        ['Total productos', str(total_productos)],
+        ['Productos activos', str(productos_activos)],
+        ['Stock bajo', str(stock_bajo)],
+        ['Agotados', str(agotados)],
+        ['Productos sin movimiento', str(sin_movimiento)],
+        ['Valor total del inventario', formato_pesos_pdf(valor_inventario)],
+    ]
+
+    elements.append(aplicar_estilo_tabla(Table(resumen, colWidths=[9 * cm, 7 * cm])))
+    elements.append(Spacer(1, 18))
+    elements.append(Paragraph('Productos con stock bajo o agotado', styles['Heading3']))
+
+    productos_criticos = productos.filter(
+        Q(stock=0) | Q(stock__lte=F('stock_minimo'))
+    ).order_by('stock', 'nombre')[:35]
+
+    data = [['Producto', 'Categoria', 'Stock', 'Minimo', 'Valor']]
+
+    for producto in productos_criticos:
+        data.append([
+            producto.nombre,
+            producto.categoria.nombre if producto.categoria else 'Sin categoria',
+            str(producto.stock),
+            str(producto.stock_minimo),
+            formato_pesos_pdf(producto.precio * producto.stock),
+        ])
+
+    if len(data) == 1:
+        data.append(['Sin productos criticos', '-', '-', '-', '-'])
+
+    elements.append(aplicar_estilo_tabla(Table(
+        data,
+        colWidths=[5.4 * cm, 4.2 * cm, 2.2 * cm, 2.2 * cm, 3 * cm]
+    )))
+
+    doc.build(elements)
+    return response
+
+
+@login_required
+@admin_required
+def reporte_distribucion_categorias_pdf(request):
+    total_productos = Producto.objects.count()
+    categorias = Categoria.objects.annotate(
+        total_categoria=Count('productos')
+    ).filter(
+        total_categoria__gt=0
+    ).order_by('-total_categoria', 'nombre')
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte-distribucion-categorias.pdf"'
+
+    fecha = timezone.localtime(timezone.now()).strftime('%d/%m/%Y %I:%M %p')
+    doc, styles, elements = crear_documento_pdf(
+        response,
+        'Reporte de distribucion por categoria',
+        f'Generado el {fecha}'
+    )
+
+    data = [['Categoria', 'Productos', 'Participacion']]
+
+    for categoria in categorias:
+        if total_productos:
+            porcentaje = (categoria.total_categoria / total_productos) * 100
+        else:
+            porcentaje = 0
+
+        data.append([
+            categoria.nombre,
+            str(categoria.total_categoria),
+            f'{porcentaje:.1f}%'.replace('.', ','),
+        ])
+
+    if len(data) == 1:
+        data.append(['Sin categorias con productos', '0', '0%'])
+
+    elements.append(aplicar_estilo_tabla(Table(
+        data,
+        colWidths=[9 * cm, 4 * cm, 4 * cm]
+    )))
+    elements.append(Spacer(1, 14))
+    elements.append(Paragraph(f'Total de productos registrados: {total_productos}', styles['Normal']))
+
+    doc.build(elements)
     return response
 
 

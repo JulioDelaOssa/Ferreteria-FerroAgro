@@ -1,4 +1,5 @@
 {% load static %}
+{% load formato_pesos %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -197,61 +198,101 @@
                         <article class="landing-product-card">
                             <div class="product-image">
                                 {% if producto.imagen %}
-                                    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                                    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" onerror="this.onerror=null;this.src='{% static 'imagenes/producto-placeholder.svg' %}';">
                                 {% else %}
-                                    <img src="{% static 'imagenes/empty-products.png' %}" alt="{{ producto.nombre }}">
+                                    <img src="{% static 'imagenes/producto-placeholder.svg' %}" alt="{{ producto.nombre }}">
                                 {% endif %}
                             </div>
 
                             <div class="product-info">
-                                <span>{{ producto.categoria.nombre|default:"General" }}</span>
+                                <div class="product-kicker">
+                                    <span>{{ producto.categoria.nombre|default:"General" }}</span>
+                                </div>
                                 <h3>{{ producto.nombre }}</h3>
-                                <strong>${{ producto.precio }}</strong>
+                                <div class="product-card-footer">
+                                    <strong>{{ producto.precio|pesos }}</strong>
+                                    <a href="https://wa.me/573145447639?text=Hola%2C%20quiero%20conocer%20mas%20sobre%20{{ producto.nombre|urlencode }}" target="_blank" rel="noopener">
+                                        <i class="ri-whatsapp-line"></i>
+                                        Conocer mas
+                                    </a>
+                                </div>
                             </div>
                         </article>
                     {% endfor %}
                 {% else %}
                     <article class="landing-product-card">
                         <div class="product-image">
-                            <img src="{% static 'imagenes/empty-products.png' %}" alt="Producto FerroAgro">
+                            <img src="{% static 'imagenes/producto-placeholder.svg' %}" alt="Producto FerroAgro">
                         </div>
                         <div class="product-info">
-                            <span>Herramientas</span>
+                            <div class="product-kicker">
+                                <span>Herramientas</span>
+                            </div>
                             <h3>Productos de ferretería</h3>
-                            <strong>Consultar</strong>
+                            <div class="product-card-footer">
+                                <strong>Consultar</strong>
+                                <a href="https://wa.me/573145447639" target="_blank" rel="noopener">
+                                    <i class="ri-whatsapp-line"></i>
+                                    Conocer mas
+                                </a>
+                            </div>
                         </div>
                     </article>
 
                     <article class="landing-product-card">
                         <div class="product-image">
-                            <img src="{% static 'imagenes/empty-inventory.png' %}" alt="Inventario FerroAgro">
+                            <img src="{% static 'imagenes/producto-cemento.svg' %}" alt="Inventario FerroAgro">
                         </div>
                         <div class="product-info">
-                            <span>Construcción</span>
+                            <div class="product-kicker">
+                                <span>Construcción</span>
+                            </div>
                             <h3>Materiales de construcción</h3>
-                            <strong>Consultar</strong>
+                            <div class="product-card-footer">
+                                <strong>Consultar</strong>
+                                <a href="https://wa.me/573145447639" target="_blank" rel="noopener">
+                                    <i class="ri-whatsapp-line"></i>
+                                    Conocer mas
+                                </a>
+                            </div>
                         </div>
                     </article>
 
                     <article class="landing-product-card">
                         <div class="product-image">
-                            <img src="{% static 'imagenes/empty-products.png' %}" alt="Agroinsumos FerroAgro">
+                            <img src="{% static 'imagenes/producto-fertilizante.svg' %}" alt="Agroinsumos FerroAgro">
                         </div>
                         <div class="product-info">
-                            <span>Agroinsumos</span>
+                            <div class="product-kicker">
+                                <span>Agroinsumos</span>
+                            </div>
                             <h3>Insumos para el campo</h3>
-                            <strong>Consultar</strong>
+                            <div class="product-card-footer">
+                                <strong>Consultar</strong>
+                                <a href="https://wa.me/573145447639" target="_blank" rel="noopener">
+                                    <i class="ri-whatsapp-line"></i>
+                                    Conocer mas
+                                </a>
+                            </div>
                         </div>
                     </article>
 
                     <article class="landing-product-card">
                         <div class="product-image">
-                            <img src="{% static 'imagenes/empty-sales.png' %}" alt="Riego FerroAgro">
+                            <img src="{% static 'imagenes/producto-manguera.svg' %}" alt="Riego FerroAgro">
                         </div>
                         <div class="product-info">
-                            <span>Riego</span>
+                            <div class="product-kicker">
+                                <span>Riego</span>
+                            </div>
                             <h3>Soluciones agrícolas</h3>
-                            <strong>Consultar</strong>
+                            <div class="product-card-footer">
+                                <strong>Consultar</strong>
+                                <a href="https://wa.me/573145447639" target="_blank" rel="noopener">
+                                    <i class="ri-whatsapp-line"></i>
+                                    Conocer mas
+                                </a>
+                            </div>
                         </div>
                     </article>
                 {% endif %}
@@ -261,7 +302,7 @@
         <section class="stats-section">
             <div>
                 <i class="ri-box-3-line"></i>
-                <strong>500+</strong>
+                <strong>Gran variedad</strong>
                 <span>Productos</span>
             </div>
 
@@ -303,17 +344,12 @@
 
                     <li>
                         <i class="ri-phone-line"></i>
-                        <span>+57 300 123 4567</span>
+                        <span>+57 314 544 7639</span>
                     </li>
 
                     <li>
                         <i class="ri-mail-line"></i>
-                        <span>info@ferroagroayapel.com</span>
-                    </li>
-
-                    <li>
-                        <i class="ri-time-line"></i>
-                        <span>Lunes a sábado</span>
+                        <span>Ferroagroayapel@hotmail.com</span>
                     </li>
                 </ul>
             </div>

@@ -11,6 +11,8 @@ urlpatterns = [
     path('post-login/', views.post_login, name='post_login'),
 
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/reportes/resumen-inventario.pdf', views.reporte_resumen_inventario_pdf, name='reporte_resumen_inventario'),
+    path('dashboard/reportes/distribucion-categorias.pdf', views.reporte_distribucion_categorias_pdf, name='reporte_distribucion_categorias'),
 
     path('productos/', views.producto_lista, name='producto_lista'),
     path('productos/crear/', views.producto_crear, name='producto_crear'),

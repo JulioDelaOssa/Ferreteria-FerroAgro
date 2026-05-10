@@ -21,8 +21,8 @@
         <aside class="sidebar">
             {% if request.user.is_staff or request.user.is_superuser %}
                 <a href="{% url 'dashboard' %}" class="brand">
-                    <span class="brand-icon">
-                        <i class="ri-leaf-line"></i>
+                    <span class="brand-logo">
+                        <img src="{% static 'imagenes/logo.png' %}" alt="FerroAgro Ayapel">
                     </span>
                     <span>
                         <strong>Ferro<span>Agro</span></strong>
@@ -31,8 +31,8 @@
                 </a>
             {% else %}
                 <a href="{% url 'ventas_panel' %}" class="brand">
-                    <span class="brand-icon">
-                        <i class="ri-leaf-line"></i>
+                    <span class="brand-logo">
+                        <img src="{% static 'imagenes/logo.png' %}" alt="FerroAgro Ayapel">
                     </span>
                     <span>
                         <strong>Ferro<span>Agro</span></strong>
@@ -93,12 +93,6 @@
             <div class="support-card">
                 <i class="ri-customer-service-2-line"></i>
                 <h3>¿Necesitas ayuda?</h3>
-                <p>Administra tu negocio de forma organizada y segura.</p>
-            </div>
-
-            <div class="sidebar-footer">
-                <strong>FerroAgro Ayapel</strong>
-                <span>Sistema de gestión empresarial</span>
             </div>
         </aside>
 
@@ -108,13 +102,11 @@
                     <form action="{% url 'producto_lista' %}" method="get" class="search-box">
                         <i class="ri-search-line"></i>
                         <input type="search" name="q" placeholder="Buscar productos, categorías o proveedores...">
-                        <span>Ctrl + K</span>
                     </form>
                 {% else %}
                     <form action="{% url 'ventas_panel' %}" method="get" class="search-box">
                         <i class="ri-search-line"></i>
                         <input type="search" name="q" placeholder="Buscar mis ventas...">
-                        <span>Ctrl + K</span>
                     </form>
                 {% endif %}
 

@@ -45,7 +45,7 @@
             </a>
         </div>
 
-        <div class="module-table-wrap">
+        <div class="module-table-wrap module-table-scroll">
             <table class="module-table">
                 <thead>
                     <tr>
@@ -124,7 +124,36 @@
             </div>
         </div>
 
-        <div class="module-table-wrap">
+        <form method="get" class="module-toolbar inventory-movement-filter">
+            <select name="tipo">
+                <option value="">Todos los movimientos</option>
+                {% for tipo, etiqueta in tipos_movimiento %}
+                    <option value="{{ tipo }}" {% if tipo_movimiento == tipo %}selected{% endif %}>{{ etiqueta }}</option>
+                {% endfor %}
+            </select>
+
+            <label>
+                <span>Desde</span>
+                <input type="date" name="desde" value="{{ fecha_desde }}">
+            </label>
+
+            <label>
+                <span>Hasta</span>
+                <input type="date" name="hasta" value="{{ fecha_hasta }}">
+            </label>
+
+            <button type="submit" class="btn-lite">
+                <i class="ri-filter-3-line"></i>
+                Filtrar
+            </button>
+
+            <a href="{% url 'inventario_lista' %}" class="btn-lite">
+                <i class="ri-refresh-line"></i>
+                Limpiar
+            </a>
+        </form>
+
+        <div class="module-table-wrap module-table-scroll movement-history-scroll">
             <table class="module-table">
                 <thead>
                     <tr>

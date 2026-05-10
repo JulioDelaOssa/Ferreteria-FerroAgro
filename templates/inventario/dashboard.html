@@ -178,7 +178,7 @@
                     Proveedores
                 </a>
 
-                <a href="{% url 'ventas_panel' %}" class="quick-action outline">
+                <a href="{% url 'reporte_resumen_inventario' %}" class="quick-action outline">
                     <i class="ri-file-chart-line"></i>
                     Generar reporte
                 </a>
@@ -355,7 +355,7 @@
         <article class="dash-card inventory-summary-card">
             <div class="dash-card-header">
                 <h2>Resumen de inventario</h2>
-                <a href="{% url 'inventario_lista' %}" class="small-link">Ver reporte</a>
+                <a href="{% url 'reporte_resumen_inventario' %}" class="small-link">Ver reporte</a>
             </div>
 
             <div class="inventory-summary-grid">
@@ -388,7 +388,7 @@
         <article class="dash-card category-card">
             <div class="dash-card-header">
                 <h2>Distribución por categoría</h2>
-                <a href="{% url 'categoria_lista' %}" class="small-link">Ver reporte</a>
+                <a href="{% url 'reporte_distribucion_categorias' %}" class="small-link">Ver reporte</a>
             </div>
 
             <div class="category-distribution">
@@ -498,3 +498,7 @@
 </script>
 
 {% endblock %}
+
+<!-- Este es un comentario de prueba -->
+ 
+ 

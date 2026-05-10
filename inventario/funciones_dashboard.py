@@ -69,7 +69,7 @@ def obtener_datos_dashboard():
     ).select_related(
         'categoria',
         'proveedor'
-    ).order_by('stock', 'nombre')[:5]
+    ).order_by('stock', 'nombre')[:30]
 
     en_stock = Producto.objects.filter(
         stock__gt=F('stock_minimo')
@@ -215,12 +215,12 @@ def obtener_datos_dashboard():
         'vendedor'
     ).prefetch_related(
         'detalles'
-    ).order_by('-fecha')[:5]
+    ).order_by('-fecha')[:30]
 
     movimientos_recientes = Movimientos.objects.select_related(
         'producto',
         'usuario'
-    ).order_by('-fecha')[:5]
+    ).order_by('-fecha')[:30]
 
     detalles_vendidos = DetalleVenta.objects.select_related(
         'producto'
@@ -245,7 +245,7 @@ def obtener_datos_dashboard():
         acumulado_productos.values(),
         key=lambda item: item['unidades'],
         reverse=True
-    )[:5]
+    )[:30]
 
     valor_inventario = Decimal('0')
 

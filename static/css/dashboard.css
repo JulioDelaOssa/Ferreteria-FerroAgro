@@ -77,14 +77,16 @@
 
 .dashboard-middle-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr) 330px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(320px, 0.85fr);
     gap: 22px;
+    align-items: stretch;
 }
 
 .dashboard-bottom-grid {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.05fr) 330px;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr) minmax(320px, 0.9fr);
     gap: 22px;
+    align-items: stretch;
 }
 
 .dash-card {
@@ -93,6 +95,22 @@
     border-radius: 18px;
     box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
     overflow: hidden;
+}
+
+.recent-sales-card,
+.low-stock-card,
+.top-products-card {
+    height: 520px;
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-card,
+.inventory-summary-card,
+.category-card {
+    height: 470px;
+    display: flex;
+    flex-direction: column;
 }
 
 .dash-card-header {
@@ -421,7 +439,14 @@
 
 .dash-table-wrap {
     width: 100%;
-    overflow-x: auto;
+    overflow: auto;
+    min-height: 0;
+}
+
+.recent-sales-card .dash-table-wrap,
+.low-stock-card .dash-table-wrap {
+    flex: 1;
+    overflow-x: hidden;
 }
 
 .dash-table {
@@ -429,22 +454,85 @@
     border-collapse: collapse;
 }
 
+.recent-sales-card .dash-table,
+.low-stock-card .dash-table {
+    table-layout: fixed;
+}
+
 .dash-table th {
-    padding: 13px 18px;
+    padding: 13px 14px;
     background: #f8fafc;
     color: #64748b;
     text-align: left;
     font-size: 12px;
     font-weight: 900;
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
 
 .dash-table td {
-    padding: 14px 18px;
+    padding: 14px;
     border-top: 1px solid #e2e8f0;
     color: #334155;
     font-size: 13px;
     font-weight: 700;
     vertical-align: middle;
+}
+
+.recent-sales-card .dash-table th:nth-child(1),
+.recent-sales-card .dash-table td:nth-child(1) {
+    width: 25%;
+}
+
+.recent-sales-card .dash-table th:nth-child(2),
+.recent-sales-card .dash-table td:nth-child(2) {
+    width: 18%;
+}
+
+.recent-sales-card .dash-table th:nth-child(3),
+.recent-sales-card .dash-table td:nth-child(3) {
+    width: 19%;
+}
+
+.recent-sales-card .dash-table th:nth-child(4),
+.recent-sales-card .dash-table td:nth-child(4) {
+    width: 17%;
+}
+
+.recent-sales-card .dash-table th:nth-child(5),
+.recent-sales-card .dash-table td:nth-child(5) {
+    width: 21%;
+    min-width: 92px;
+}
+
+.low-stock-card .dash-table th:nth-child(1),
+.low-stock-card .dash-table td:nth-child(1) {
+    width: 45%;
+}
+
+.low-stock-card .dash-table th:nth-child(2),
+.low-stock-card .dash-table td:nth-child(2),
+.low-stock-card .dash-table th:nth-child(3),
+.low-stock-card .dash-table td:nth-child(3) {
+    width: 18%;
+}
+
+.low-stock-card .dash-table th:nth-child(4),
+.low-stock-card .dash-table td:nth-child(4) {
+    width: 19%;
+    min-width: 76px;
+}
+
+.recent-sales-card .dash-table td,
+.low-stock-card .dash-table td {
+    overflow-wrap: anywhere;
+}
+
+.recent-sales-card .dash-table td:nth-child(5),
+.low-stock-card .dash-table td:nth-child(4) {
+    overflow-wrap: normal;
+    white-space: nowrap;
 }
 
 .dash-table tbody tr:hover {
@@ -461,6 +549,11 @@
     border-radius: 999px;
     font-size: 11px;
     font-weight: 900;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    min-width: 64px;
 }
 
 .status-pill.paid {
@@ -489,6 +582,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
 }
 
 .dash-product-cell img {
@@ -498,6 +592,12 @@
     object-fit: cover;
     border: 1px solid #e2e8f0;
     background: #f8fafc;
+}
+
+.dash-product-cell span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stock-danger {
@@ -517,6 +617,8 @@
     background: #ffffff;
     font-size: 12px;
     font-weight: 900;
+    white-space: nowrap;
+    min-width: 52px;
 }
 
 .mini-button:hover {
@@ -530,6 +632,8 @@
     padding: 16px;
     display: grid;
     gap: 14px;
+    overflow: auto;
+    min-height: 0;
 }
 
 .top-product-item {
@@ -628,6 +732,8 @@
     padding: 16px 18px;
     display: grid;
     gap: 15px;
+    overflow: auto;
+    min-height: 0;
 }
 
 .activity-row {
@@ -635,6 +741,7 @@
     grid-template-columns: 44px 1fr auto;
     gap: 12px;
     align-items: center;
+    min-width: 0;
 }
 
 .activity-icon {
@@ -652,6 +759,9 @@
     display: block;
     color: #334155;
     font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .activity-row span {
@@ -674,6 +784,10 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
+    flex: 1;
+    align-content: start;
+    overflow: auto;
+    min-height: 0;
 }
 
 .summary-box {
@@ -715,12 +829,14 @@
 /* Distribución por categoría */
 
 .category-card .category-distribution {
-    min-height: 280px;
     padding: 24px;
     display: grid;
     grid-template-columns: 1fr;
     justify-items: center;
     gap: 22px;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
 }
 
 .category-donut-wrap {

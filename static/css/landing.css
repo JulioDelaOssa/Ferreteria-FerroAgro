@@ -350,26 +350,37 @@
 .landing-products-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 22px;
+    gap: 20px;
 }
 
 .landing-product-card {
-    border-radius: 22px;
-    border: 1px solid var(--slate-200);
-    background: var(--white);
+    position: relative;
+    min-height: 430px;
+    border-radius: 6px;
+    border: 1px solid #d9e2d5;
+    border-left: 7px solid var(--green-800);
+    background:
+        linear-gradient(180deg, rgba(236, 253, 245, 0.42), rgba(255, 255, 255, 0) 42%),
+        var(--white);
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
     transition: 0.2s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .landing-product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-5px);
+    border-color: rgba(4, 120, 87, 0.42);
+    box-shadow: 0 22px 42px rgba(15, 23, 42, 0.13);
 }
 
 .product-image {
-    height: 230px;
-    background: var(--slate-50);
+    height: 220px;
+    margin: 14px 14px 0;
+    border-radius: 4px;
+    border: 1px solid var(--slate-200);
+    background: #f8fafc;
     overflow: hidden;
 }
 
@@ -380,32 +391,85 @@
     object-fit: cover;
 }
 
-.product-image img[src*="empty-products"],
-.product-image img[src*="empty-sales"],
-.product-image img[src*="empty-inventory"] {
+.product-image img[src*="producto-placeholder"],
+.product-image img[src*="producto-cemento"],
+.product-image img[src*="producto-fertilizante"],
+.product-image img[src*="producto-manguera"] {
     object-fit: contain;
-    padding: 16px;
+    padding: 20px;
 }
 
 .product-info {
-    padding: 18px;
+    min-height: 190px;
+    padding: 18px 18px 20px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
-.product-info span {
-    color: var(--orange);
-    font-size: 12px;
+.product-kicker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-kicker::before {
+    content: "";
+    width: 26px;
+    height: 3px;
+    background: var(--orange);
+}
+
+.product-kicker span {
+    color: var(--green-900);
+    font-size: 11px;
     font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .product-info h3 {
-    margin: 8px 0 12px;
+    margin: 12px 0 18px;
     color: var(--slate-950);
-    font-size: 17px;
+    font-size: 20px;
+    line-height: 1.22;
 }
 
-.product-info strong {
+.product-card-footer {
+    margin-top: auto;
+    display: grid;
+    gap: 12px;
+}
+
+.product-card-footer strong {
     color: var(--green-900);
-    font-size: 20px;
+    font-size: 23px;
+    line-height: 1;
+}
+
+.product-card-footer a {
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--green-900);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 900;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.product-card-footer a:hover {
+    background: var(--orange);
+    color: var(--white);
+}
+
+.product-card-footer a i {
+    font-size: 19px;
 }
 
 .stats-section {

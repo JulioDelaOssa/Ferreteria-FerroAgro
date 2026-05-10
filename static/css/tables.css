@@ -6,6 +6,11 @@
     overflow: hidden;
 }
 
+.table-container {
+    width: 100%;
+    overflow: auto;
+}
+
 .table-toolbar {
     padding: 18px;
     display: flex;
@@ -142,6 +147,38 @@
 }
 
 .action-btn.danger:hover {
+    color: var(--red);
+    border-color: var(--red);
+    background: var(--red-light);
+}
+
+.table-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--slate-200);
+    background: var(--white);
+    color: var(--slate-700);
+    display: inline-grid;
+    place-items: center;
+    font-size: 19px;
+    transition: 0.2s ease;
+}
+
+.icon-btn:hover {
+    color: var(--green-800);
+    border-color: var(--green-700);
+    background: var(--green-50);
+    transform: translateY(-2px);
+}
+
+.icon-btn.danger:hover {
     color: var(--red);
     border-color: var(--red);
     background: var(--red-light);

@@ -139,6 +139,47 @@
     overflow-x: auto;
 }
 
+.module-table-scroll {
+    max-height: 620px;
+    overflow: auto;
+}
+
+.movement-history-scroll {
+    max-height: 440px;
+}
+
+.module-table-scroll .module-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.inventory-movement-filter {
+    grid-template-columns: minmax(210px, 1fr) 180px 180px auto auto;
+}
+
+.inventory-movement-filter label {
+    display: grid;
+    gap: 5px;
+}
+
+.inventory-movement-filter label span {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.inventory-movement-filter input[type="date"] {
+    height: 44px;
+    border: 1px solid #dbe3ef;
+    border-radius: 13px;
+    padding: 0 12px;
+    background: #ffffff;
+    color: #334155;
+    font-weight: 700;
+}
+
 .module-table {
     width: 100%;
     border-collapse: collapse;

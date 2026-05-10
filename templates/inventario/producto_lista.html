@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load formato_pesos %}
 
 {% block page_title %}Productos | FerroAgro Ayapel{% endblock %}
 {% block header_title %}Productos{% endblock %}
@@ -81,7 +82,7 @@
             </button>
         </form>
 
-        <div class="module-table-wrap">
+        <div class="module-table-wrap module-table-scroll">
             <table class="module-table">
                 <thead>
                     <tr>
@@ -116,7 +117,7 @@
 
                             <td>{{ producto.categoria.nombre|default:"Sin categoría" }}</td>
                             <td>{{ producto.proveedor.nombre|default:"Sin proveedor" }}</td>
-                            <td>${{ producto.precio }}</td>
+                            <td>{{ producto.precio|pesos }}</td>
                             <td>{{ producto.stock }}</td>
 
                             <td>
