@@ -2,7 +2,13 @@
 
 {% block page_title %}Nueva venta | FerroAgro Ayapel{% endblock %}
 {% block header_title %}Nueva venta{% endblock %}
-{% block header_description %}Selecciona uno o varios productos, define cantidades y registra la factura.{% endblock %}
+{% block header_description %}
+    {% if request.user.is_staff or request.user.is_superuser %}
+        Selecciona uno o varios productos, define cantidades y registra la factura.
+    {% else %}
+        Registra una nueva venta con tu usuario vendedor.
+    {% endif %}
+{% endblock %}
 
 {% block header_actions %}
 <a href="{% url 'ventas_panel' %}" class="btn-lite">
@@ -59,21 +65,29 @@
             <div class="module-card-header">
                 <div>
                     <h2>Datos de factura</h2>
-                    <p>Información del vendedor, cliente y método de pago.</p>
+                    <p>Información del cliente, pago y observaciones.</p>
                 </div>
             </div>
 
             <div class="sale-side-body">
-                <section class="form-group">
-                    <label>Vendedor</label>
-                    <select name="vendedor_id">
-                        {% for vendedor in vendedores %}
-                            <option value="{{ vendedor.id }}" {% if vendedor.id == request.user.id %}selected{% endif %}>
-                                {{ vendedor.get_full_name|default:vendedor.username }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </section>
+                {% if request.user.is_staff or request.user.is_superuser %}
+                    <section class="form-group">
+                        <label>Vendedor</label>
+                        <select name="vendedor_id">
+                            <option value="">Usar mi usuario</option>
+                            {% for vendedor in vendedores %}
+                                <option value="{{ vendedor.id }}">
+                                    {{ vendedor.get_full_name|default:vendedor.username }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </section>
+                {% else %}
+                    <section class="form-group">
+                        <label>Vendedor</label>
+                        <input type="text" value="{{ request.user.get_full_name|default:request.user.username }}" readonly>
+                    </section>
+                {% endif %}
 
                 <section class="form-group">
                     <label>Cliente</label>

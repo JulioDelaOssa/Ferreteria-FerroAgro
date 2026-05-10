@@ -1,40 +1,71 @@
 {% extends 'base.html' %}
 
-{% block page_title %}Nuevo vendedor - FerroAgro{% endblock %}
-{% block header_title %}Nuevo vendedor{% endblock %}
-{% block header_description %}Creacion de usuarios con permisos de venta{% endblock %}
+{% block page_title %}{{ titulo }} | FerroAgro Ayapel{% endblock %}
+{% block header_title %}{{ titulo }}{% endblock %}
+{% block header_description %}Creación de usuarios con permisos de venta.{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'vendedor_lista' %}" class="btn-lite">
+    <i class="ri-arrow-left-line"></i>
+    Volver
+</a>
+{% endblock %}
 
 {% block content %}
-<section class="panel-card compact-card">
-    <header class="section-header">
-        <div>
-            <h3>Nuevo vendedor</h3>
-            <p>El vendedor solo podra registrar ventas en el sistema.</p>
+<section class="form-layout">
+    <article class="panel-card compact-card">
+        <div class="form-card-header">
+            <h2>Datos del vendedor</h2>
+            <p>Completa la información para crear un usuario vendedor.</p>
         </div>
-        <a href="{% url 'vendedor_lista' %}" class="btn-secondary">Volver</a>
-    </header>
-    <form method="post" class="product-form">
-        {% csrf_token %}
-        {% for field in form %}
-        <section class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.help_text %}
-            <small class="help-text">{{ field.help_text }}</small>
+
+        <form method="post" action="{% url 'vendedor_crear' %}" class="product-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="field-error">
+                    {% for error in form.non_field_errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
             {% endif %}
-            {% if field.errors %}
-            <div class="field-error">
-                {% for error in field.errors %}
-                <span>{{ error }}</span>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </section>
-        {% endfor %}
-        <section class="form-actions">
-            <button type="submit" class="btn-primary">Crear vendedor</button>
-            <a href="{% url 'vendedor_lista' %}" class="btn-secondary">Cancelar</a>
-        </section>
-    </form>
+
+            {% for field in form %}
+                <section class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="help-text">{{ field.help_text }}</small>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="field-error">
+                            {% for error in field.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </section>
+            {% endfor %}
+
+            <section class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="ri-user-add-line"></i>
+                    Crear vendedor
+                </button>
+
+                <a href="{% url 'vendedor_lista' %}" class="btn-lite">
+                    Cancelar
+                </a>
+            </section>
+        </form>
+    </article>
+
+    <aside class="panel-card preview-card">
+        <i class="ri-user-settings-line preview-icon"></i>
+        <h3>Usuarios vendedores</h3>
+        <p>Desde aquí puedes crear usuarios para registrar ventas y manejar operaciones básicas del sistema.</p>
+    </aside>
 </section>
 {% endblock %}

@@ -1,9 +1,29 @@
 {% extends 'base.html' %}
 {% load formato_pesos %}
 
-{% block page_title %}Ventas | FerroAgro Ayapel{% endblock %}
-{% block header_title %}Ventas{% endblock %}
-{% block header_description %}Consulta ventas registradas, revisa facturas y registra nuevas ventas.{% endblock %}
+{% block page_title %}
+    {% if request.user.is_staff or request.user.is_superuser %}
+        Ventas | FerroAgro Ayapel
+    {% else %}
+        Mis ventas | FerroAgro Ayapel
+    {% endif %}
+{% endblock %}
+
+{% block header_title %}
+    {% if request.user.is_staff or request.user.is_superuser %}
+        Ventas
+    {% else %}
+        Mis ventas
+    {% endif %}
+{% endblock %}
+
+{% block header_description %}
+    {% if request.user.is_staff or request.user.is_superuser %}
+        Consulta ventas registradas, revisa facturas y registra nuevas ventas.
+    {% else %}
+        Consulta tus ventas registradas y crea nuevas facturas.
+    {% endif %}
+{% endblock %}
 
 {% block header_actions %}
 <a href="{% url 'venta_nueva' %}" class="btn-warning">
@@ -19,7 +39,11 @@
         <article class="module-stat-card">
             <i class="ri-shopping-cart-2-line"></i>
             <div>
-                <span>Total ventas</span>
+                {% if request.user.is_staff or request.user.is_superuser %}
+                    <span>Total ventas</span>
+                {% else %}
+                    <span>Mis ventas</span>
+                {% endif %}
                 <strong>{{ total_ventas }}</strong>
             </div>
         </article>
@@ -27,7 +51,11 @@
         <article class="module-stat-card">
             <i class="ri-money-dollar-circle-line"></i>
             <div>
-                <span>Ingresos pagados</span>
+                {% if request.user.is_staff or request.user.is_superuser %}
+                    <span>Ingresos pagados</span>
+                {% else %}
+                    <span>Total vendido</span>
+                {% endif %}
                 <strong>{{ ingresos|pesos }}</strong>
             </div>
         </article>
@@ -44,8 +72,13 @@
     <article class="module-card">
         <div class="module-card-header">
             <div>
-                <h2>Historial de ventas</h2>
-                <p>Listado de facturas registradas en el sistema.</p>
+                {% if request.user.is_staff or request.user.is_superuser %}
+                    <h2>Historial de ventas</h2>
+                    <p>Listado de facturas registradas en el sistema.</p>
+                {% else %}
+                    <h2>Mis ventas registradas</h2>
+                    <p>Listado de facturas que has registrado en el sistema.</p>
+                {% endif %}
             </div>
 
             <a href="{% url 'venta_nueva' %}" class="btn-primary">
@@ -60,7 +93,11 @@
                     <tr>
                         <th>Factura</th>
                         <th>Cliente</th>
-                        <th>Vendedor</th>
+
+                        {% if request.user.is_staff or request.user.is_superuser %}
+                            <th>Vendedor</th>
+                        {% endif %}
+
                         <th>Método</th>
                         <th>Total</th>
                         <th>Estado</th>
@@ -77,10 +114,16 @@
                                     FAC-{{ venta.id }}
                                 </a>
                             </td>
+
                             <td>{{ venta.cliente_nombre|default:"Consumidor final" }}</td>
-                            <td>{{ venta.vendedor.get_full_name|default:venta.vendedor.username }}</td>
+
+                            {% if request.user.is_staff or request.user.is_superuser %}
+                                <td>{{ venta.vendedor.get_full_name|default:venta.vendedor.username }}</td>
+                            {% endif %}
+
                             <td>{{ venta.get_metodo_pago_display }}</td>
                             <td>{{ venta.total|pesos }}</td>
+
                             <td>
                                 {% if venta.estado == 'pagada' %}
                                     <span class="status-pill paid">Pagada</span>
@@ -90,12 +133,15 @@
                                     <span class="status-pill canceled">Anulada</span>
                                 {% endif %}
                             </td>
+
                             <td>{{ venta.fecha|date:"d/m/Y h:i a" }}</td>
+
                             <td>
                                 <div class="module-actions">
                                     <a href="{% url 'venta_detalle' venta.id %}" class="action-btn" title="Ver factura">
                                         <i class="ri-eye-line"></i>
                                     </a>
+
                                     <a href="{% url 'factura_pdf' venta.id %}" class="action-btn" title="Descargar PDF">
                                         <i class="ri-file-pdf-2-line"></i>
                                     </a>
@@ -104,16 +150,27 @@
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="8">
-                                <div class="module-empty">
-                                    <i class="ri-shopping-cart-2-line"></i>
-                                    <h3>No hay ventas registradas</h3>
-                                    <p>Cuando registres ventas, aparecerán aquí con su factura y detalle.</p>
-                                    <a href="{% url 'venta_nueva' %}" class="btn-primary">
-                                        Registrar venta
-                                    </a>
-                                </div>
-                            </td>
+                            {% if request.user.is_staff or request.user.is_superuser %}
+                                <td colspan="8">
+                            {% else %}
+                                <td colspan="7">
+                            {% endif %}
+                                    <div class="module-empty">
+                                        <i class="ri-shopping-cart-2-line"></i>
+
+                                        {% if request.user.is_staff or request.user.is_superuser %}
+                                            <h3>No hay ventas registradas</h3>
+                                            <p>Cuando registres ventas, aparecerán aquí con su factura y detalle.</p>
+                                        {% else %}
+                                            <h3>No has registrado ventas</h3>
+                                            <p>Cuando registres tus ventas, aparecerán aquí.</p>
+                                        {% endif %}
+
+                                        <a href="{% url 'venta_nueva' %}" class="btn-primary">
+                                            Registrar venta
+                                        </a>
+                                    </div>
+                                </td>
                         </tr>
                     {% endfor %}
                 </tbody>

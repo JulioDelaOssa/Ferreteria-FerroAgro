@@ -19,51 +19,75 @@
 <body>
     <div class="app-shell">
         <aside class="sidebar">
-            <a href="{% url 'dashboard' %}" class="brand">
-                <span class="brand-icon">
-                    <i class="ri-leaf-line"></i>
-                </span>
-                <span>
-                    <strong>Ferro<span>Agro</span></strong>
-                    <small>Ayapel</small>
-                </span>
-            </a>
+            {% if request.user.is_staff or request.user.is_superuser %}
+                <a href="{% url 'dashboard' %}" class="brand">
+                    <span class="brand-icon">
+                        <i class="ri-leaf-line"></i>
+                    </span>
+                    <span>
+                        <strong>Ferro<span>Agro</span></strong>
+                        <small>Ayapel</small>
+                    </span>
+                </a>
+            {% else %}
+                <a href="{% url 'ventas_panel' %}" class="brand">
+                    <span class="brand-icon">
+                        <i class="ri-leaf-line"></i>
+                    </span>
+                    <span>
+                        <strong>Ferro<span>Agro</span></strong>
+                        <small>Ayapel</small>
+                    </span>
+                </a>
+            {% endif %}
 
             <nav class="sidebar-nav">
-                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                    <i class="ri-dashboard-3-line"></i>
-                    Dashboard
-                </a>
+                {% if request.user.is_staff or request.user.is_superuser %}
+                    <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <i class="ri-dashboard-3-line"></i>
+                        Dashboard
+                    </a>
 
-                <a href="{% url 'producto_lista' %}" class="{% if request.resolver_match.url_name == 'producto_lista' or request.resolver_match.url_name == 'producto_crear' or request.resolver_match.url_name == 'producto_editar' %}active{% endif %}">
-                    <i class="ri-box-3-line"></i>
-                    Productos
-                </a>
+                    <a href="{% url 'producto_lista' %}" class="{% if request.resolver_match.url_name == 'producto_lista' or request.resolver_match.url_name == 'producto_crear' or request.resolver_match.url_name == 'producto_editar' %}active{% endif %}">
+                        <i class="ri-box-3-line"></i>
+                        Productos
+                    </a>
 
-                <a href="{% url 'inventario_lista' %}" class="{% if request.resolver_match.url_name == 'inventario_lista' or request.resolver_match.url_name == 'ajustar_stock' %}active{% endif %}">
-                    <i class="ri-archive-stack-line"></i>
-                    Inventario
-                </a>
+                    <a href="{% url 'inventario_lista' %}" class="{% if request.resolver_match.url_name == 'inventario_lista' or request.resolver_match.url_name == 'ajustar_stock' %}active{% endif %}">
+                        <i class="ri-archive-stack-line"></i>
+                        Inventario
+                    </a>
 
-                <a href="{% url 'ventas_panel' %}" class="{% if request.resolver_match.url_name == 'ventas_panel' or request.resolver_match.url_name == 'venta_nueva' or request.resolver_match.url_name == 'venta_detalle' %}active{% endif %}">
-                    <i class="ri-shopping-cart-2-line"></i>
-                    Ventas
-                </a>
+                    <a href="{% url 'ventas_panel' %}" class="{% if request.resolver_match.url_name == 'ventas_panel' or request.resolver_match.url_name == 'venta_nueva' or request.resolver_match.url_name == 'venta_detalle' %}active{% endif %}">
+                        <i class="ri-shopping-cart-2-line"></i>
+                        Ventas
+                    </a>
 
-                <a href="{% url 'categoria_lista' %}" class="{% if request.resolver_match.url_name == 'categoria_lista' or request.resolver_match.url_name == 'categoria_crear' or request.resolver_match.url_name == 'categoria_editar' %}active{% endif %}">
-                    <i class="ri-price-tag-3-line"></i>
-                    Categorías
-                </a>
+                    <a href="{% url 'categoria_lista' %}" class="{% if request.resolver_match.url_name == 'categoria_lista' or request.resolver_match.url_name == 'categoria_crear' or request.resolver_match.url_name == 'categoria_editar' %}active{% endif %}">
+                        <i class="ri-price-tag-3-line"></i>
+                        Categorías
+                    </a>
 
-                <a href="{% url 'proveedor_lista' %}" class="{% if request.resolver_match.url_name == 'proveedor_lista' or request.resolver_match.url_name == 'proveedor_crear' or request.resolver_match.url_name == 'proveedor_editar' %}active{% endif %}">
-                    <i class="ri-truck-line"></i>
-                    Proveedores
-                </a>
+                    <a href="{% url 'proveedor_lista' %}" class="{% if request.resolver_match.url_name == 'proveedor_lista' or request.resolver_match.url_name == 'proveedor_crear' or request.resolver_match.url_name == 'proveedor_editar' %}active{% endif %}">
+                        <i class="ri-truck-line"></i>
+                        Proveedores
+                    </a>
 
-                <a href="{% url 'vendedor_lista' %}" class="{% if request.resolver_match.url_name == 'vendedor_lista' or request.resolver_match.url_name == 'vendedor_crear' %}active{% endif %}">
-                    <i class="ri-user-settings-line"></i>
-                    Vendedores
-                </a>
+                    <a href="{% url 'vendedor_lista' %}" class="{% if request.resolver_match.url_name == 'vendedor_lista' or request.resolver_match.url_name == 'vendedor_crear' %}active{% endif %}">
+                        <i class="ri-user-settings-line"></i>
+                        Vendedores
+                    </a>
+                {% else %}
+                    <a href="{% url 'ventas_panel' %}" class="{% if request.resolver_match.url_name == 'ventas_panel' or request.resolver_match.url_name == 'venta_detalle' %}active{% endif %}">
+                        <i class="ri-shopping-cart-2-line"></i>
+                        Mis ventas
+                    </a>
+
+                    <a href="{% url 'venta_nueva' %}" class="{% if request.resolver_match.url_name == 'venta_nueva' %}active{% endif %}">
+                        <i class="ri-add-circle-line"></i>
+                        Registrar venta
+                    </a>
+                {% endif %}
             </nav>
 
             <div class="support-card">
@@ -80,57 +104,101 @@
 
         <main class="main-area">
             <header class="topbar">
-
-                <form action="{% url 'producto_lista' %}" method="get" class="search-box">
-                    <i class="ri-search-line"></i>
-                    <input type="search" name="q" placeholder="Buscar productos, categorías o proveedores...">
-                    <span>Ctrl + K</span>
-                </form>
+                {% if request.user.is_staff or request.user.is_superuser %}
+                    <form action="{% url 'producto_lista' %}" method="get" class="search-box">
+                        <i class="ri-search-line"></i>
+                        <input type="search" name="q" placeholder="Buscar productos, categorías o proveedores...">
+                        <span>Ctrl + K</span>
+                    </form>
+                {% else %}
+                    <form action="{% url 'ventas_panel' %}" method="get" class="search-box">
+                        <i class="ri-search-line"></i>
+                        <input type="search" name="q" placeholder="Buscar mis ventas...">
+                        <span>Ctrl + K</span>
+                    </form>
+                {% endif %}
 
                 <div class="topbar-user">
-                    <a href="{% url 'landing' %}" class="icon-link" title="Página principal">
-                        <i class="ri-home-5-line"></i>
-                    </a>
+                    {% if request.user.is_staff or request.user.is_superuser %}
+                        <a href="{% url 'dashboard' %}" class="icon-link" title="Dashboard">
+                            <i class="ri-home-5-line"></i>
+                        </a>
 
-                    <div class="notification-wrapper">
-                        <button type="button" class="notification-button" id="notificationButton">
-                            <i class="ri-notification-3-line"></i>
-                            {% if alertas_total and alertas_total > 0 %}
-                                <span class="notification-badge">{{ alertas_total }}</span>
-                            {% endif %}
-                        </button>
+                        <div class="notification-wrapper">
+                            <button type="button" class="notification-button" id="notificationButton">
+                                <i class="ri-notification-3-line"></i>
 
-                        <div class="notification-menu" id="notificationMenu">
-                            <div class="notification-header">
-                                <strong>Notificaciones</strong>
-                                <span>Alertas</span>
-                            </div>
+                                {% if alertas_total > 0 %}
+                                    <span class="notification-badge">{{ alertas_total }}</span>
+                                {% endif %}
+                            </button>
 
-                            {% if alertas_total and alertas_total > 0 %}
-                                <a href="{% url 'inventario_lista' %}" class="notification-item">
-                                    <i class="ri-error-warning-line"></i>
-                                    <div>
-                                        <strong>Revisar alertas</strong>
-                                        <span>Hay información que requiere atención.</span>
-                                    </div>
-                                </a>
-                            {% else %}
-                                <div class="notification-empty">
-                                    <i class="ri-shield-check-line"></i>
-                                    <strong>Sin notificaciones</strong>
-                                    <span>No hay alertas por ahora.</span>
+                            <div class="notification-menu" id="notificationMenu">
+                                <div class="notification-header">
+                                    <strong>Notificaciones</strong>
+                                    <span>Alertas del sistema</span>
                                 </div>
-                            {% endif %}
+
+                                {% if alertas_total > 0 %}
+                                    {% if alertas_stock_bajo > 0 %}
+                                        <a href="{% url 'inventario_lista' %}" class="notification-item">
+                                            <i class="ri-error-warning-line"></i>
+                                            <div>
+                                                <strong>Stock bajo</strong>
+                                                <span>{{ alertas_stock_bajo }} producto{% if alertas_stock_bajo != 1 %}s{% endif %} requieren revisión.</span>
+                                            </div>
+                                        </a>
+                                    {% endif %}
+
+                                    {% if alertas_agotados > 0 %}
+                                        <a href="{% url 'inventario_lista' %}" class="notification-item">
+                                            <i class="ri-close-circle-line"></i>
+                                            <div>
+                                                <strong>Productos agotados</strong>
+                                                <span>{{ alertas_agotados }} producto{% if alertas_agotados != 1 %}s{% endif %} sin unidades disponibles.</span>
+                                            </div>
+                                        </a>
+                                    {% endif %}
+
+                                    {% if alertas_ventas_pendientes > 0 %}
+                                        <a href="{% url 'ventas_panel' %}" class="notification-item">
+                                            <i class="ri-time-line"></i>
+                                            <div>
+                                                <strong>Ventas pendientes</strong>
+                                                <span>{{ alertas_ventas_pendientes }} venta{% if alertas_ventas_pendientes != 1 %}s{% endif %} pendientes.</span>
+                                            </div>
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="notification-empty">
+                                        <i class="ri-shield-check-line"></i>
+                                        <strong>Sin notificaciones</strong>
+                                        <span>No hay alertas por ahora.</span>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
+                    {% else %}
+                        <a href="{% url 'ventas_panel' %}" class="icon-link" title="Mis ventas">
+                            <i class="ri-home-5-line"></i>
+                        </a>
+                    {% endif %}
 
                     <div class="user-info">
                         <div class="avatar">
                             <i class="ri-user-line"></i>
                         </div>
+
                         <div>
                             <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
-                            <small>Administrador</small>
+
+                            {% if request.user.is_superuser %}
+                                <small>Administrador</small>
+                            {% elif request.user.is_staff %}
+                                <small>Staff</small>
+                            {% else %}
+                                <small>Vendedor</small>
+                            {% endif %}
                         </div>
                     </div>
 

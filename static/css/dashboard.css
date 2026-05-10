@@ -137,6 +137,8 @@
     color: #006b4e;
 }
 
+/* Gráfico de ventas */
+
 .simple-chart {
     height: 270px;
     padding: 24px 26px 18px;
@@ -251,6 +253,8 @@
     margin: 6px 0 10px;
     line-height: 1.5;
 }
+
+/* Estado del inventario */
 
 .inventory-status-body {
     padding: 24px;
@@ -373,6 +377,8 @@
     background: #cbd5e1;
 }
 
+/* Acciones rápidas */
+
 .quick-actions-dashboard {
     padding: 18px;
     display: grid;
@@ -410,6 +416,8 @@
     color: #0f766e;
     border: 1px solid #0f766e;
 }
+
+/* Tablas dashboard */
 
 .dash-table-wrap {
     width: 100%;
@@ -516,6 +524,8 @@
     color: #006b4e;
 }
 
+/* Productos más vendidos */
+
 .top-products-list {
     padding: 16px;
     display: grid;
@@ -559,6 +569,61 @@
     font-size: 12px;
 }
 
+.top-products-card .top-products-list {
+    padding: 22px 24px;
+    gap: 18px;
+}
+
+.top-products-card .top-product-item {
+    min-height: 72px;
+    grid-template-columns: 28px 54px minmax(0, 1fr) auto;
+    column-gap: 14px;
+    padding: 10px 0;
+}
+
+.top-products-card .top-product-item .rank {
+    font-size: 16px;
+    font-weight: 900;
+    color: #020617;
+}
+
+.top-products-card .top-product-item img,
+.top-products-card .top-product-item .small-placeholder {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+}
+
+.top-products-card .top-product-item div {
+    min-width: 0;
+}
+
+.top-products-card .top-product-item strong {
+    font-size: 14px;
+    line-height: 1.25;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.top-products-card .top-product-item small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.top-products-card .top-product-item b {
+    padding-left: 18px;
+    font-size: 13px;
+    font-weight: 900;
+    color: #020617;
+    white-space: nowrap;
+}
+
+/* Actividad reciente */
+
 .activity-list-dashboard {
     padding: 16px 18px;
     display: grid;
@@ -601,6 +666,8 @@
     font-size: 12px;
     font-weight: 900;
 }
+
+/* Resumen de inventario */
 
 .inventory-summary-grid {
     padding: 18px;
@@ -785,6 +852,8 @@
     line-height: 1.5;
 }
 
+/* Placeholder de producto */
+
 .product-placeholder {
     width: 42px;
     height: 42px;
@@ -804,6 +873,8 @@
     border-radius: 10px;
     font-size: 20px;
 }
+
+/* Responsive */
 
 @media (max-width: 1350px) {
     .dashboard-top-grid,
@@ -855,5 +926,15 @@
 
     .kpi-card {
         padding: 18px;
+    }
+
+    .top-products-card .top-product-item {
+        grid-template-columns: 24px 48px minmax(0, 1fr);
+        row-gap: 6px;
+    }
+
+    .top-products-card .top-product-item b {
+        grid-column: 3;
+        padding-left: 0;
     }
 }

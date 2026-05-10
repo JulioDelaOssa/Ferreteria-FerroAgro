@@ -5,70 +5,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión | FerroAgro Ayapel</title>
+
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 </head>
+
 <body class="login-body">
     <main class="login-page">
         <section class="login-panel">
-            <div class="login-brand">
-                <div class="brand-mark">
-                    <i class="ri-leaf-line"></i>
-                </div>
-                <div>
-                    <h1>Ferro<span>Agro</span></h1>
-                    <p>Ayapel</p>
-                </div>
-            </div>
-
-            <div class="login-copy">
-                <h2>Bienvenido de nuevo</h2>
-                <p>Inicia sesión para acceder a la plataforma de gestión empresarial de FerroAgro Ayapel y administrar tu negocio de manera fácil, segura y eficiente.</p>
-            </div>
-
-            {% if form.errors %}
-                <div class="alert-error">
-                    Usuario o contraseña incorrectos.
-                </div>
-            {% endif %}
-
-            <form method="post" class="login-form">
-                {% csrf_token %}
-
-                <div class="form-group">
-                    <label for="id_username">Usuario</label>
-                    <div class="input-icon">
-                        <i class="ri-user-line"></i>
-                        <input type="text" name="username" id="id_username" required autocomplete="username" placeholder="Ingresa tu usuario">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="id_password">Contraseña</label>
-                    <div class="input-icon">
-                        <i class="ri-lock-2-line"></i>
-                        <input type="password" name="password" id="id_password" required autocomplete="current-password" placeholder="Ingresa tu contraseña">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary login-submit">
-                    <i class="ri-login-circle-line"></i>
-                    Iniciar sesión
-                </button>
-
-                <a href="{% url 'landing' %}" class="back-home">
-                    <i class="ri-arrow-left-line"></i>
-                    Volver al inicio
+            <div class="login-content">
+                <a href="{% url 'landing' %}" class="login-brand">
+                    <img src="{% static 'imagenes/logo.png' %}" alt="FerroAgro Ayapel">
                 </a>
-            </form>
+
+                <div class="login-copy">
+                    <span class="login-badge">
+                        <i class="ri-shield-keyhole-line"></i>
+                        Acceso seguro
+                    </span>
+
+                    <h2>Bienvenido de nuevo</h2>
+
+                    <p>
+                        Inicia sesión para acceder a la plataforma de gestión empresarial de FerroAgro Ayapel
+                        y administrar productos, inventario y ventas de manera fácil, segura y eficiente.
+                    </p>
+                </div>
+
+                {% if form.errors %}
+                    <div class="alert-error">
+                        <i class="ri-error-warning-line"></i>
+                        <span>Usuario o contraseña incorrectos.</span>
+                    </div>
+                {% endif %}
+
+                <form method="post" class="login-form">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="id_username">Usuario</label>
+
+                        <div class="input-icon">
+                            <i class="ri-user-line"></i>
+                            <input
+                                type="text"
+                                name="username"
+                                id="id_username"
+                                required
+                                autocomplete="username"
+                                placeholder="Ingresa tu usuario"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_password">Contraseña</label>
+
+                        <div class="input-icon">
+                            <i class="ri-lock-2-line"></i>
+                            <input
+                                type="password"
+                                name="password"
+                                id="id_password"
+                                required
+                                autocomplete="current-password"
+                                placeholder="Ingresa tu contraseña"
+                            >
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary login-submit">
+                        <i class="ri-login-circle-line"></i>
+                        Iniciar sesión
+                    </button>
+
+                    <a href="{% url 'landing' %}" class="back-home">
+                        <i class="ri-arrow-left-line"></i>
+                        Volver al inicio
+                    </a>
+                </form>
+            </div>
         </section>
 
         <section class="login-visual">
-            <img src="{% static 'imagenes/login-ferroagro.jpg' %}" alt="FerroAgro Ayapel">
+            <img src="{% static 'imagenes/login-ferroagro.png' %}" alt="FerroAgro Ayapel">
+
             <div class="login-visual-card">
                 <i class="ri-shield-check-line"></i>
+
                 <div>
                     <h3>Gestión segura</h3>
                     <p>Administra productos, inventario y ventas desde una sola plataforma.</p>

@@ -1,55 +1,95 @@
 {% extends 'base.html' %}
 
-{% block page_title %}Nuevo vendedor | FerroAgro Ayapel{% endblock %}
-{% block header_title %}Nuevo vendedor{% endblock %}
-{% block header_description %}Creación de usuarios con permisos de venta.{% endblock %}
+{% block page_title %}Vendedores | FerroAgro Ayapel{% endblock %}
+{% block header_title %}Vendedores{% endblock %}
+{% block header_description %}Administra los usuarios vendedores registrados en el sistema.{% endblock %}
 
 {% block header_actions %}
-<a href="{% url 'vendedor_lista' %}" class="btn-lite">
-    <i class="ri-arrow-left-line"></i>
-    Volver
+<a href="{% url 'vendedor_crear' %}" class="btn-primary">
+    <i class="ri-user-add-line"></i>
+    Crear vendedor
 </a>
 {% endblock %}
 
 {% block content %}
-<section class="form-layout">
-    <article class="panel-card compact-card">
-        <form method="post" class="product-form">
-            {% csrf_token %}
+<section class="module-page">
+    <article class="module-card">
+        <div class="module-card-header">
+            <div>
+                <h2>Lista de vendedores</h2>
+                <p>Usuarios disponibles para registrar ventas dentro del sistema.</p>
+            </div>
 
-            {% for field in form %}
-                <section class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
+            <a href="{% url 'vendedor_crear' %}" class="btn-primary">
+                <i class="ri-add-line"></i>
+                Nuevo vendedor
+            </a>
+        </div>
 
-                    {% if field.help_text %}
-                        <small class="help-text">{{ field.help_text }}</small>
-                    {% endif %}
+        <div class="module-table-wrap">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Estado</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
 
-                    {% if field.errors %}
-                        <div class="field-error">
-                            {% for error in field.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </section>
-            {% endfor %}
+                <tbody>
+                    {% for vendedor in vendedores %}
+                        <tr>
+                            <td>
+                                <strong>{{ vendedor.username }}</strong>
+                            </td>
 
-            <section class="form-actions">
-                <button type="submit" class="btn-primary">
-                    <i class="ri-user-add-line"></i>
-                    Crear vendedor
-                </button>
-                <a href="{% url 'vendedor_lista' %}" class="btn-lite">Cancelar</a>
-            </section>
-        </form>
+                            <td>
+                                {{ vendedor.get_full_name|default:"Sin nombre completo" }}
+                            </td>
+
+                            <td>
+                                {{ vendedor.email|default:"Sin correo" }}
+                            </td>
+
+                            <td>
+                                {% if vendedor.is_active %}
+                                    <span class="status-pill paid">Activo</span>
+                                {% else %}
+                                    <span class="status-pill canceled">Inactivo</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if vendedor.is_superuser %}
+                                    <span class="status-pill pending">Administrador</span>
+                                {% elif vendedor.is_staff %}
+                                    <span class="status-pill pending">Staff</span>
+                                {% else %}
+                                    <span class="status-pill paid">Vendedor</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="module-empty">
+                                    <i class="ri-user-settings-line"></i>
+                                    <h3>No hay vendedores registrados</h3>
+                                    <p>Cuando crees vendedores, aparecerán aquí.</p>
+
+                                    <a href="{% url 'vendedor_crear' %}" class="btn-primary">
+                                        <i class="ri-user-add-line"></i>
+                                        Crear vendedor
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </article>
-
-    <aside class="panel-card preview-card">
-        <i class="ri-user-settings-line preview-icon"></i>
-        <h3>Usuarios vendedores</h3>
-        <p>Desde aquí puedes crear usuarios para registrar ventas y manejar operaciones básicas del sistema.</p>
-    </aside>
 </section>
 {% endblock %}

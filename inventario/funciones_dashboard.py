@@ -41,16 +41,22 @@ def obtener_datos_dashboard():
     hoy = timezone.localdate()
     ayer = hoy - timedelta(days=1)
     inicio_semana = hoy - timedelta(days=6)
-    inicio_mes_fecha = hoy.replace(day=1)
 
     inicio_hoy, fin_hoy = rango_dia(hoy)
     inicio_ayer, fin_ayer = rango_dia(ayer)
+
+    inicio_mes, inicio_siguiente_mes = rango_mes(hoy.year, hoy.month)
 
     total_productos = Producto.objects.count()
     productos_activos = Producto.objects.filter(activo=True).count()
 
     productos_nuevos_mes = Producto.objects.filter(
-        fecha_registro__date__gte=inicio_mes_fecha
+        fecha_registro__gte=inicio_mes,
+        fecha_registro__lt=inicio_siguiente_mes
+    ).count()
+
+    agotados = Producto.objects.filter(
+        stock=0
     ).count()
 
     stock_bajo = Producto.objects.filter(
@@ -58,7 +64,12 @@ def obtener_datos_dashboard():
         stock__lte=F('stock_minimo')
     ).count()
 
-    agotados = Producto.objects.filter(stock=0).count()
+    productos_stock_critico = Producto.objects.filter(
+        stock__lte=F('stock_minimo')
+    ).select_related(
+        'categoria',
+        'proveedor'
+    ).order_by('stock', 'nombre')[:5]
 
     en_stock = Producto.objects.filter(
         stock__gt=F('stock_minimo')
@@ -66,7 +77,9 @@ def obtener_datos_dashboard():
 
     sin_movimiento = Producto.objects.annotate(
         total_movimientos=Count('movimientos')
-    ).filter(total_movimientos=0).count()
+    ).filter(
+        total_movimientos=0
+    ).count()
 
     ventas_hoy_qs = Venta.objects.filter(
         fecha__gte=inicio_hoy,
@@ -92,8 +105,6 @@ def obtener_datos_dashboard():
     else:
         porcentaje_ventas_dia = 'Sin datos suficientes'
 
-    inicio_mes, inicio_siguiente_mes = rango_mes(hoy.year, hoy.month)
-
     ventas_mes_qs = Venta.objects.filter(
         fecha__gte=inicio_mes,
         fecha__lt=inicio_siguiente_mes,
@@ -111,7 +122,10 @@ def obtener_datos_dashboard():
         mes_anterior = hoy.month - 1
         year_anterior = hoy.year
 
-    inicio_mes_anterior, inicio_mes_actual = rango_mes(year_anterior, mes_anterior)
+    inicio_mes_anterior, inicio_mes_actual = rango_mes(
+        year_anterior,
+        mes_anterior
+    )
 
     ingresos_mes_anterior = Venta.objects.filter(
         fecha__gte=inicio_mes_anterior,
@@ -122,7 +136,9 @@ def obtener_datos_dashboard():
     )['total'] or Decimal('0')
 
     if ingresos_mes_anterior > 0:
-        porcentaje_ingresos = ((ingresos_mes - ingresos_mes_anterior) / ingresos_mes_anterior) * 100
+        porcentaje_ingresos = (
+            (ingresos_mes - ingresos_mes_anterior) / ingresos_mes_anterior
+        ) * 100
         porcentaje_ingresos_mes = f'{porcentaje_ingresos:+.0f}% vs mes anterior'
     else:
         porcentaje_ingresos_mes = 'Sin datos suficientes'
@@ -132,7 +148,6 @@ def obtener_datos_dashboard():
 
     for i in range(7):
         dia = inicio_semana + timedelta(days=i)
-
         inicio_dia, fin_dia = rango_dia(dia)
 
         ventas_dia_qs = Venta.objects.filter(
@@ -172,14 +187,18 @@ def obtener_datos_dashboard():
         porcentaje_en_stock_num = round((en_stock / total_productos) * 100)
         porcentaje_stock_bajo_num = round((stock_bajo / total_productos) * 100)
         porcentaje_agotado_num = round((agotados / total_productos) * 100)
-        porcentaje_sin_movimiento_num = round((sin_movimiento / total_productos) * 100)
+
         hay_inventario = True
     else:
         porcentaje_en_stock_num = 0
         porcentaje_stock_bajo_num = 0
         porcentaje_agotado_num = 0
-        porcentaje_sin_movimiento_num = 0
+
         hay_inventario = False
+
+    porcentaje_sin_movimiento_num = round(
+        (sin_movimiento / total_productos) * 100
+    ) if total_productos > 0 else 0
 
     porcentaje_en_stock = f'{porcentaje_en_stock_num}%'
     porcentaje_stock_bajo = f'{porcentaje_stock_bajo_num}%'
@@ -189,21 +208,14 @@ def obtener_datos_dashboard():
     donut_en_stock_fin = porcentaje_en_stock_num
     donut_stock_bajo_fin = porcentaje_en_stock_num + porcentaje_stock_bajo_num
     donut_agotado_fin = donut_stock_bajo_fin + porcentaje_agotado_num
-    donut_sin_movimiento_fin = donut_agotado_fin + porcentaje_sin_movimiento_num
+
+    donut_sin_movimiento_fin = donut_agotado_fin
 
     ventas_recientes = Venta.objects.select_related(
         'vendedor'
     ).prefetch_related(
         'detalles'
     ).order_by('-fecha')[:5]
-
-    productos_stock_bajo = Producto.objects.filter(
-        stock__gt=0,
-        stock__lte=F('stock_minimo')
-    ).select_related(
-        'categoria',
-        'proveedor'
-    ).order_by('stock')[:5]
 
     movimientos_recientes = Movimientos.objects.select_related(
         'producto',
@@ -290,36 +302,47 @@ def obtener_datos_dashboard():
         'total_productos': total_productos,
         'productos_activos': productos_activos,
         'productos_nuevos_mes': productos_nuevos_mes,
+
         'stock_bajo': stock_bajo,
         'agotados': agotados,
+
         'ventas_dia': ventas_dia,
         'ingresos_hoy': ingresos_hoy,
         'ingresos_mes': ingresos_mes,
+
         'porcentaje_ventas_dia': porcentaje_ventas_dia,
         'porcentaje_ingresos_mes': porcentaje_ingresos_mes,
+
         'ventas_semana': ventas_semana,
         'hay_ventas_semana': hay_ventas_semana,
+
         'hay_inventario': hay_inventario,
+
         'porcentaje_en_stock': porcentaje_en_stock,
         'porcentaje_stock_bajo': porcentaje_stock_bajo,
         'porcentaje_agotado': porcentaje_agotado,
         'porcentaje_sin_movimiento': porcentaje_sin_movimiento,
+
         'porcentaje_en_stock_num': porcentaje_en_stock_num,
         'porcentaje_stock_bajo_num': porcentaje_stock_bajo_num,
         'porcentaje_agotado_num': porcentaje_agotado_num,
         'porcentaje_sin_movimiento_num': porcentaje_sin_movimiento_num,
+
         'donut_en_stock_fin': donut_en_stock_fin,
         'donut_stock_bajo_fin': donut_stock_bajo_fin,
         'donut_agotado_fin': donut_agotado_fin,
         'donut_sin_movimiento_fin': donut_sin_movimiento_fin,
+
         'ventas_recientes': ventas_recientes,
-        'productos_stock_bajo': productos_stock_bajo,
+        'productos_stock_bajo': productos_stock_critico,
         'productos_mas_vendidos': productos_mas_vendidos,
         'movimientos_recientes': movimientos_recientes,
+
         'valor_inventario': valor_inventario,
         'productos_sin_movimiento': sin_movimiento,
         'rotacion_promedio': rotacion_promedio,
         'ultima_actualizacion': ultima_actualizacion,
+
         'distribucion_categorias': distribucion_categorias,
         'alertas_total': alertas_total,
     }

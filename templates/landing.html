@@ -10,16 +10,11 @@
     <link rel="stylesheet" href="{% static 'css/landing.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
 </head>
+
 <body class="landing-body">
     <header class="landing-header">
-        <a href="{% url 'landing' %}" class="landing-brand">
-            <span class="brand-icon">
-                <i class="ri-leaf-line"></i>
-            </span>
-            <span>
-                <strong>Ferro<span>Agro</span></strong>
-                <small>Ayapel</small>
-            </span>
+        <a href="{% url 'landing' %}" class="landing-brand landing-brand-image">
+            <img src="{% static 'imagenes/logo.png' %}" alt="FerroAgro Ayapel">
         </a>
 
         <nav class="landing-nav">
@@ -42,29 +37,39 @@
                     <i class="ri-leaf-line"></i>
                     Ferretería y agro en Ayapel
                 </span>
+
                 <h1>Soluciones en ferretería y agro para <span>Ayapel</span></h1>
-                <p>En FerroAgro Ayapel ofrecemos herramientas, materiales de construcción e insumos agropecuarios de calidad, con atención cercana para nuestra comunidad.</p>
+
+                <p>
+                    En FerroAgro Ayapel ofrecemos herramientas, materiales de construcción e insumos agropecuarios de calidad,
+                    con atención cercana para nuestra comunidad.
+                </p>
+
                 <div class="hero-actions">
                     <a href="#productos" class="btn-primary">
                         <i class="ri-shopping-cart-2-line"></i>
                         Ver productos
                     </a>
+
                     <a href="#contacto" class="btn-outline">
                         <i class="ri-phone-line"></i>
                         Contáctanos
                     </a>
                 </div>
+
                 <div class="hero-points">
                     <div>
                         <i class="ri-shield-check-line"></i>
                         <strong>Calidad</strong>
                         <span>Marcas confiables</span>
                     </div>
+
                     <div>
                         <i class="ri-seedling-line"></i>
                         <strong>Agro</strong>
                         <span>Insumos para el campo</span>
                     </div>
+
                     <div>
                         <i class="ri-group-line"></i>
                         <strong>Servicio</strong>
@@ -74,21 +79,28 @@
             </div>
 
             <div class="hero-image">
-                <img src="{% static 'imagenes/hero-ferroagro.jpg' %}" alt="Herramientas y agroinsumos FerroAgro">
+                <img src="{% static 'imagenes/hero-ferroagro.png' %}" alt="Herramientas y agroinsumos FerroAgro">
             </div>
         </section>
 
         <section id="nosotros" class="about-section">
             <div class="about-image">
-                <img src="{% static 'imagenes/ferreteria-fachada.jpg' %}" alt="FerroAgro Ayapel">
+                <img src="{% static 'imagenes/nosotros-ferroagro.png' %}" alt="FerroAgro Ayapel">
             </div>
+
             <div class="about-copy">
                 <span class="section-badge">
                     <i class="ri-store-2-line"></i>
                     ¿Quiénes somos?
                 </span>
+
                 <h2>Una empresa local al servicio de Ayapel</h2>
-                <p>FerroAgro Ayapel es una empresa dedicada a la comercialización de productos de ferretería, materiales de construcción e insumos agropecuarios. Trabajamos para apoyar el crecimiento de nuestra comunidad con soluciones confiables y atención responsable.</p>
+
+                <p>
+                    FerroAgro Ayapel es una empresa dedicada a la comercialización de productos de ferretería,
+                    materiales de construcción e insumos agropecuarios. Trabajamos para apoyar el crecimiento de
+                    nuestra comunidad con soluciones confiables y atención responsable.
+                </p>
 
                 <div class="about-grid">
                     <div>
@@ -96,16 +108,19 @@
                         <h3>Misión</h3>
                         <p>Brindar productos y servicios de calidad para el desarrollo local.</p>
                     </div>
+
                     <div>
                         <i class="ri-hand-heart-line"></i>
                         <h3>Compromiso</h3>
                         <p>Atención personalizada, precios justos y soluciones eficientes.</p>
                     </div>
+
                     <div>
                         <i class="ri-shield-star-line"></i>
                         <h3>Confianza</h3>
                         <p>Procesos organizados para vender y controlar mejor el inventario.</p>
                     </div>
+
                     <div>
                         <i class="ri-community-line"></i>
                         <h3>Comunidad</h3>
@@ -121,6 +136,7 @@
                     <i class="ri-apps-2-line"></i>
                     Servicios
                 </span>
+
                 <h2>Nuestros servicios</h2>
                 <p>Todo lo necesario para gestionar productos, inventario y ventas desde una plataforma organizada.</p>
             </div>
@@ -131,26 +147,31 @@
                     <h3>Gestión de productos</h3>
                     <p>Catálogo completo y actualizado para consultar fácilmente cada producto.</p>
                 </article>
+
                 <article>
                     <i class="ri-archive-stack-line"></i>
                     <h3>Control de inventario</h3>
                     <p>Seguimiento de stock, alertas de bajo inventario y movimientos.</p>
                 </article>
+
                 <article>
                     <i class="ri-shopping-cart-2-line"></i>
                     <h3>Registro de ventas</h3>
                     <p>Ventas rápidas con varios productos y generación de factura.</p>
                 </article>
+
                 <article>
                     <i class="ri-customer-service-2-line"></i>
                     <h3>Atención al cliente</h3>
                     <p>Organización clara para atender mejor a cada comprador.</p>
                 </article>
+
                 <article>
                     <i class="ri-truck-line"></i>
                     <h3>Proveedores</h3>
                     <p>Control de proveedores desde la aplicación sin usar administración interna.</p>
                 </article>
+
                 <article>
                     <i class="ri-file-chart-line"></i>
                     <h3>Reportes</h3>
@@ -165,6 +186,7 @@
                     <i class="ri-shopping-bag-3-line"></i>
                     Catálogo
                 </span>
+
                 <h2>Productos destacados</h2>
                 <p>Algunos productos representativos de ferretería, construcción, riego y agroinsumos.</p>
             </div>
@@ -174,8 +196,13 @@
                     {% for producto in productos_destacados %}
                         <article class="landing-product-card">
                             <div class="product-image">
-                                <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}">
+                                {% if producto.imagen %}
+                                    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                                {% else %}
+                                    <img src="{% static 'imagenes/empty-products.png' %}" alt="{{ producto.nombre }}">
+                                {% endif %}
                             </div>
+
                             <div class="product-info">
                                 <span>{{ producto.categoria.nombre|default:"General" }}</span>
                                 <h3>{{ producto.nombre }}</h3>
@@ -186,42 +213,45 @@
                 {% else %}
                     <article class="landing-product-card">
                         <div class="product-image">
-                            <img src="{% static 'imagenes/producto-martillo.jpg' %}" alt="Martillo">
+                            <img src="{% static 'imagenes/empty-products.png' %}" alt="Producto FerroAgro">
                         </div>
                         <div class="product-info">
                             <span>Herramientas</span>
-                            <h3>Martillo uña 16 oz</h3>
-                            <strong>$28.900</strong>
+                            <h3>Productos de ferretería</h3>
+                            <strong>Consultar</strong>
                         </div>
                     </article>
+
                     <article class="landing-product-card">
                         <div class="product-image">
-                            <img src="{% static 'imagenes/producto-cemento.jpg' %}" alt="Cemento">
+                            <img src="{% static 'imagenes/empty-inventory.png' %}" alt="Inventario FerroAgro">
                         </div>
                         <div class="product-info">
                             <span>Construcción</span>
-                            <h3>Cemento uso general 50 kg</h3>
-                            <strong>$31.900</strong>
+                            <h3>Materiales de construcción</h3>
+                            <strong>Consultar</strong>
                         </div>
                     </article>
+
                     <article class="landing-product-card">
                         <div class="product-image">
-                            <img src="{% static 'imagenes/producto-fertilizante.jpg' %}" alt="Fertilizante">
+                            <img src="{% static 'imagenes/empty-products.png' %}" alt="Agroinsumos FerroAgro">
                         </div>
                         <div class="product-info">
                             <span>Agroinsumos</span>
-                            <h3>Fertilizante 20-20-20</h3>
-                            <strong>$89.900</strong>
+                            <h3>Insumos para el campo</h3>
+                            <strong>Consultar</strong>
                         </div>
                     </article>
+
                     <article class="landing-product-card">
                         <div class="product-image">
-                            <img src="{% static 'imagenes/producto-manguera.jpg' %}" alt="Manguera">
+                            <img src="{% static 'imagenes/empty-sales.png' %}" alt="Riego FerroAgro">
                         </div>
                         <div class="product-info">
                             <span>Riego</span>
-                            <h3>Manguera agrícola</h3>
-                            <strong>$89.900</strong>
+                            <h3>Soluciones agrícolas</h3>
+                            <strong>Consultar</strong>
                         </div>
                     </article>
                 {% endif %}
@@ -234,16 +264,19 @@
                 <strong>500+</strong>
                 <span>Productos</span>
             </div>
+
             <div>
                 <i class="ri-group-line"></i>
                 <strong>100+</strong>
                 <span>Clientes satisfechos</span>
             </div>
+
             <div>
                 <i class="ri-time-line"></i>
                 <strong>Rápida</strong>
                 <span>Atención</span>
             </div>
+
             <div>
                 <i class="ri-archive-line"></i>
                 <strong>Control</strong>
@@ -257,7 +290,9 @@
                     <i class="ri-map-pin-line"></i>
                     Contacto
                 </span>
+
                 <h2>Contáctanos</h2>
+
                 <p>Estamos listos para ayudarte con productos de ferretería, construcción y agro.</p>
 
                 <ul>
@@ -265,14 +300,17 @@
                         <i class="ri-map-pin-2-line"></i>
                         <span>Ayapel, Córdoba, Colombia</span>
                     </li>
+
                     <li>
                         <i class="ri-phone-line"></i>
                         <span>+57 300 123 4567</span>
                     </li>
+
                     <li>
                         <i class="ri-mail-line"></i>
                         <span>info@ferroagroayapel.com</span>
                     </li>
+
                     <li>
                         <i class="ri-time-line"></i>
                         <span>Lunes a sábado</span>
@@ -281,23 +319,18 @@
             </div>
 
             <div class="contact-card">
-                <img src="{% static 'imagenes/promo-comunidad.jpg' %}" alt="FerroAgro comunidad">
+                <img src="{% static 'imagenes/login-ferroagro.png' %}" alt="FerroAgro comunidad">
             </div>
         </section>
     </main>
 
     <footer class="landing-footer">
-        <div class="landing-brand">
-            <span class="brand-icon">
-                <i class="ri-leaf-line"></i>
-            </span>
-            <span>
-                <strong>Ferro<span>Agro</span></strong>
-                <small>Ayapel</small>
-            </span>
+        <div class="landing-brand landing-brand-image">
+            <img src="{% static 'imagenes/logo.png' %}" alt="FerroAgro Ayapel">
         </div>
+
         <p>Soluciones en ferretería y agro para el desarrollo de nuestra comunidad.</p>
-        <small>© 2024 FerroAgro Ayapel. Todos los derechos reservados.</small>
+        <small>© 2026 FerroAgro Ayapel. Todos los derechos reservados.</small>
     </footer>
 </body>
 </html>

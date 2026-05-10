@@ -1,21 +1,21 @@
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.db.models import Count, F, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import cm
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import cm
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-from django.contrib.auth.models import User
 
-from .funciones_dashboard import obtener_datos_dashboard
 from .forms import (
     AjusteStockForm,
     CategoriaForm,
@@ -23,16 +23,44 @@ from .forms import (
     ProveedorForm,
     VendedorForm,
 )
+from .funciones_dashboard import obtener_datos_dashboard
 from .models import Categoria, DetalleVenta, Movimientos, Producto, Proveedor, Venta
+
+
+def es_administrador(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
+
+admin_required = user_passes_test(es_administrador, login_url='ventas_panel')
+
+
+def formato_pesos_pdf(valor):
+    if valor is None:
+        return '$0'
+
+    try:
+        numero = Decimal(valor)
+    except (InvalidOperation, TypeError, ValueError):
+        return '$0'
+
+    numero = int(numero)
+    return f'${numero:,}'.replace(',', '.')
 
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
 
+    def get_success_url(self):
+        return reverse('post_login')
+
 
 def landing(request):
+    if request.user.is_authenticated:
+        return redirect('post_login')
+
     productos_destacados = Producto.objects.filter(
-        activo=True).order_by('-fecha_registro')[:8]
+        activo=True
+    ).order_by('-fecha_registro')[:8]
 
     return render(request, 'landing.html', {
         'productos_destacados': productos_destacados
@@ -41,22 +69,30 @@ def landing(request):
 
 @login_required
 def post_login(request):
-    return redirect('dashboard')
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('dashboard')
+
+    return redirect('ventas_panel')
 
 
 @login_required
+@admin_required
 def dashboard(request):
     context = obtener_datos_dashboard()
     return render(request, 'inventario/dashboard.html', context)
 
 
 @login_required
+@admin_required
 def producto_lista(request):
-    query = request.GET.get('q', '')
+    query = request.GET.get('q', '').strip()
     categoria_id = request.GET.get('categoria', '')
     estado = request.GET.get('estado', '')
 
-    productos = Producto.objects.select_related('categoria', 'proveedor').all()
+    productos = Producto.objects.select_related(
+        'categoria',
+        'proveedor'
+    ).all()
 
     if query:
         productos = productos.filter(
@@ -90,6 +126,7 @@ def producto_lista(request):
 
 
 @login_required
+@admin_required
 def producto_crear(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
@@ -119,6 +156,7 @@ def producto_crear(request):
 
 
 @login_required
+@admin_required
 def producto_editar(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
 
@@ -141,6 +179,7 @@ def producto_editar(request, pk):
 
 
 @login_required
+@admin_required
 def producto_eliminar(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
 
@@ -155,6 +194,7 @@ def producto_eliminar(request, pk):
 
 
 @login_required
+@admin_required
 def categoria_lista(request):
     categorias = Categoria.objects.annotate(
         total_productos=Count('productos')
@@ -166,6 +206,7 @@ def categoria_lista(request):
 
 
 @login_required
+@admin_required
 def categoria_crear(request):
     es_popup = request.GET.get('popup') == '1'
 
@@ -197,6 +238,7 @@ def categoria_crear(request):
 
 
 @login_required
+@admin_required
 def categoria_editar(request, pk):
     categoria = get_object_or_404(Categoria, pk=pk)
 
@@ -215,11 +257,14 @@ def categoria_editar(request, pk):
         'categoria': categoria,
         'titulo': 'Editar categoría',
         'volver_url': reverse('categoria_lista'),
-        'icono': 'ri-price-tag-3-line'
+        'icono': 'ri-price-tag-3-line',
+        'popup': False,
+        'base_template': 'base.html'
     })
 
 
 @login_required
+@admin_required
 def categoria_eliminar(request, pk):
     categoria = get_object_or_404(Categoria, pk=pk)
 
@@ -234,6 +279,7 @@ def categoria_eliminar(request, pk):
 
 
 @login_required
+@admin_required
 def proveedor_lista(request):
     proveedores = Proveedor.objects.annotate(
         total_productos=Count('productos')
@@ -245,6 +291,7 @@ def proveedor_lista(request):
 
 
 @login_required
+@admin_required
 def proveedor_crear(request):
     es_popup = request.GET.get('popup') == '1'
 
@@ -276,6 +323,7 @@ def proveedor_crear(request):
 
 
 @login_required
+@admin_required
 def proveedor_editar(request, pk):
     proveedor = get_object_or_404(Proveedor, pk=pk)
 
@@ -294,11 +342,14 @@ def proveedor_editar(request, pk):
         'proveedor': proveedor,
         'titulo': 'Editar proveedor',
         'volver_url': reverse('proveedor_lista'),
-        'icono': 'ri-truck-line'
+        'icono': 'ri-truck-line',
+        'popup': False,
+        'base_template': 'base.html'
     })
 
 
 @login_required
+@admin_required
 def proveedor_eliminar(request, pk):
     proveedor = get_object_or_404(Proveedor, pk=pk)
 
@@ -313,9 +364,12 @@ def proveedor_eliminar(request, pk):
 
 
 @login_required
+@admin_required
 def inventario_lista(request):
     productos = Producto.objects.select_related(
-        'categoria', 'proveedor').order_by('nombre')
+        'categoria',
+        'proveedor'
+    ).order_by('nombre')
 
     total_productos = productos.count()
 
@@ -329,7 +383,7 @@ def inventario_lista(request):
     movimientos = Movimientos.objects.select_related(
         'producto',
         'usuario'
-    ).order_by('-fecha')[:10]
+    ).order_by('-fecha')[:50]
 
     return render(request, 'inventario/inventario_lista.html', {
         'productos': productos,
@@ -341,6 +395,7 @@ def inventario_lista(request):
 
 
 @login_required
+@admin_required
 def ajustar_stock(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
 
@@ -350,7 +405,7 @@ def ajustar_stock(request, pk):
         if form.is_valid():
             tipo = form.cleaned_data['tipo']
             cantidad = form.cleaned_data['cantidad']
-            motivo = form.cleaned_data['motivo']
+            motivo = form.cleaned_data.get('motivo', '')
 
             if tipo == 'entrada':
                 producto.stock += cantidad
@@ -358,7 +413,9 @@ def ajustar_stock(request, pk):
             elif tipo == 'salida':
                 if cantidad > producto.stock:
                     messages.error(
-                        request, 'No puedes retirar más unidades de las disponibles.')
+                        request,
+                        'No puedes retirar más unidades de las disponibles.'
+                    )
                     return redirect('ajustar_stock', pk=producto.pk)
 
                 producto.stock -= cantidad
@@ -393,51 +450,103 @@ def ajustar_stock(request, pk):
 
 @login_required
 def ventas_panel(request):
-    ventas = Venta.objects.select_related('vendedor').prefetch_related(
+    query = request.GET.get('q', '').strip()
+
+    ventas = Venta.objects.select_related(
+        'vendedor'
+    ).prefetch_related(
         'detalles'
     ).order_by('-fecha')
 
+    # Si el usuario es vendedor, solo puede ver sus propias ventas
+    if not request.user.is_staff and not request.user.is_superuser:
+        ventas = ventas.filter(vendedor=request.user)
+
+    productos_disponibles = Producto.objects.filter(
+        activo=True,
+        stock__gt=0
+    ).select_related(
+        'categoria',
+        'proveedor'
+    ).order_by('nombre')
+
+    if query:
+        ventas = ventas.filter(
+            Q(cliente_nombre__icontains=query) |
+            Q(cliente_documento__icontains=query) |
+            Q(metodo_pago__icontains=query)
+        )
+
+        productos_disponibles = productos_disponibles.filter(
+            Q(nombre__icontains=query) |
+            Q(categoria__nombre__icontains=query) |
+            Q(proveedor__nombre__icontains=query)
+        )
+
     total_ventas = ventas.count()
 
-    ingresos = ventas.filter(estado='pagada').aggregate(
+    ingresos = ventas.filter(
+        estado='pagada'
+    ).aggregate(
         total=Sum('total')
     )['total'] or Decimal('0')
 
-    pendientes = ventas.filter(estado='pendiente').count()
-    anuladas = ventas.filter(estado='anulada').count()
+    pendientes = ventas.filter(
+        estado='pendiente'
+    ).count()
+
+    anuladas = ventas.filter(
+        estado='anulada'
+    ).count()
 
     return render(request, 'inventario/ventas_panel.html', {
         'ventas': ventas,
+        'productos_disponibles': productos_disponibles,
         'total_ventas': total_ventas,
         'ingresos': ingresos,
         'pendientes': pendientes,
         'anuladas': anuladas,
+        'query': query,
     })
 
-
 @login_required
+@transaction.atomic
 def venta_nueva(request):
     productos = Producto.objects.filter(
         activo=True,
         stock__gt=0
-    ).select_related('categoria').order_by('nombre')
+    ).select_related(
+        'categoria',
+        'proveedor'
+    ).order_by('nombre')
 
-    vendedores = User.objects.filter(is_active=True).order_by('username')
+    vendedores = User.objects.filter(
+        is_active=True,
+        is_staff=False,
+        is_superuser=False
+    ).order_by('first_name', 'username')
 
     if request.method == 'POST':
         productos_ids = request.POST.getlist('producto_id')
         cantidades = request.POST.getlist('cantidad')
 
         vendedor_id = request.POST.get('vendedor_id')
-        cliente_nombre = request.POST.get('cliente_nombre', '')
-        cliente_documento = request.POST.get('cliente_documento', '')
-        cliente_telefono = request.POST.get('cliente_telefono', '')
+        cliente_nombre = request.POST.get('cliente_nombre', '').strip()
+        cliente_documento = request.POST.get('cliente_documento', '').strip()
+        cliente_telefono = request.POST.get('cliente_telefono', '').strip()
         metodo_pago = request.POST.get('metodo_pago', 'efectivo')
-        descuento = Decimal(request.POST.get('descuento') or '0')
-        observaciones = request.POST.get('observaciones', '')
+        observaciones = request.POST.get('observaciones', '').strip()
 
-        if vendedor_id:
-            vendedor = get_object_or_404(User, pk=vendedor_id, is_active=True)
+        try:
+            descuento = Decimal(request.POST.get('descuento') or '0')
+        except (InvalidOperation, TypeError, ValueError):
+            descuento = Decimal('0')
+
+        if request.user.is_staff or request.user.is_superuser:
+            if vendedor_id:
+                vendedor = get_object_or_404(User, pk=vendedor_id, is_active=True)
+            else:
+                vendedor = request.user
         else:
             vendedor = request.user
 
@@ -447,14 +556,21 @@ def venta_nueva(request):
             if not producto_id or not cantidad:
                 continue
 
-            producto = get_object_or_404(Producto, pk=producto_id)
-            cantidad = int(cantidad)
+            producto = get_object_or_404(Producto, pk=producto_id, activo=True)
+
+            try:
+                cantidad = int(cantidad)
+            except ValueError:
+                cantidad = 0
 
             if cantidad <= 0:
                 continue
 
             if cantidad > producto.stock:
-                messages.error(request, f'No hay suficiente stock para {producto.nombre}.')
+                messages.error(
+                    request,
+                    f'No hay suficiente stock para {producto.nombre}.'
+                )
                 return redirect('venta_nueva')
 
             subtotal = producto.precio * cantidad
@@ -471,47 +587,50 @@ def venta_nueva(request):
             return redirect('venta_nueva')
 
         subtotal_general = sum(item['subtotal'] for item in items)
+
+        if descuento < 0:
+            descuento = Decimal('0')
+
+        if descuento > subtotal_general:
+            descuento = subtotal_general
+
         total = subtotal_general - descuento
 
-        if total < 0:
-            total = Decimal('0')
+        venta = Venta.objects.create(
+            vendedor=vendedor,
+            cliente_nombre=cliente_nombre or 'Consumidor final',
+            cliente_documento=cliente_documento,
+            cliente_telefono=cliente_telefono,
+            metodo_pago=metodo_pago,
+            estado='pagada',
+            subtotal=subtotal_general,
+            descuento=descuento,
+            total=total,
+            observaciones=observaciones
+        )
 
-        with transaction.atomic():
-            venta = Venta.objects.create(
-                vendedor=vendedor,
-                cliente_nombre=cliente_nombre,
-                cliente_documento=cliente_documento,
-                cliente_telefono=cliente_telefono,
-                metodo_pago=metodo_pago,
-                estado='pagada',
-                subtotal=subtotal_general,
-                descuento=descuento,
-                total=total,
-                observaciones=observaciones
+        for item in items:
+            producto = item['producto']
+
+            DetalleVenta.objects.create(
+                venta=venta,
+                producto=producto,
+                producto_nombre=producto.nombre,
+                cantidad=item['cantidad'],
+                precio_unitario=item['precio_unitario'],
+                subtotal=item['subtotal']
             )
 
-            for item in items:
-                producto = item['producto']
+            producto.stock -= item['cantidad']
+            producto.save()
 
-                DetalleVenta.objects.create(
-                    venta=venta,
-                    producto=producto,
-                    producto_nombre=producto.nombre,
-                    cantidad=item['cantidad'],
-                    precio_unitario=item['precio_unitario'],
-                    subtotal=item['subtotal']
-                )
-
-                producto.stock -= item['cantidad']
-                producto.save()
-
-                Movimientos.objects.create(
-                    producto=producto,
-                    tipo='salida',
-                    cantidad=-item['cantidad'],
-                    motivo=f'Venta factura #{venta.id}',
-                    usuario=request.user
-                )
+            Movimientos.objects.create(
+                producto=producto,
+                tipo='salida',
+                cantidad=-item['cantidad'],
+                motivo=f'Venta factura #{venta.id}',
+                usuario=request.user
+            )
 
         messages.success(request, 'Venta registrada correctamente.')
         return redirect('venta_detalle', pk=venta.pk)
@@ -559,17 +678,33 @@ def factura_pdf(request, pk):
     elements.append(Paragraph('FerroAgro Ayapel', styles['Title']))
     elements.append(Paragraph('Factura de venta', styles['Heading2']))
     elements.append(Spacer(1, 12))
-    elements.append(Paragraph(f'Factura: #{venta.id}', styles['Normal']))
+
+    elements.append(Paragraph(f'Factura: FAC-{venta.id}', styles['Normal']))
     elements.append(Paragraph(
-        f'Fecha: {venta.fecha.strftime("%d/%m/%Y %I:%M %p")}', styles['Normal']))
+        f'Fecha: {venta.fecha.strftime("%d/%m/%Y %I:%M %p")}',
+        styles['Normal']
+    ))
     elements.append(Paragraph(
-        f'Cliente: {venta.cliente_nombre or "Consumidor final"}', styles['Normal']))
+        f'Cliente: {venta.cliente_nombre or "Consumidor final"}',
+        styles['Normal']
+    ))
     elements.append(Paragraph(
-        f'Documento: {venta.cliente_documento or "No registrado"}', styles['Normal']))
+        f'Documento: {venta.cliente_documento or "No registrado"}',
+        styles['Normal']
+    ))
     elements.append(Paragraph(
-        f'Teléfono: {venta.cliente_telefono or "No registrado"}', styles['Normal']))
+        f'Teléfono: {venta.cliente_telefono or "No registrado"}',
+        styles['Normal']
+    ))
     elements.append(Paragraph(
-        f'Método de pago: {venta.get_metodo_pago_display()}', styles['Normal']))
+        f'Vendedor: {venta.vendedor.get_full_name() or venta.vendedor.username}',
+        styles['Normal']
+    ))
+    elements.append(Paragraph(
+        f'Método de pago: {venta.get_metodo_pago_display()}',
+        styles['Normal']
+    ))
+
     elements.append(Spacer(1, 18))
 
     data = [['Producto', 'Cantidad', 'Precio unitario', 'Subtotal']]
@@ -578,8 +713,8 @@ def factura_pdf(request, pk):
         data.append([
             detalle.producto_nombre,
             str(detalle.cantidad),
-            f'${detalle.precio_unitario:,.2f}',
-            f'${detalle.subtotal:,.2f}'
+            formato_pesos_pdf(detalle.precio_unitario),
+            formato_pesos_pdf(detalle.subtotal)
         ])
 
     table = Table(data, colWidths=[7 * cm, 3 * cm, 4 * cm, 4 * cm])
@@ -590,16 +725,31 @@ def factura_pdf(request, pk):
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
         ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8fafc')),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
     ]))
 
     elements.append(table)
     elements.append(Spacer(1, 18))
-    elements.append(
-        Paragraph(f'Subtotal: ${venta.subtotal:,.2f}', styles['Normal']))
-    elements.append(
-        Paragraph(f'Descuento: ${venta.descuento:,.2f}', styles['Normal']))
-    elements.append(
-        Paragraph(f'Total: ${venta.total:,.2f}', styles['Heading2']))
+
+    elements.append(Paragraph(
+        f'Subtotal: {formato_pesos_pdf(venta.subtotal)}',
+        styles['Normal']
+    ))
+    elements.append(Paragraph(
+        f'Descuento: {formato_pesos_pdf(venta.descuento)}',
+        styles['Normal']
+    ))
+    elements.append(Paragraph(
+        f'Total: {formato_pesos_pdf(venta.total)}',
+        styles['Heading2']
+    ))
+
+    if venta.observaciones:
+        elements.append(Spacer(1, 12))
+        elements.append(Paragraph('Observaciones:', styles['Heading3']))
+        elements.append(Paragraph(venta.observaciones, styles['Normal']))
 
     doc.build(elements)
 
@@ -607,9 +757,8 @@ def factura_pdf(request, pk):
 
 
 @login_required
+@admin_required
 def vendedor_lista(request):
-    from django.contrib.auth.models import User
-
     vendedores = User.objects.all().order_by('username')
 
     return render(request, 'inventario/vendedores_lista.html', {
@@ -618,12 +767,18 @@ def vendedor_lista(request):
 
 
 @login_required
+@admin_required
 def vendedor_crear(request):
     if request.method == 'POST':
         form = VendedorForm(request.POST)
 
         if form.is_valid():
-            form.save()
+            vendedor = form.save(commit=False)
+            vendedor.is_staff = False
+            vendedor.is_superuser = False
+            vendedor.is_active = True
+            vendedor.save()
+
             messages.success(request, 'Vendedor creado correctamente.')
             return redirect('vendedor_lista')
     else:
