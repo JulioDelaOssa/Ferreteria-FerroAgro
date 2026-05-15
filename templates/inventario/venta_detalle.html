@@ -85,6 +85,16 @@
                     </div>
                 </div>
             {% endif %}
+
+            {% if venta.cliente_correo %}
+                <div class="invoice-info-item">
+                    <i class="ri-mail-line"></i>
+                    <div>
+                        <span>Correo</span>
+                        <strong>{{ venta.cliente_correo }}</strong>
+                    </div>
+                </div>
+            {% endif %}
         </section>
 
         <section class="invoice-table-wrap">

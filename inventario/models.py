@@ -85,6 +85,23 @@ class Producto(models.Model):
         return '/static/imagenes/producto-placeholder.jpg'
 
 
+class Cliente(models.Model):
+    nombre = models.CharField(max_length=150)
+    documento = models.CharField(max_length=40, unique=True)
+    telefono = models.CharField(max_length=40, blank=True, null=True)
+    correo = models.EmailField(max_length=120, blank=True, null=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'clientes'
+        verbose_name = 'Cliente'
+        verbose_name_plural = 'Clientes'
+        ordering = ['nombre']
+
+    def __str__(self):
+        return f'{self.nombre} - {self.documento}'
+
+
 class Venta(models.Model):
     ESTADO_CHOICES = [
         ('pagada', 'Pagada'),
@@ -100,9 +117,11 @@ class Venta(models.Model):
     ]
 
     vendedor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, related_name='ventas')
     cliente_nombre = models.CharField(max_length=150, blank=True, null=True)
     cliente_documento = models.CharField(max_length=40, blank=True, null=True)
     cliente_telefono = models.CharField(max_length=40, blank=True, null=True)
+    cliente_correo = models.EmailField(max_length=120, blank=True, null=True)
     metodo_pago = models.CharField(max_length=30, choices=METODO_PAGO_CHOICES, default='efectivo')
     estado = models.CharField(max_length=30, choices=ESTADO_CHOICES, default='pagada')
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)

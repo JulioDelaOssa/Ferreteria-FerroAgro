@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import Categoria, Producto, Proveedor
+from .models import Categoria, Cliente, Producto, Proveedor
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
@@ -65,6 +65,36 @@ class ProveedorForm(forms.ModelForm):
             'email': 'Correo',
             'direccion': 'Dirección',
             'activo': 'Proveedor activo'
+        }
+
+
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ['nombre', 'documento', 'telefono', 'correo']
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Nombre completo del cliente'
+            }),
+            'documento': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Número de documento o NIT'
+            }),
+            'telefono': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Teléfono del cliente'
+            }),
+            'correo': forms.EmailInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'correo@ejemplo.com'
+            })
+        }
+        labels = {
+            'nombre': 'Nombre',
+            'documento': 'Documento',
+            'telefono': 'Teléfono',
+            'correo': 'Correo'
         }
 
 
@@ -310,3 +340,54 @@ class VendedorForm(UserCreationForm):
         })
         self.fields['password1'].label = 'Contraseña'
         self.fields['password2'].label = 'Confirmar contraseña'
+
+class VendedorEditarForm(forms.ModelForm):
+    password = None
+
+    first_name = forms.CharField(
+        label='Nombre',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Nombre del vendedor'
+        })
+    )
+
+    last_name = forms.CharField(
+        label='Apellido',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Apellido del vendedor'
+        })
+    )
+
+    email = forms.EmailField(
+        label='Correo',
+        required=False,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'correo@ejemplo.com'
+        })
+    )
+
+    is_active = forms.BooleanField(
+        label='Vendedor activo',
+        required=False,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        })
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_active']
+        labels = {
+            'username': 'Usuario'
+        }
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Usuario de acceso'
+            })
+        }

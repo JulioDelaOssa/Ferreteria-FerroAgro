@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Clientes | FerroAgro Ayapel{% endblock %}
+{% block header_title %}Clientes registrados{% endblock %}
+{% block header_description %}Consulta clientes por nombre o documento y revisa sus datos de contacto.{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'cliente_crear' %}" class="btn-primary">
+    <i class="ri-user-add-line"></i>
+    Nuevo cliente
+</a>
+{% endblock %}
+
+{% block content %}
+<section class="module-page">
+    <section class="module-stats-grid">
+        <article class="module-stat-card">
+            <i class="ri-user-3-line"></i>
+            <div>
+                <span>Total clientes</span>
+                <strong>{{ total_clientes }}</strong>
+            </div>
+        </article>
+    </section>
+
+    <article class="module-card">
+        <div class="module-card-header">
+            <div>
+                <h2>Clientes registrados</h2>
+                <p>Listado de clientes guardados en la base de datos.</p>
+            </div>
+            <a href="{% url 'cliente_crear' %}" class="btn-primary"><i class="ri-add-line"></i> Agregar</a>
+        </div>
+
+        <form method="get" class="module-toolbar client-toolbar">
+            <div class="module-search">
+                <i class="ri-search-line"></i>
+                <input type="text" name="q" value="{{ query }}" placeholder="Buscar por nombre, documento, teléfono o correo">
+            </div>
+            <button type="submit" class="btn-lite"><i class="ri-search-line"></i> Buscar</button>
+            <a href="{% url 'cliente_lista' %}" class="btn-lite"><i class="ri-refresh-line"></i> Limpiar</a>
+        </form>
+
+        <div class="module-table-wrap">
+            <table class="module-table">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Documento</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Ventas</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                        <tr>
+                            <td><strong>{{ cliente.nombre }}</strong></td>
+                            <td>{{ cliente.documento }}</td>
+                            <td>{{ cliente.telefono|default:'Sin teléfono' }}</td>
+                            <td>{{ cliente.correo|default:'Sin correo' }}</td>
+                            <td>{{ cliente.total_ventas }}</td>
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'cliente_editar' cliente.id %}" class="action-btn" title="Editar"><i class="ri-edit-2-line"></i></a>
+                                    <a href="{% url 'cliente_eliminar' cliente.id %}" class="action-btn danger" title="Eliminar"><i class="ri-delete-bin-line"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="module-empty">
+                                    <i class="ri-user-3-line"></i>
+                                    <h3>No hay clientes registrados</h3>
+                                    <p>Los clientes agregados desde ventas o desde esta sección aparecerán aquí.</p>
+                                    <a href="{% url 'cliente_crear' %}" class="btn-primary">Crear cliente</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include 'inventario/paginacion.html' with page_obj=clientes %}
+    </article>
+</section>
+{% endblock %}

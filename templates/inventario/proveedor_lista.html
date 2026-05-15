@@ -7,15 +7,51 @@
 <article class="panel-card">
     <div class="table-container">
         <table class="data-table">
-            <thead><tr><th>Proveedor</th><th>Contacto</th><th>Teléfono</th><th>Correo</th><th>Productos</th><th>Acciones</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Proveedor</th>
+                    <th>Contacto</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Productos</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
             <tbody>
                 {% for proveedor in proveedores %}
-                <tr><td><strong>{{ proveedor.nombre }}</strong></td><td>{{ proveedor.contacto|default:'Sin contacto' }}</td><td>{{ proveedor.telefono|default:'Sin teléfono' }}</td><td>{{ proveedor.email|default:'Sin correo' }}</td><td>{{ proveedor.total_productos }}</td><td><div class="table-actions"><a class="icon-btn" href="{% url 'proveedor_editar' proveedor.id %}"><i class="ri-edit-line"></i></a><a class="icon-btn danger" href="{% url 'proveedor_eliminar' proveedor.id %}"><i class="ri-delete-bin-6-line"></i></a></div></td></tr>
+                    <tr>
+                        <td><strong>{{ proveedor.nombre }}</strong></td>
+                        <td>{{ proveedor.contacto|default:'Sin contacto' }}</td>
+                        <td>{{ proveedor.telefono|default:'Sin teléfono' }}</td>
+                        <td>{{ proveedor.email|default:'Sin correo' }}</td>
+                        <td>{{ proveedor.total_productos }}</td>
+                        <td>
+                            {% if proveedor.activo %}
+                                <span class="status-pill paid">Activo</span>
+                            {% else %}
+                                <span class="status-pill canceled">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a class="icon-btn" href="{% url 'proveedor_editar' proveedor.id %}" title="Editar"><i class="ri-edit-line"></i></a>
+                                <form method="post" action="{% url 'proveedor_cambiar_estado' proveedor.id %}" class="inline-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="icon-btn" title="{% if proveedor.activo %}Desactivar{% else %}Activar{% endif %}">
+                                        <i class="{% if proveedor.activo %}ri-user-unfollow-line{% else %}ri-user-follow-line{% endif %}"></i>
+                                    </button>
+                                </form>
+                                <a class="icon-btn danger" href="{% url 'proveedor_eliminar' proveedor.id %}" title="Eliminar"><i class="ri-delete-bin-6-line"></i></a>
+                            </div>
+                        </td>
+                    </tr>
                 {% empty %}
-                <tr><td colspan="6" class="empty-table">No hay proveedores registrados.</td></tr>
+                    <tr><td colspan="7" class="empty-table">No hay proveedores registrados.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    {% include 'inventario/paginacion.html' with page_obj=proveedores %}
 </article>
 {% endblock %}

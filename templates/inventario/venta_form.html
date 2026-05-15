@@ -10,7 +10,7 @@
     <header class="section-header">
         <div>
             <h3>{{ producto.nombre }}</h3>
-            <p>Precio: <strong>{{ producto.precio|pesos_colombianos }}</strong> | Stock disponible: <strong>{{ producto.stock }}</strong></p>
+            <p>Precio: <strong>{{ producto.precio|pesos }}</strong> | Stock disponible: <strong>{{ producto.stock }}</strong></p>
         </div>
         <a href="{% url 'ventas_panel' %}" class="btn-secondary">← Volver</a>
     </header>
@@ -18,7 +18,7 @@
         {% csrf_token %}
         {% for field in form %}
         <section class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            <label for="{{ field.id_for_label }}">{{ field.label }} <span class="field-required-status">{% if field.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
             {{ field }}
             {% if field.errors %}
             <div class="field-error">

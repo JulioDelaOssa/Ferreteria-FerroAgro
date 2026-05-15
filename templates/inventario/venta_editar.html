@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load formato_pesos %}
+
+{% block page_title %}Editar factura #{{ venta.id }} | FerroAgro Ayapel{% endblock %}
+{% block header_title %}Editar factura #{{ venta.id }}{% endblock %}
+{% block header_description %}Actualiza datos del cliente, estado de pago, descuento y observaciones de la venta.{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'ventas_panel' %}" class="btn-lite"><i class="ri-arrow-left-line"></i> Volver a ventas</a>
+{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <article class="form-card">
+        <form method="post" class="product-form">
+            {% csrf_token %}
+            <div class="form-grid">
+                <section class="form-group">
+                    <label>Tipo de cliente <span class="field-required-status">(Obligatorio*)</span></label>
+                    <select name="cliente_modo" id="clienteModo" required>
+                        <option value="nuevo">Agregar nuevo cliente</option>
+                        <option value="existente" {% if venta.cliente %}selected{% endif %}>Seleccionar cliente existente</option>
+                    </select>
+                </section>
+
+                <section class="form-group existing-client-box" id="clienteExistenteBox">
+                    <label>Cliente existente <span class="field-required-status">(opcional)</span></label>
+                    <input type="text" id="buscarCliente" placeholder="Buscar por nombre o documento">
+                    <select name="cliente_id" id="clienteSelect">
+                        <option value="">Selecciona un cliente</option>
+                        {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}" {% if venta.cliente_id == cliente.id %}selected{% endif %} data-search="{{ cliente.nombre|lower }} {{ cliente.documento|lower }}" data-nombre="{{ cliente.nombre }}" data-documento="{{ cliente.documento }}" data-telefono="{{ cliente.telefono|default:'' }}" data-correo="{{ cliente.correo|default:'' }}">
+                                {{ cliente.nombre }} | {{ cliente.documento }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </section>
+
+                <section class="form-group new-client-field">
+                    <label>Cliente <span class="field-required-status">(Obligatorio*)</span></label>
+                    <input type="text" name="cliente_nombre" id="clienteNombre" value="{{ venta.cliente_nombre }}" required>
+                </section>
+
+                <section class="form-group new-client-field">
+                    <label>Documento <span class="field-required-status">(Obligatorio*)</span></label>
+                    <input type="text" name="cliente_documento" id="clienteDocumento" value="{{ venta.cliente_documento }}" required>
+                </section>
+
+                <section class="form-group new-client-field">
+                    <label>Teléfono <span class="field-required-status">(opcional)</span></label>
+                    <input type="text" name="cliente_telefono" id="clienteTelefono" value="{{ venta.cliente_telefono }}">
+                </section>
+
+                <section class="form-group new-client-field">
+                    <label>Correo <span class="field-required-status">(opcional)</span></label>
+                    <input type="email" name="cliente_correo" id="clienteCorreo" value="{{ venta.cliente_correo }}">
+                </section>
+
+                <section class="form-group">
+                    <label>Método de pago <span class="field-required-status">(Obligatorio*)</span></label>
+                    <select name="metodo_pago" required>
+                        <option value="efectivo" {% if venta.metodo_pago == 'efectivo' %}selected{% endif %}>Efectivo</option>
+                        <option value="transferencia" {% if venta.metodo_pago == 'transferencia' %}selected{% endif %}>Transferencia</option>
+                        <option value="tarjeta" {% if venta.metodo_pago == 'tarjeta' %}selected{% endif %}>Tarjeta</option>
+                        <option value="credito" {% if venta.metodo_pago == 'credito' %}selected{% endif %}>Crédito</option>
+                    </select>
+                </section>
+
+                <section class="form-group">
+                    <label>Estado <span class="field-required-status">(Obligatorio*)</span></label>
+                    <select name="estado" required>
+                        <option value="pagada" {% if venta.estado == 'pagada' %}selected{% endif %}>Pagada</option>
+                        <option value="pendiente" {% if venta.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="anulada" {% if venta.estado == 'anulada' %}selected{% endif %}>Anulada</option>
+                    </select>
+                </section>
+
+                <section class="form-group">
+                    <label>Descuento <span class="field-required-status">(opcional)</span></label>
+                    <input type="number" name="descuento" min="0" step="0.01" value="{{ venta.descuento }}">
+                    <small class="help-text">Subtotal actual: {{ venta.subtotal|pesos }}</small>
+                </section>
+            </div>
+
+            <section class="form-group">
+                <label>Observaciones <span class="field-required-status">(opcional)</span></label>
+                <textarea name="observaciones" rows="3">{{ venta.observaciones }}</textarea>
+            </section>
+
+            <section class="form-actions">
+                <button type="submit" class="btn-primary"><i class="ri-save-3-line"></i> Guardar cambios</button>
+                <a href="{% url 'venta_detalle' venta.id %}" class="btn-lite">Cancelar</a>
+            </section>
+        </form>
+    </article>
+</section>
+
+<script>
+    const clienteModo = document.getElementById("clienteModo");
+    const clienteExistenteBox = document.getElementById("clienteExistenteBox");
+    const buscarCliente = document.getElementById("buscarCliente");
+    const clienteSelect = document.getElementById("clienteSelect");
+    const clienteNombre = document.getElementById("clienteNombre");
+    const clienteDocumento = document.getElementById("clienteDocumento");
+    const clienteTelefono = document.getElementById("clienteTelefono");
+    const clienteCorreo = document.getElementById("clienteCorreo");
+    const clienteOptions = clienteSelect ? Array.from(clienteSelect.options) : [];
+
+    function toggleClienteModo() {
+        const usarExistente = clienteModo && clienteModo.value === "existente";
+        if (clienteExistenteBox) {
+            clienteExistenteBox.style.display = usarExistente ? "grid" : "none";
+        }
+        if (clienteSelect) {
+            clienteSelect.required = usarExistente;
+        }
+        if (clienteNombre) {
+            clienteNombre.required = !usarExistente;
+        }
+        if (clienteDocumento) {
+            clienteDocumento.required = !usarExistente;
+        }
+    }
+
+    function copiarDatosCliente() {
+        if (!clienteSelect) {
+            return;
+        }
+        const selected = clienteSelect.options[clienteSelect.selectedIndex];
+        if (!selected || !selected.value) {
+            return;
+        }
+        clienteNombre.value = selected.dataset.nombre || "";
+        clienteDocumento.value = selected.dataset.documento || "";
+        clienteTelefono.value = selected.dataset.telefono || "";
+        clienteCorreo.value = selected.dataset.correo || "";
+    }
+
+    if (clienteModo) {
+        clienteModo.addEventListener("change", toggleClienteModo);
+        toggleClienteModo();
+    }
+
+    if (clienteSelect) {
+        clienteSelect.addEventListener("change", copiarDatosCliente);
+    }
+
+    if (buscarCliente && clienteSelect) {
+        buscarCliente.addEventListener("input", function () {
+            const term = this.value.toLowerCase().trim();
+            clienteSelect.innerHTML = "";
+
+            clienteOptions.forEach(function (option) {
+                if (!option.value || option.dataset.search.includes(term)) {
+                    clienteSelect.appendChild(option);
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}

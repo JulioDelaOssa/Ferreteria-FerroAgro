@@ -372,14 +372,15 @@
 }
 
 .sale-form {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 420px;
-    gap: 22px;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
 }
 
 .sale-main-card,
 .sale-side-card {
+    width: 100%;
     min-width: 0;
 }
 
@@ -453,18 +454,27 @@
 }
 
 .sale-side-card {
-    position: sticky;
-    top: 100px;
+    position: static;
 }
 
 .sale-side-body {
     padding: 24px;
     display: grid;
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 22px;
+}
+
+.sale-side-body .form-group {
+    display: grid;
+    gap: 8px;
+}
+
+.sale-side-body .form-full {
+    grid-column: 1 / -1;
 }
 
 .sale-side-body textarea {
-    min-height: 100px;
+    min-height: 110px;
     padding: 14px;
     resize: vertical;
     line-height: 1.5;
@@ -476,13 +486,33 @@
     margin-top: 6px;
 }
 
-@media (max-width: 1100px) {
-    .sale-form {
+.existing-client-box {
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.existing-client-box label {
+    grid-column: 1 / -1;
+}
+
+.field-required-status {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+@media (max-width: 900px) {
+    .sale-side-body {
         grid-template-columns: 1fr;
     }
 
-    .sale-side-card {
-        position: static;
+    .sale-side-body .form-full {
+        grid-column: auto;
+    }
+
+    .existing-client-box {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -492,6 +522,15 @@
     }
 
     .remove-sale-row {
+        width: 100%;
+    }
+
+    .module-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .module-card-header .btn-primary {
         width: 100%;
     }
 }
@@ -734,4 +773,48 @@
     .invoice-info-grid {
         grid-template-columns: 1fr;
     }
+}
+
+
+.pagination-box {
+    padding: 16px 24px;
+    border-top: 1px solid #dbe3ef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: #ffffff;
+}
+
+.pagination-box a,
+.pagination-box span {
+    min-height: 38px;
+    padding: 9px 14px;
+    border-radius: 12px;
+    border: 1px solid #dbe3ef;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 900;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.pagination-box a:hover {
+    border-color: #15803d;
+    color: #14532d;
+    background: #dcfce7;
+}
+
+.pagination-box .disabled {
+    color: #94a3b8;
+    background: #f8fafc;
+}
+
+.client-toolbar {
+    grid-template-columns: minmax(260px, 1fr) auto auto;
+}
+
+.existing-client-box {
+    display: none;
 }

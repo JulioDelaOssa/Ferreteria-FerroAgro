@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Categoria, DetalleVenta, Movimientos, Producto, Proveedor, Venta
+from .models import Categoria, Cliente, DetalleVenta, Movimientos, Producto, Proveedor, Venta
 
 
 class DetalleVentaInline(admin.TabularInline):
@@ -14,6 +14,13 @@ class CategoriaAdmin(admin.ModelAdmin):
     list_display = ['nombre', 'activo', 'fecha_creacion']
     list_filter = ['activo']
     search_fields = ['nombre']
+
+
+@admin.register(Cliente)
+class ClienteAdmin(admin.ModelAdmin):
+    list_display = ['nombre', 'documento', 'telefono', 'correo', 'fecha_registro']
+    list_filter = ['fecha_registro']
+    search_fields = ['nombre', 'documento', 'telefono', 'correo']
 
 
 @admin.register(Proveedor)
@@ -32,9 +39,9 @@ class ProductoAdmin(admin.ModelAdmin):
 
 @admin.register(Venta)
 class VentaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'cliente_nombre', 'vendedor', 'metodo_pago', 'estado', 'total', 'fecha']
+    list_display = ['id', 'cliente_nombre', 'cliente_documento', 'vendedor', 'metodo_pago', 'estado', 'total', 'fecha']
     list_filter = ['estado', 'metodo_pago', 'fecha']
-    search_fields = ['cliente_nombre', 'cliente_documento', 'cliente_telefono']
+    search_fields = ['cliente_nombre', 'cliente_documento', 'cliente_telefono', 'cliente_correo', 'cliente__nombre', 'cliente__documento']
     inlines = [DetalleVentaInline]
 
 

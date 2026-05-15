@@ -1,0 +1,40 @@
+<nav class="pagination-box table-pagination-control">
+    <div class="per-page-control">
+        <label for="{{ page_obj.per_page_param }}">Mostrar</label>
+        <select id="{{ page_obj.per_page_param }}" data-page-param="{{ page_obj.page_param }}" data-size-param="{{ page_obj.per_page_param }}" class="per-page-select">
+            {% for option in page_obj.per_page_options %}
+                <option value="{{ option }}" {% if option == page_obj.current_per_page %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+        </select>
+        <span>por página</span>
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination-links">
+            {% if page_obj.has_previous %}
+                <a href="?{% if page_obj.extra_query %}{{ page_obj.extra_query }}&{% endif %}{{ page_obj.per_page_param }}={{ page_obj.current_per_page }}&{{ page_obj.page_param }}={{ page_obj.previous_page_number }}">Anterior</a>
+            {% else %}
+                <span class="disabled">Anterior</span>
+            {% endif %}
+
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?{% if page_obj.extra_query %}{{ page_obj.extra_query }}&{% endif %}{{ page_obj.per_page_param }}={{ page_obj.current_per_page }}&{{ page_obj.page_param }}={{ page_obj.next_page_number }}">Siguiente</a>
+            {% else %}
+                <span class="disabled">Siguiente</span>
+            {% endif %}
+        </div>
+    {% endif %}
+</nav>
+
+<script>
+    document.querySelectorAll(".per-page-select").forEach(function (select) {
+        select.addEventListener("change", function () {
+            const params = new URLSearchParams(window.location.search);
+            params.set(select.dataset.sizeParam, select.value);
+            params.delete(select.dataset.pageParam);
+            window.location.search = params.toString();
+        });
+    });
+</script>

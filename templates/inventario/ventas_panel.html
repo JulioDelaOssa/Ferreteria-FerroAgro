@@ -93,6 +93,7 @@
                     <tr>
                         <th>Factura</th>
                         <th>Cliente</th>
+                        <th>Documento</th>
 
                         {% if request.user.is_staff or request.user.is_superuser %}
                             <th>Vendedor</th>
@@ -116,6 +117,7 @@
                             </td>
 
                             <td>{{ venta.cliente_nombre|default:"Consumidor final" }}</td>
+                            <td>{{ venta.cliente_documento|default:"Sin documento" }}</td>
 
                             {% if request.user.is_staff or request.user.is_superuser %}
                                 <td>{{ venta.vendedor.get_full_name|default:venta.vendedor.username }}</td>
@@ -142,18 +144,30 @@
                                         <i class="ri-eye-line"></i>
                                     </a>
 
+                                    {% if request.user.is_staff or request.user.is_superuser %}
+                                        <a href="{% url 'venta_editar' venta.id %}" class="action-btn" title="Editar venta">
+                                            <i class="ri-edit-2-line"></i>
+                                        </a>
+                                    {% endif %}
+
                                     <a href="{% url 'factura_pdf' venta.id %}" class="action-btn" title="Descargar PDF">
                                         <i class="ri-file-pdf-2-line"></i>
                                     </a>
+
+                                    {% if request.user.is_staff or request.user.is_superuser %}
+                                        <a href="{% url 'venta_eliminar' venta.id %}" class="action-btn danger" title="Eliminar venta">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
                     {% empty %}
                         <tr>
                             {% if request.user.is_staff or request.user.is_superuser %}
-                                <td colspan="8">
+                                <td colspan="9">
                             {% else %}
-                                <td colspan="7">
+                                <td colspan="8">
                             {% endif %}
                                     <div class="module-empty">
                                         <i class="ri-shopping-cart-2-line"></i>
@@ -176,6 +190,7 @@
                 </tbody>
             </table>
         </div>
+        {% include 'inventario/paginacion.html' with page_obj=ventas %}
     </article>
 
 </section>

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block page_title %}{{ titulo }} | FerroAgro Ayapel{% endblock %}
+{% block header_title %}{{ titulo }}{% endblock %}
+{% block header_description %}Registra nombre, documento, teléfono y correo del cliente.{% endblock %}
+
+{% block header_actions %}
+<a href="{{ volver_url }}" class="btn-lite"><i class="ri-arrow-left-line"></i> Volver</a>
+{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <article class="form-card">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-grid">
+                {% for field in form %}
+                    <section class="form-group {% if field.field.widget.input_type == 'checkbox' %}form-check{% endif %}">
+                        <label for="{{ field.id_for_label }}">{{ field.label }} <span class="field-required-status">{% if field.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
+                        {{ field }}
+                        {% if field.errors %}<small class="form-error">{{ field.errors|striptags }}</small>{% endif %}
+                    </section>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <a href="{{ volver_url }}" class="btn-lite">Cancelar</a>
+                <button type="submit" class="btn-primary">Guardar cliente</button>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

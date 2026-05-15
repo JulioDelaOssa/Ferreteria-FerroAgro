@@ -24,20 +24,20 @@
                 {% csrf_token %}
 
                 <section class="form-group">
-                    <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                    <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }} <span class="field-required-status">{% if form.nombre.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                     {{ form.nombre }}
                     {{ form.nombre.errors }}
                 </section>
 
                 <section class="form-group">
-                    <label for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }}</label>
+                    <label for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }} <span class="field-required-status">{% if form.descripcion.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                     {{ form.descripcion }}
                     {{ form.descripcion.errors }}
                 </section>
 
                 <section class="form-check-row">
                     {{ form.activo }}
-                    <label for="{{ form.activo.id_for_label }}">{{ form.activo.label }}</label>
+                    <label for="{{ form.activo.id_for_label }}">{{ form.activo.label }} <span class="field-required-status">{% if form.activo.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                     {{ form.activo.errors }}
                 </section>
 

@@ -19,7 +19,7 @@
             <p>Completa la información para crear un usuario vendedor.</p>
         </div>
 
-        <form method="post" action="{% url 'vendedor_crear' %}" class="product-form">
+        <form method="post" class="product-form">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
@@ -32,7 +32,7 @@
 
             {% for field in form %}
                 <section class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <label for="{{ field.id_for_label }}">{{ field.label }} <span class="field-required-status">{% if field.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                     {{ field }}
 
                     {% if field.help_text %}
@@ -51,8 +51,8 @@
 
             <section class="form-actions">
                 <button type="submit" class="btn-primary">
-                    <i class="ri-user-add-line"></i>
-                    Crear vendedor
+                    <i class="{% if editar %}ri-save-3-line{% else %}ri-user-add-line{% endif %}"></i>
+                    {% if editar %}Guardar vendedor{% else %}Crear vendedor{% endif %}
                 </button>
 
                 <a href="{% url 'vendedor_lista' %}" class="btn-lite">

@@ -38,8 +38,8 @@
             <div class="sale-products-list" id="saleProductsList">
                 <div class="sale-product-row">
                     <section class="form-group">
-                        <label>Producto</label>
-                        <select name="producto_id" class="sale-product-select">
+                        <label>Producto <span class="field-required-status">(Obligatorio*)</span></label>
+                        <select name="producto_id" class="sale-product-select" required>
                             <option value="">Selecciona un producto</option>
                             {% for producto in productos %}
                                 <option value="{{ producto.id }}" data-precio="{{ producto.precio }}" data-stock="{{ producto.stock }}">
@@ -50,8 +50,8 @@
                     </section>
 
                     <section class="form-group">
-                        <label>Cantidad</label>
-                        <input type="number" name="cantidad" min="1" value="1" class="sale-quantity-input">
+                        <label>Cantidad <span class="field-required-status">(Obligatorio*)</span></label>
+                        <input type="number" name="cantidad" min="1" value="1" class="sale-quantity-input" required>
                     </section>
 
                     <button type="button" class="remove-sale-row" title="Quitar producto">
@@ -61,7 +61,7 @@
             </div>
         </article>
 
-        <aside class="module-card sale-side-card">
+        <article class="module-card sale-side-card">
             <div class="module-card-header">
                 <div>
                     <h2>Datos de factura</h2>
@@ -72,7 +72,7 @@
             <div class="sale-side-body">
                 {% if request.user.is_staff or request.user.is_superuser %}
                     <section class="form-group">
-                        <label>Vendedor</label>
+                        <label>Vendedor <span class="field-required-status">(opcional)</span></label>
                         <select name="vendedor_id">
                             <option value="">Usar mi usuario</option>
                             {% for vendedor in vendedores %}
@@ -84,29 +84,55 @@
                     </section>
                 {% else %}
                     <section class="form-group">
-                        <label>Vendedor</label>
+                        <label>Vendedor <span class="field-required-status">(opcional)</span></label>
                         <input type="text" value="{{ request.user.get_full_name|default:request.user.username }}" readonly>
                     </section>
                 {% endif %}
 
                 <section class="form-group">
-                    <label>Cliente</label>
-                    <input type="text" name="cliente_nombre" placeholder="Consumidor final">
+                    <label>Tipo de cliente <span class="field-required-status">(Obligatorio*)</span></label>
+                    <select name="cliente_modo" id="clienteModo">
+                        <option value="nuevo">Agregar nuevo cliente</option>
+                        <option value="existente">Seleccionar cliente existente</option>
+                    </select>
+                </section>
+
+                <section class="form-group existing-client-box form-full" id="clienteExistenteBox">
+                    <label>Buscar cliente existente <span class="field-required-status">(opcional)</span></label>
+                    <input type="text" id="buscarCliente" placeholder="Buscar por nombre o documento">
+                    <select name="cliente_id" id="clienteSelect">
+                        <option value="">Selecciona un cliente</option>
+                        {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}" data-search="{{ cliente.nombre|lower }} {{ cliente.documento|lower }}" data-nombre="{{ cliente.nombre }}" data-documento="{{ cliente.documento }}" data-telefono="{{ cliente.telefono|default:'' }}" data-correo="{{ cliente.correo|default:'' }}">
+                                {{ cliente.nombre }} | {{ cliente.documento }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </section>
+
+                <section class="form-group new-client-field">
+                    <label>Cliente <span class="field-required-status">(Obligatorio*)</span></label>
+                    <input type="text" name="cliente_nombre" id="clienteNombre" placeholder="Consumidor final">
+                </section>
+
+                <section class="form-group new-client-field">
+                    <label>Documento <span class="field-required-status">(Obligatorio*)</span></label>
+                    <input type="text" name="cliente_documento" id="clienteDocumento" placeholder="CC o NIT">
+                </section>
+
+                <section class="form-group new-client-field">
+                    <label>Teléfono <span class="field-required-status">(opcional)</span></label>
+                    <input type="text" name="cliente_telefono" id="clienteTelefono" placeholder="Teléfono del cliente">
+                </section>
+
+                <section class="form-group new-client-field">
+                    <label>Correo <span class="field-required-status">(opcional)</span></label>
+                    <input type="email" name="cliente_correo" id="clienteCorreo" placeholder="Correo del cliente">
                 </section>
 
                 <section class="form-group">
-                    <label>Documento</label>
-                    <input type="text" name="cliente_documento" placeholder="CC o NIT">
-                </section>
-
-                <section class="form-group">
-                    <label>Teléfono</label>
-                    <input type="text" name="cliente_telefono" placeholder="Teléfono del cliente">
-                </section>
-
-                <section class="form-group">
-                    <label>Método de pago</label>
-                    <select name="metodo_pago">
+                    <label>Método de pago <span class="field-required-status">(Obligatorio*)</span></label>
+                    <select name="metodo_pago" required>
                         <option value="efectivo">Efectivo</option>
                         <option value="transferencia">Transferencia</option>
                         <option value="tarjeta">Tarjeta</option>
@@ -115,21 +141,21 @@
                 </section>
 
                 <section class="form-group">
-                    <label>Descuento</label>
+                    <label>Descuento <span class="field-required-status">(opcional)</span></label>
                     <input type="number" name="descuento" min="0" step="0.01" value="0">
                 </section>
 
-                <section class="form-group">
-                    <label>Observaciones</label>
+                <section class="form-group form-full">
+                    <label>Observaciones <span class="field-required-status">(opcional)</span></label>
                     <textarea name="observaciones" placeholder="Observaciones de la venta"></textarea>
                 </section>
 
-                <button type="submit" class="btn-warning sale-submit">
+                <button type="submit" class="btn-warning sale-submit form-full">
                     <i class="ri-bill-line"></i>
                     Registrar venta
                 </button>
             </div>
-        </aside>
+        </article>
     </form>
 </section>
 
@@ -168,6 +194,79 @@
         });
 
         updateRemoveButtons();
+    }
+
+    const clienteModo = document.getElementById("clienteModo");
+    const clienteExistenteBox = document.getElementById("clienteExistenteBox");
+    const buscarCliente = document.getElementById("buscarCliente");
+    const clienteSelect = document.getElementById("clienteSelect");
+    const clienteNombre = document.getElementById("clienteNombre");
+    const clienteDocumento = document.getElementById("clienteDocumento");
+    const clienteTelefono = document.getElementById("clienteTelefono");
+    const clienteCorreo = document.getElementById("clienteCorreo");
+    const clienteOptions = clienteSelect ? Array.from(clienteSelect.options) : [];
+
+    function toggleClienteModo() {
+        const usarExistente = clienteModo && clienteModo.value === "existente";
+
+        if (clienteExistenteBox) {
+            clienteExistenteBox.style.display = usarExistente ? "grid" : "none";
+        }
+
+        if (clienteSelect) {
+            clienteSelect.required = usarExistente;
+
+            if (!usarExistente) {
+                clienteSelect.value = "";
+            }
+        }
+
+        if (clienteNombre) {
+            clienteNombre.required = !usarExistente;
+        }
+
+        if (clienteDocumento) {
+            clienteDocumento.required = !usarExistente;
+        }
+    }
+
+    function copiarDatosCliente() {
+        if (!clienteSelect) {
+            return;
+        }
+
+        const selected = clienteSelect.options[clienteSelect.selectedIndex];
+
+        if (!selected || !selected.value) {
+            return;
+        }
+
+        clienteNombre.value = selected.dataset.nombre || "";
+        clienteDocumento.value = selected.dataset.documento || "";
+        clienteTelefono.value = selected.dataset.telefono || "";
+        clienteCorreo.value = selected.dataset.correo || "";
+    }
+
+    if (clienteModo) {
+        clienteModo.addEventListener("change", toggleClienteModo);
+        toggleClienteModo();
+    }
+
+    if (clienteSelect) {
+        clienteSelect.addEventListener("change", copiarDatosCliente);
+    }
+
+    if (buscarCliente && clienteSelect) {
+        buscarCliente.addEventListener("input", function () {
+            const term = this.value.toLowerCase().trim();
+            clienteSelect.innerHTML = "";
+
+            clienteOptions.forEach(function (option) {
+                if (!option.value || option.dataset.search.includes(term)) {
+                    clienteSelect.appendChild(option);
+                }
+            });
+        });
     }
 </script>
 {% endblock %}

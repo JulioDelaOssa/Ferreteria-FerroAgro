@@ -19,7 +19,6 @@
                 <h2>Lista de vendedores</h2>
                 <p>Usuarios disponibles para registrar ventas dentro del sistema.</p>
             </div>
-
             <a href="{% url 'vendedor_crear' %}" class="btn-primary">
                 <i class="ri-add-line"></i>
                 Nuevo vendedor
@@ -35,24 +34,15 @@
                         <th>Correo</th>
                         <th>Estado</th>
                         <th>Tipo</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     {% for vendedor in vendedores %}
                         <tr>
-                            <td>
-                                <strong>{{ vendedor.username }}</strong>
-                            </td>
-
-                            <td>
-                                {{ vendedor.get_full_name|default:"Sin nombre completo" }}
-                            </td>
-
-                            <td>
-                                {{ vendedor.email|default:"Sin correo" }}
-                            </td>
-
+                            <td><strong>{{ vendedor.username }}</strong></td>
+                            <td>{{ vendedor.get_full_name|default:"Sin nombre completo" }}</td>
+                            <td>{{ vendedor.email|default:"Sin correo" }}</td>
                             <td>
                                 {% if vendedor.is_active %}
                                     <span class="status-pill paid">Activo</span>
@@ -60,7 +50,6 @@
                                     <span class="status-pill canceled">Inactivo</span>
                                 {% endif %}
                             </td>
-
                             <td>
                                 {% if vendedor.is_superuser %}
                                     <span class="status-pill pending">Administrador</span>
@@ -70,15 +59,26 @@
                                     <span class="status-pill paid">Vendedor</span>
                                 {% endif %}
                             </td>
+                            <td>
+                                <div class="module-actions">
+                                    <a href="{% url 'vendedor_editar' vendedor.id %}" class="action-btn" title="Editar"><i class="ri-edit-2-line"></i></a>
+                                    <form method="post" action="{% url 'vendedor_cambiar_estado' vendedor.id %}" class="inline-form">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-btn" title="{% if vendedor.is_active %}Desactivar{% else %}Activar{% endif %}">
+                                            <i class="{% if vendedor.is_active %}ri-user-unfollow-line{% else %}ri-user-follow-line{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                    <a href="{% url 'vendedor_eliminar' vendedor.id %}" class="action-btn danger" title="Eliminar"><i class="ri-delete-bin-line"></i></a>
+                                </div>
+                            </td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <div class="module-empty">
                                     <i class="ri-user-settings-line"></i>
                                     <h3>No hay vendedores registrados</h3>
                                     <p>Cuando crees vendedores, aparecerán aquí.</p>
-
                                     <a href="{% url 'vendedor_crear' %}" class="btn-primary">
                                         <i class="ri-user-add-line"></i>
                                         Crear vendedor
@@ -90,6 +90,7 @@
                 </tbody>
             </table>
         </div>
+        {% include 'inventario/paginacion.html' with page_obj=vendedores %}
     </article>
 </section>
 {% endblock %}

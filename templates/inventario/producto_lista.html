@@ -20,7 +20,7 @@
             <i class="ri-box-3-line"></i>
             <div>
                 <span>Total productos</span>
-                <strong>{{ productos|length }}</strong>
+                <strong>{{ total_productos_filtrados }}</strong>
             </div>
         </article>
 
@@ -159,6 +159,7 @@
                 </tbody>
             </table>
         </div>
+        {% include 'inventario/paginacion.html' with page_obj=productos %}
     </article>
 </section>
 {% endblock %}

@@ -25,25 +25,25 @@
 
                 <div class="form-grid">
                     <section class="form-group">
-                        <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                        <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }} <span class="field-required-status">{% if form.nombre.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                         {{ form.nombre }}
                         {{ form.nombre.errors }}
                     </section>
 
                     <section class="form-group">
-                        <label for="{{ form.precio.id_for_label }}">{{ form.precio.label }}</label>
+                        <label for="{{ form.precio.id_for_label }}">{{ form.precio.label }} <span class="field-required-status">{% if form.precio.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                         {{ form.precio }}
                         {{ form.precio.errors }}
                     </section>
 
                     <section class="form-group">
-                        <label for="{{ form.stock.id_for_label }}">{{ form.stock.label }}</label>
+                        <label for="{{ form.stock.id_for_label }}">{{ form.stock.label }} <span class="field-required-status">{% if form.stock.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                         {{ form.stock }}
                         {{ form.stock.errors }}
                     </section>
 
                     <section class="form-group">
-                        <label for="{{ form.stock_minimo.id_for_label }}">{{ form.stock_minimo.label }}</label>
+                        <label for="{{ form.stock_minimo.id_for_label }}">{{ form.stock_minimo.label }} <span class="field-required-status">{% if form.stock_minimo.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                         {{ form.stock_minimo }}
                         <small class="help-text">Cuando el producto llegue a esta cantidad, aparecerá como stock bajo.</small>
                         {{ form.stock_minimo.errors }}
@@ -51,7 +51,7 @@
 
                     <section class="form-group">
                         <div class="field-head">
-                            <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }}</label>
+                            <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }} <span class="field-required-status">{% if form.categoria.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                             <a href="{% url 'categoria_crear' %}?popup=1" class="field-action-link popup-link">
                                 <i class="ri-add-line"></i>
                                 Agregar categoría
@@ -63,7 +63,7 @@
 
                     <section class="form-group">
                         <div class="field-head">
-                            <label for="{{ form.proveedor.id_for_label }}">{{ form.proveedor.label }}</label>
+                            <label for="{{ form.proveedor.id_for_label }}">{{ form.proveedor.label }} <span class="field-required-status">{% if form.proveedor.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                             <a href="{% url 'proveedor_crear' %}?popup=1" class="field-action-link popup-link">
                                 <i class="ri-add-line"></i>
                                 Agregar proveedor
@@ -75,13 +75,13 @@
                 </div>
 
                 <section class="form-group">
-                    <label for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }}</label>
+                    <label for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }} <span class="field-required-status">{% if form.descripcion.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                     {{ form.descripcion }}
                     {{ form.descripcion.errors }}
                 </section>
 
                 <section class="form-group">
-                    <label for="{{ form.imagen.id_for_label }}">{{ form.imagen.label }}</label>
+                    <label for="{{ form.imagen.id_for_label }}">{{ form.imagen.label }} <span class="field-required-status">{% if form.imagen.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                     <div class="file-upload-box">
                         <i class="ri-image-add-line"></i>
                         <div>
@@ -94,7 +94,7 @@
 
                 <section class="form-check-row">
                     {{ form.activo }}
-                    <label for="{{ form.activo.id_for_label }}">{{ form.activo.label }}</label>
+                    <label for="{{ form.activo.id_for_label }}">{{ form.activo.label }} <span class="field-required-status">{% if form.activo.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
                     {{ form.activo.errors }}
                 </section>
 

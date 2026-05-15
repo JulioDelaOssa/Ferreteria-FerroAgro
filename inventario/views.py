@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, F, Q, Sum
 from django.http import HttpResponse
@@ -22,12 +23,39 @@ from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, Tabl
 from .forms import (
     AjusteStockForm,
     CategoriaForm,
+    ClienteForm,
     ProductoForm,
     ProveedorForm,
+    VendedorEditarForm,
     VendedorForm,
 )
 from .funciones_dashboard import obtener_datos_dashboard
-from .models import Categoria, DetalleVenta, Movimientos, Producto, Proveedor, Venta
+from .models import Categoria, Cliente, DetalleVenta, Movimientos, Producto, Proveedor, Venta
+
+
+def paginar(request, queryset, page_param='page', per_page=8):
+    opciones = [5, 8, 10, 15, 20, 50]
+    per_page_param = f'{page_param}_size'
+
+    try:
+        per_page = int(request.GET.get(per_page_param) or request.GET.get('per_page') or per_page)
+    except (TypeError, ValueError):
+        per_page = 8
+
+    if per_page not in opciones:
+        per_page = 8
+
+    paginator = Paginator(queryset, per_page)
+    page_obj = paginator.get_page(request.GET.get(page_param))
+    query_params = request.GET.copy()
+    query_params.pop(page_param, None)
+    query_params.pop(per_page_param, None)
+    page_obj.page_param = page_param
+    page_obj.per_page_param = per_page_param
+    page_obj.current_per_page = per_page
+    page_obj.per_page_options = opciones
+    page_obj.extra_query = query_params.urlencode()
+    return page_obj
 
 
 def es_administrador(user):
@@ -153,10 +181,13 @@ def producto_lista(request):
     elif estado == 'agotado':
         productos = productos.filter(stock=0)
 
+    total_productos_filtrados = productos.count()
+    productos = paginar(request, productos)
     categorias = Categoria.objects.filter(activo=True)
 
     return render(request, 'inventario/producto_lista.html', {
         'productos': productos,
+        'total_productos_filtrados': total_productos_filtrados,
         'categorias': categorias,
         'query': query,
         'categoria_id': categoria_id,
@@ -238,6 +269,7 @@ def categoria_lista(request):
     categorias = Categoria.objects.annotate(
         total_productos=Count('productos')
     ).order_by('nombre')
+    categorias = paginar(request, categorias)
 
     return render(request, 'inventario/categoria_lista.html', {
         'categorias': categorias
@@ -313,7 +345,9 @@ def categoria_eliminar(request, pk):
         return redirect('categoria_lista')
 
     return render(request, 'inventario/categoria_confirmar_eliminar.html', {
-        'categoria': categoria
+        'tipo': 'categoría',
+        'objeto': categoria,
+        'volver_url': reverse('categoria_lista')
     })
 
 
@@ -323,6 +357,7 @@ def proveedor_lista(request):
     proveedores = Proveedor.objects.annotate(
         total_productos=Count('productos')
     ).order_by('nombre')
+    proveedores = paginar(request, proveedores)
 
     return render(request, 'inventario/proveedor_lista.html', {
         'proveedores': proveedores
@@ -397,9 +432,25 @@ def proveedor_eliminar(request, pk):
         messages.success(request, 'Proveedor eliminado correctamente.')
         return redirect('proveedor_lista')
 
-    return render(request, 'inventario/proveedor_confirmar_eliminar.html', {
-        'proveedor': proveedor
+    return render(request, 'inventario/categoria_confirmar_eliminar.html', {
+        'tipo': 'proveedor',
+        'objeto': proveedor,
+        'volver_url': reverse('proveedor_lista')
     })
+
+
+@login_required
+@admin_required
+def proveedor_cambiar_estado(request, pk):
+    proveedor = get_object_or_404(Proveedor, pk=pk)
+
+    if request.method == 'POST':
+        proveedor.activo = not proveedor.activo
+        proveedor.save(update_fields=['activo'])
+        estado = 'activado' if proveedor.activo else 'desactivado'
+        messages.success(request, f'Proveedor {estado} correctamente.')
+
+    return redirect('proveedor_lista')
 
 
 @login_required
@@ -445,7 +496,8 @@ def inventario_lista(request):
         )
         movimientos = movimientos.filter(fecha__lte=fin_hasta)
 
-    movimientos = movimientos[:120]
+    productos = paginar(request, productos, 'productos_page')
+    movimientos = paginar(request, movimientos, 'movimientos_page')
 
     return render(request, 'inventario/inventario_lista.html', {
         'productos': productos,
@@ -519,12 +571,12 @@ def ventas_panel(request):
     query = request.GET.get('q', '').strip()
 
     ventas = Venta.objects.select_related(
-        'vendedor'
+        'vendedor',
+        'cliente'
     ).prefetch_related(
         'detalles'
     ).order_by('-fecha')
 
-    # Si el usuario es vendedor, solo puede ver sus propias ventas
     if not request.user.is_staff and not request.user.is_superuser:
         ventas = ventas.filter(vendedor=request.user)
 
@@ -540,6 +592,8 @@ def ventas_panel(request):
         ventas = ventas.filter(
             Q(cliente_nombre__icontains=query) |
             Q(cliente_documento__icontains=query) |
+            Q(cliente_telefono__icontains=query) |
+            Q(cliente_correo__icontains=query) |
             Q(metodo_pago__icontains=query)
         )
 
@@ -564,6 +618,8 @@ def ventas_panel(request):
     anuladas = ventas.filter(
         estado='anulada'
     ).count()
+
+    ventas = paginar(request, ventas)
 
     return render(request, 'inventario/ventas_panel.html', {
         'ventas': ventas,
@@ -592,14 +648,19 @@ def venta_nueva(request):
         is_superuser=False
     ).order_by('first_name', 'username')
 
+    clientes = Cliente.objects.all().order_by('nombre')
+
     if request.method == 'POST':
         productos_ids = request.POST.getlist('producto_id')
         cantidades = request.POST.getlist('cantidad')
 
         vendedor_id = request.POST.get('vendedor_id')
+        cliente_modo = request.POST.get('cliente_modo', 'nuevo')
+        cliente_id = request.POST.get('cliente_id')
         cliente_nombre = request.POST.get('cliente_nombre', '').strip()
         cliente_documento = request.POST.get('cliente_documento', '').strip()
         cliente_telefono = request.POST.get('cliente_telefono', '').strip()
+        cliente_correo = request.POST.get('cliente_correo', '').strip()
         metodo_pago = request.POST.get('metodo_pago', 'efectivo')
         observaciones = request.POST.get('observaciones', '').strip()
 
@@ -662,11 +723,32 @@ def venta_nueva(request):
 
         total = subtotal_general - descuento
 
+        cliente = None
+        if cliente_modo == 'existente' and cliente_id:
+            cliente = get_object_or_404(Cliente, pk=cliente_id)
+        elif cliente_modo == 'nuevo' and cliente_nombre and cliente_documento:
+            cliente, creado = Cliente.objects.update_or_create(
+                documento=cliente_documento,
+                defaults={
+                    'nombre': cliente_nombre,
+                    'telefono': cliente_telefono,
+                    'correo': cliente_correo
+                }
+            )
+
+        if cliente:
+            cliente_nombre = cliente.nombre
+            cliente_documento = cliente.documento
+            cliente_telefono = cliente.telefono or ''
+            cliente_correo = cliente.correo or ''
+
         venta = Venta.objects.create(
             vendedor=vendedor,
+            cliente=cliente,
             cliente_nombre=cliente_nombre or 'Consumidor final',
             cliente_documento=cliente_documento,
             cliente_telefono=cliente_telefono,
+            cliente_correo=cliente_correo,
             metodo_pago=metodo_pago,
             estado='pagada',
             subtotal=subtotal_general,
@@ -703,14 +785,15 @@ def venta_nueva(request):
 
     return render(request, 'inventario/venta_nueva.html', {
         'productos': productos,
-        'vendedores': vendedores
+        'vendedores': vendedores,
+        'clientes': clientes
     })
 
 
 @login_required
 def venta_detalle(request, pk):
     venta = get_object_or_404(
-        Venta.objects.select_related('vendedor').prefetch_related('detalles'),
+        Venta.objects.select_related('vendedor', 'cliente').prefetch_related('detalles'),
         pk=pk
     )
 
@@ -720,9 +803,108 @@ def venta_detalle(request, pk):
 
 
 @login_required
+@admin_required
+@transaction.atomic
+def venta_editar(request, pk):
+    venta = get_object_or_404(Venta.objects.select_related('cliente'), pk=pk)
+    clientes = Cliente.objects.all().order_by('nombre')
+
+    if request.method == 'POST':
+        cliente_modo = request.POST.get('cliente_modo', 'nuevo')
+        cliente_id = request.POST.get('cliente_id')
+        cliente_nombre = request.POST.get('cliente_nombre', '').strip()
+        cliente_documento = request.POST.get('cliente_documento', '').strip()
+        cliente_telefono = request.POST.get('cliente_telefono', '').strip()
+        cliente_correo = request.POST.get('cliente_correo', '').strip()
+        metodo_pago = request.POST.get('metodo_pago', venta.metodo_pago)
+        estado = request.POST.get('estado', venta.estado)
+        observaciones = request.POST.get('observaciones', '').strip()
+
+        try:
+            descuento = Decimal(request.POST.get('descuento') or '0')
+        except (InvalidOperation, TypeError, ValueError):
+            descuento = Decimal('0')
+
+        if descuento < 0:
+            descuento = Decimal('0')
+
+        if descuento > venta.subtotal:
+            descuento = venta.subtotal
+
+        cliente = None
+        if cliente_modo == 'existente' and cliente_id:
+            cliente = get_object_or_404(Cliente, pk=cliente_id)
+        elif cliente_modo == 'nuevo' and cliente_nombre and cliente_documento:
+            cliente, creado = Cliente.objects.update_or_create(
+                documento=cliente_documento,
+                defaults={
+                    'nombre': cliente_nombre,
+                    'telefono': cliente_telefono,
+                    'correo': cliente_correo
+                }
+            )
+
+        if cliente:
+            cliente_nombre = cliente.nombre
+            cliente_documento = cliente.documento
+            cliente_telefono = cliente.telefono or ''
+            cliente_correo = cliente.correo or ''
+
+        venta.cliente = cliente
+        venta.cliente_nombre = cliente_nombre or 'Consumidor final'
+        venta.cliente_documento = cliente_documento
+        venta.cliente_telefono = cliente_telefono
+        venta.cliente_correo = cliente_correo
+        venta.metodo_pago = metodo_pago
+        venta.estado = estado
+        venta.descuento = descuento
+        venta.total = venta.subtotal - descuento
+        venta.observaciones = observaciones
+        venta.save()
+
+        messages.success(request, 'Venta actualizada correctamente.')
+        return redirect('venta_detalle', pk=venta.pk)
+
+    return render(request, 'inventario/venta_editar.html', {
+        'venta': venta,
+        'clientes': clientes
+    })
+
+
+@login_required
+@admin_required
+@transaction.atomic
+def venta_eliminar(request, pk):
+    venta = get_object_or_404(Venta.objects.prefetch_related('detalles'), pk=pk)
+
+    if request.method == 'POST':
+        for detalle in venta.detalles.select_related('producto'):
+            if detalle.producto:
+                detalle.producto.stock += detalle.cantidad
+                detalle.producto.save(update_fields=['stock'])
+                Movimientos.objects.create(
+                    producto=detalle.producto,
+                    tipo='entrada',
+                    cantidad=detalle.cantidad,
+                    motivo=f'Eliminación de factura #{venta.id}',
+                    usuario=request.user
+                )
+
+        venta.delete()
+        messages.success(request, 'Venta eliminada correctamente y stock restaurado.')
+        return redirect('ventas_panel')
+
+    return render(request, 'inventario/categoria_confirmar_eliminar.html', {
+        'tipo': 'venta',
+        'objeto': venta,
+        'volver_url': reverse('ventas_panel')
+    })
+
+
+@login_required
 def factura_pdf(request, pk):
     venta = get_object_or_404(
-        Venta.objects.select_related('vendedor').prefetch_related('detalles'),
+        Venta.objects.select_related('vendedor', 'cliente').prefetch_related('detalles'),
         pk=pk
     )
 
@@ -760,6 +942,10 @@ def factura_pdf(request, pk):
     ))
     elements.append(Paragraph(
         f'Teléfono: {venta.cliente_telefono or "No registrado"}',
+        styles['Normal']
+    ))
+    elements.append(Paragraph(
+        f'Correo: {venta.cliente_correo or "No registrado"}',
         styles['Normal']
     ))
     elements.append(Paragraph(
@@ -939,8 +1125,94 @@ def reporte_distribucion_categorias_pdf(request):
 
 @login_required
 @admin_required
+def cliente_lista(request):
+    query = request.GET.get('q', '').strip()
+    clientes = Cliente.objects.annotate(total_ventas=Count('ventas')).order_by('nombre')
+
+    if query:
+        clientes = clientes.filter(
+            Q(nombre__icontains=query) |
+            Q(documento__icontains=query) |
+            Q(telefono__icontains=query) |
+            Q(correo__icontains=query)
+        )
+
+    total_clientes = clientes.count()
+    clientes = paginar(request, clientes)
+
+    return render(request, 'inventario/cliente_lista.html', {
+        'clientes': clientes,
+        'query': query,
+        'total_clientes': total_clientes
+    })
+
+
+@login_required
+@admin_required
+def cliente_crear(request):
+    if request.method == 'POST':
+        form = ClienteForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cliente registrado correctamente.')
+            return redirect('cliente_lista')
+    else:
+        form = ClienteForm()
+
+    return render(request, 'inventario/cliente_form.html', {
+        'form': form,
+        'titulo': 'Agregar cliente',
+        'volver_url': reverse('cliente_lista')
+    })
+
+
+@login_required
+@admin_required
+def cliente_editar(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+
+    if request.method == 'POST':
+        form = ClienteForm(request.POST, instance=cliente)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cliente actualizado correctamente.')
+            return redirect('cliente_lista')
+    else:
+        form = ClienteForm(instance=cliente)
+
+    return render(request, 'inventario/cliente_form.html', {
+        'form': form,
+        'cliente': cliente,
+        'titulo': 'Editar cliente',
+        'volver_url': reverse('cliente_lista')
+    })
+
+
+@login_required
+@admin_required
+def cliente_eliminar(request, pk):
+    cliente = get_object_or_404(Cliente, pk=pk)
+
+    if request.method == 'POST':
+        Venta.objects.filter(cliente=cliente).update(cliente=None)
+        cliente.delete()
+        messages.success(request, 'Cliente eliminado correctamente.')
+        return redirect('cliente_lista')
+
+    return render(request, 'inventario/categoria_confirmar_eliminar.html', {
+        'tipo': 'cliente',
+        'objeto': cliente,
+        'volver_url': reverse('cliente_lista')
+    })
+
+
+@login_required
+@admin_required
 def vendedor_lista(request):
     vendedores = User.objects.all().order_by('username')
+    vendedores = paginar(request, vendedores)
 
     return render(request, 'inventario/vendedores_lista.html', {
         'vendedores': vendedores
@@ -968,5 +1240,66 @@ def vendedor_crear(request):
     return render(request, 'inventario/vendedor_form.html', {
         'form': form,
         'titulo': 'Agregar vendedor',
+        'volver_url': reverse('vendedor_lista')
+    })
+
+
+@login_required
+@admin_required
+def vendedor_editar(request, pk):
+    vendedor = get_object_or_404(User, pk=pk)
+
+    if request.method == 'POST':
+        form = VendedorEditarForm(request.POST, instance=vendedor)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Vendedor actualizado correctamente.')
+            return redirect('vendedor_lista')
+    else:
+        form = VendedorEditarForm(instance=vendedor)
+
+    return render(request, 'inventario/vendedor_form.html', {
+        'form': form,
+        'titulo': 'Editar vendedor',
+        'volver_url': reverse('vendedor_lista'),
+        'editar': True
+    })
+
+
+@login_required
+@admin_required
+def vendedor_cambiar_estado(request, pk):
+    vendedor = get_object_or_404(User, pk=pk)
+
+    if request.method == 'POST':
+        if vendedor == request.user:
+            messages.error(request, 'No puedes desactivar tu propio usuario.')
+        else:
+            vendedor.is_active = not vendedor.is_active
+            vendedor.save(update_fields=['is_active'])
+            estado = 'activado' if vendedor.is_active else 'desactivado'
+            messages.success(request, f'Vendedor {estado} correctamente.')
+
+    return redirect('vendedor_lista')
+
+
+@login_required
+@admin_required
+def vendedor_eliminar(request, pk):
+    vendedor = get_object_or_404(User, pk=pk)
+
+    if request.method == 'POST':
+        if vendedor == request.user:
+            messages.error(request, 'No puedes eliminar tu propio usuario.')
+            return redirect('vendedor_lista')
+
+        vendedor.delete()
+        messages.success(request, 'Vendedor eliminado correctamente.')
+        return redirect('vendedor_lista')
+
+    return render(request, 'inventario/categoria_confirmar_eliminar.html', {
+        'tipo': 'vendedor',
+        'objeto': vendedor,
         'volver_url': reverse('vendedor_lista')
     })
