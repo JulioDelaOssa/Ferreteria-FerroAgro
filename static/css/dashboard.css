@@ -155,8 +155,6 @@
     color: #006b4e;
 }
 
-/* Gráfico de ventas */
-
 .simple-chart {
     height: 270px;
     padding: 24px 26px 18px;
@@ -271,8 +269,6 @@
     margin: 6px 0 10px;
     line-height: 1.5;
 }
-
-/* Estado del inventario */
 
 .inventory-status-body {
     padding: 24px;
@@ -395,8 +391,6 @@
     background: #cbd5e1;
 }
 
-/* Acciones rápidas */
-
 .quick-actions-dashboard {
     padding: 18px;
     display: grid;
@@ -434,8 +428,6 @@
     color: #0f766e;
     border: 1px solid #0f766e;
 }
-
-/* Tablas dashboard */
 
 .dash-table-wrap {
     width: 100%;
@@ -626,8 +618,6 @@
     color: #006b4e;
 }
 
-/* Productos más vendidos */
-
 .top-products-list {
     padding: 16px;
     display: grid;
@@ -726,8 +716,6 @@
     white-space: nowrap;
 }
 
-/* Actividad reciente */
-
 .activity-list-dashboard {
     padding: 16px 18px;
     display: grid;
@@ -777,8 +765,6 @@
     font-weight: 900;
 }
 
-/* Resumen de inventario */
-
 .inventory-summary-grid {
     padding: 18px;
     display: grid;
@@ -825,8 +811,6 @@
 .orange-box i {
     color: #ff7900;
 }
-
-/* Distribución por categoría */
 
 .category-card .category-distribution {
     padding: 24px;
@@ -968,8 +952,6 @@
     line-height: 1.5;
 }
 
-/* Placeholder de producto */
-
 .product-placeholder {
     width: 42px;
     height: 42px;
@@ -989,8 +971,6 @@
     border-radius: 10px;
     font-size: 20px;
 }
-
-/* Responsive */
 
 @media (max-width: 1350px) {
     .dashboard-top-grid,

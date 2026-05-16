@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block page_title %}Nueva venta | FerroAgro Ayapel{% endblock %}
 {% block header_title %}Nueva venta{% endblock %}
@@ -65,11 +66,11 @@
             <div class="module-card-header">
                 <div>
                     <h2>Datos de factura</h2>
-                    <p>Información del cliente, pago y observaciones.</p>
+                    <p>Primero ingresa la cédula o documento del cliente.</p>
                 </div>
             </div>
 
-            <div class="sale-side-body">
+            <div class="sale-side-body cliente-documento-widget">
                 {% if request.user.is_staff or request.user.is_superuser %}
                     <section class="form-group">
                         <label>Vendedor <span class="field-required-status">(opcional)</span></label>
@@ -89,43 +90,33 @@
                     </section>
                 {% endif %}
 
+                <input type="hidden" name="cliente_modo" id="clienteModo" value="">
+                <input type="hidden" name="cliente_id" id="clienteId" value="">
+
                 <section class="form-group">
-                    <label>Tipo de cliente <span class="field-required-status">(Obligatorio*)</span></label>
-                    <select name="cliente_modo" id="clienteModo">
-                        <option value="nuevo">Agregar nuevo cliente</option>
-                        <option value="existente">Seleccionar cliente existente</option>
-                    </select>
+                    <label>Documento del cliente <span class="field-required-status">(Obligatorio*)</span></label>
+                    <input type="text" name="cliente_documento" id="clienteDocumento" data-cliente-documento placeholder="Cédula o NIT" autocomplete="off" required>
+                    <small class="help-text" id="clienteEstado">Ingresa el documento para validar si el cliente ya existe.</small>
                 </section>
 
-                <section class="form-group existing-client-box form-full" id="clienteExistenteBox">
-                    <label>Buscar cliente existente <span class="field-required-status">(opcional)</span></label>
-                    <input type="text" id="buscarCliente" placeholder="Buscar por nombre o documento">
-                    <select name="cliente_id" id="clienteSelect">
-                        <option value="">Selecciona un cliente</option>
-                        {% for cliente in clientes %}
-                            <option value="{{ cliente.id }}" data-search="{{ cliente.nombre|lower }} {{ cliente.documento|lower }}" data-nombre="{{ cliente.nombre }}" data-documento="{{ cliente.documento }}" data-telefono="{{ cliente.telefono|default:'' }}" data-correo="{{ cliente.correo|default:'' }}">
-                                {{ cliente.nombre }} | {{ cliente.documento }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                <section class="form-group form-full cliente-nuevo-accion" id="clienteNuevoAccion" hidden>
+                    <button type="button" class="btn-lite client-new-button" id="mostrarNuevoCliente">
+                        <i class="ri-user-add-line"></i>
+                        + Nuevo cliente
+                    </button>
                 </section>
 
-                <section class="form-group new-client-field">
-                    <label>Cliente <span class="field-required-status">(Obligatorio*)</span></label>
-                    <input type="text" name="cliente_nombre" id="clienteNombre" placeholder="Consumidor final">
+                <section class="form-group form-full cliente-nombre-box" id="clienteNombreBox" hidden>
+                    <label id="clienteNombreLabel">Nombre del cliente <span class="field-required-status">(Obligatorio*)</span></label>
+                    <input type="text" name="cliente_nombre" id="clienteNombre" placeholder="Nombre completo del cliente">
                 </section>
 
-                <section class="form-group new-client-field">
-                    <label>Documento <span class="field-required-status">(Obligatorio*)</span></label>
-                    <input type="text" name="cliente_documento" id="clienteDocumento" placeholder="CC o NIT">
-                </section>
-
-                <section class="form-group new-client-field">
+                <section class="form-group new-client-field" id="clienteTelefonoBox" hidden>
                     <label>Teléfono <span class="field-required-status">(opcional)</span></label>
                     <input type="text" name="cliente_telefono" id="clienteTelefono" placeholder="Teléfono del cliente">
                 </section>
 
-                <section class="form-group new-client-field">
+                <section class="form-group new-client-field" id="clienteCorreoBox" hidden>
                     <label>Correo <span class="field-required-status">(opcional)</span></label>
                     <input type="email" name="cliente_correo" id="clienteCorreo" placeholder="Correo del cliente">
                 </section>
@@ -159,6 +150,8 @@
     </form>
 </section>
 
+{{ clientes_json|json_script:"clientesVentaData" }}
+<script src="{% static 'js/clientes_venta.js' %}"></script>
 <script>
     const addButton = document.getElementById("addProductRow");
     const list = document.getElementById("saleProductsList");
@@ -194,79 +187,6 @@
         });
 
         updateRemoveButtons();
-    }
-
-    const clienteModo = document.getElementById("clienteModo");
-    const clienteExistenteBox = document.getElementById("clienteExistenteBox");
-    const buscarCliente = document.getElementById("buscarCliente");
-    const clienteSelect = document.getElementById("clienteSelect");
-    const clienteNombre = document.getElementById("clienteNombre");
-    const clienteDocumento = document.getElementById("clienteDocumento");
-    const clienteTelefono = document.getElementById("clienteTelefono");
-    const clienteCorreo = document.getElementById("clienteCorreo");
-    const clienteOptions = clienteSelect ? Array.from(clienteSelect.options) : [];
-
-    function toggleClienteModo() {
-        const usarExistente = clienteModo && clienteModo.value === "existente";
-
-        if (clienteExistenteBox) {
-            clienteExistenteBox.style.display = usarExistente ? "grid" : "none";
-        }
-
-        if (clienteSelect) {
-            clienteSelect.required = usarExistente;
-
-            if (!usarExistente) {
-                clienteSelect.value = "";
-            }
-        }
-
-        if (clienteNombre) {
-            clienteNombre.required = !usarExistente;
-        }
-
-        if (clienteDocumento) {
-            clienteDocumento.required = !usarExistente;
-        }
-    }
-
-    function copiarDatosCliente() {
-        if (!clienteSelect) {
-            return;
-        }
-
-        const selected = clienteSelect.options[clienteSelect.selectedIndex];
-
-        if (!selected || !selected.value) {
-            return;
-        }
-
-        clienteNombre.value = selected.dataset.nombre || "";
-        clienteDocumento.value = selected.dataset.documento || "";
-        clienteTelefono.value = selected.dataset.telefono || "";
-        clienteCorreo.value = selected.dataset.correo || "";
-    }
-
-    if (clienteModo) {
-        clienteModo.addEventListener("change", toggleClienteModo);
-        toggleClienteModo();
-    }
-
-    if (clienteSelect) {
-        clienteSelect.addEventListener("change", copiarDatosCliente);
-    }
-
-    if (buscarCliente && clienteSelect) {
-        buscarCliente.addEventListener("input", function () {
-            const term = this.value.toLowerCase().trim();
-            clienteSelect.innerHTML = "";
-
-            clienteOptions.forEach(function (option) {
-                if (!option.value || option.dataset.search.includes(term)) {
-                    clienteSelect.appendChild(option);
-                }
-            });
-        });
     }
 </script>
 {% endblock %}

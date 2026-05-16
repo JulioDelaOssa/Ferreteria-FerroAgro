@@ -818,3 +818,31 @@
 .existing-client-box {
     display: none;
 }
+.cliente-nuevo-accion .client-new-button {
+    width: max-content;
+    min-height: 46px;
+    border: 1px dashed #14b8a6;
+    color: #0f766e;
+    background: #f0fdfa;
+}
+
+.cliente-nuevo-accion .client-new-button:hover {
+    background: #ccfbf1;
+    transform: translateY(-2px);
+}
+
+.cliente-nombre-box input[readonly] {
+    background: #ecfdf5;
+    border-color: #86efac;
+    color: #064e3b;
+}
+
+.help-text.status-ok {
+    color: #047857;
+    font-weight: 800;
+}
+
+.help-text.status-warning {
+    color: #ea580c;
+    font-weight: 800;
+}

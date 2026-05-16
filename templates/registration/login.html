@@ -35,6 +35,15 @@
                     </p>
                 </div>
 
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert-message {{ message.tags }}">
+                            <i class="ri-information-line"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
                 {% if form.errors %}
                     <div class="alert-error">
                         <i class="ri-error-warning-line"></i>
@@ -82,6 +91,10 @@
                         Iniciar sesión
                     </button>
 
+                    <div class="auth-links">
+                        <a href="{% url 'password_reset' %}">Recuperar contraseña</a>
+                    </div>
+
                     <a href="{% url 'landing' %}" class="back-home">
                         <i class="ri-arrow-left-line"></i>
                         Volver al inicio
@@ -96,6 +109,14 @@
                             <i class="ri-mail-line"></i>
                             Ferroagroayapel@hotmail.com
                         </span>
+                    </div>
+
+                    <div class="auth-footer">
+                        <span>Integrantes:</span>
+                        <strong>Julio de la Ossa</strong>
+                        <strong>Jorge Arrieta</strong>
+                        <strong>Jose Reyes</strong>
+                        <strong>Cleyver Espitia</strong>
                     </div>
                 </form>
             </div>

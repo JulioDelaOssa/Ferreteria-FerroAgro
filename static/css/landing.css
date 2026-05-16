@@ -695,3 +695,24 @@
         border-right: 0;
     }
 }
+
+.landing-team {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.landing-team span {
+    font-weight: 900;
+    color: #ffffff;
+}
+
+.landing-team strong {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #dcfce7;
+}

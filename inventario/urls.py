@@ -1,12 +1,33 @@
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, PasswordResetCompleteView, PasswordResetConfirmView, PasswordResetDoneView, PasswordResetView
 from django.urls import path
 
+from .forms import NuevaContrasenaForm, RecuperarContrasenaForm
 from . import views
 
 urlpatterns = [
     path('', views.landing, name='landing'),
 
     path('login/', views.CustomLoginView.as_view(), name='login'),
+    path(
+        'password-reset/',
+        PasswordResetView.as_view(
+            template_name='registration/password_reset_form.html',
+            email_template_name='registration/password_reset_email.html',
+            subject_template_name='registration/password_reset_subject.txt',
+            form_class=RecuperarContrasenaForm
+        ),
+        name='password_reset'
+    ),
+    path('password-reset/enviado/', PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
+    path(
+        'password-reset/<uidb64>/<token>/',
+        PasswordResetConfirmView.as_view(
+            template_name='registration/password_reset_confirm.html',
+            form_class=NuevaContrasenaForm
+        ),
+        name='password_reset_confirm'
+    ),
+    path('password-reset/completo/', PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('post-login/', views.post_login, name='post_login'),
 
@@ -50,4 +71,6 @@ urlpatterns = [
     path('vendedores/<int:pk>/editar/', views.vendedor_editar, name='vendedor_editar'),
     path('vendedores/<int:pk>/estado/', views.vendedor_cambiar_estado, name='vendedor_cambiar_estado'),
     path('vendedores/<int:pk>/eliminar/', views.vendedor_eliminar, name='vendedor_eliminar'),
+
+    path('clientes/buscar/', views.buscar_cliente_por_documento, name='buscar_cliente_por_documento'),
 ]

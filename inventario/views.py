@@ -20,6 +20,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
+from django.http import JsonResponse
+
 from .forms import (
     AjusteStockForm,
     CategoriaForm,
@@ -38,7 +40,8 @@ def paginar(request, queryset, page_param='page', per_page=8):
     per_page_param = f'{page_param}_size'
 
     try:
-        per_page = int(request.GET.get(per_page_param) or request.GET.get('per_page') or per_page)
+        per_page = int(request.GET.get(per_page_param)
+                       or request.GET.get('per_page') or per_page)
     except (TypeError, ValueError):
         per_page = 8
 
@@ -76,6 +79,19 @@ def formato_pesos_pdf(valor):
 
     numero = int(numero)
     return f'${numero:,}'.replace(',', '.')
+
+
+def serializar_clientes_venta(clientes):
+    return [
+        {
+            'id': cliente.id,
+            'nombre': cliente.nombre,
+            'documento': cliente.documento,
+            'telefono': cliente.telefono or '',
+            'correo': cliente.correo or '',
+        }
+        for cliente in clientes
+    ]
 
 
 def crear_documento_pdf(response, titulo, subtitulo):
@@ -631,6 +647,7 @@ def ventas_panel(request):
         'query': query,
     })
 
+
 @login_required
 @transaction.atomic
 def venta_nueva(request):
@@ -649,13 +666,14 @@ def venta_nueva(request):
     ).order_by('first_name', 'username')
 
     clientes = Cliente.objects.all().order_by('nombre')
+    clientes_json = serializar_clientes_venta(clientes)
 
     if request.method == 'POST':
         productos_ids = request.POST.getlist('producto_id')
         cantidades = request.POST.getlist('cantidad')
 
         vendedor_id = request.POST.get('vendedor_id')
-        cliente_modo = request.POST.get('cliente_modo', 'nuevo')
+        cliente_modo = request.POST.get('cliente_modo', '')
         cliente_id = request.POST.get('cliente_id')
         cliente_nombre = request.POST.get('cliente_nombre', '').strip()
         cliente_documento = request.POST.get('cliente_documento', '').strip()
@@ -671,7 +689,8 @@ def venta_nueva(request):
 
         if request.user.is_staff or request.user.is_superuser:
             if vendedor_id:
-                vendedor = get_object_or_404(User, pk=vendedor_id, is_active=True)
+                vendedor = get_object_or_404(
+                    User, pk=vendedor_id, is_active=True)
             else:
                 vendedor = request.user
         else:
@@ -710,7 +729,8 @@ def venta_nueva(request):
             })
 
         if not items:
-            messages.error(request, 'Debes agregar al menos un producto a la venta.')
+            messages.error(
+                request, 'Debes agregar al menos un producto a la venta.')
             return redirect('venta_nueva')
 
         subtotal_general = sum(item['subtotal'] for item in items)
@@ -723,10 +743,23 @@ def venta_nueva(request):
 
         total = subtotal_general - descuento
 
+        if not cliente_documento:
+            messages.error(request, 'Debes ingresar el documento del cliente.')
+            return redirect('venta_nueva')
+
         cliente = None
-        if cliente_modo == 'existente' and cliente_id:
-            cliente = get_object_or_404(Cliente, pk=cliente_id)
-        elif cliente_modo == 'nuevo' and cliente_nombre and cliente_documento:
+        if cliente_modo == 'existente':
+            if cliente_id:
+                cliente = get_object_or_404(Cliente, pk=cliente_id)
+            else:
+                cliente = Cliente.objects.filter(
+                    documento=cliente_documento).first()
+        elif cliente_modo == 'nuevo':
+            if not cliente_nombre:
+                messages.error(
+                    request, 'Debes ingresar el nombre del nuevo cliente.')
+                return redirect('venta_nueva')
+
             cliente, creado = Cliente.objects.update_or_create(
                 documento=cliente_documento,
                 defaults={
@@ -735,12 +768,19 @@ def venta_nueva(request):
                     'correo': cliente_correo
                 }
             )
+        else:
+            cliente = Cliente.objects.filter(
+                documento=cliente_documento).first()
 
-        if cliente:
-            cliente_nombre = cliente.nombre
-            cliente_documento = cliente.documento
-            cliente_telefono = cliente.telefono or ''
-            cliente_correo = cliente.correo or ''
+            if not cliente:
+                messages.error(
+                    request, 'El cliente no existe. Usa el botón + Nuevo cliente para registrarlo antes de guardar la venta.')
+                return redirect('venta_nueva')
+
+        cliente_nombre = cliente.nombre
+        cliente_documento = cliente.documento
+        cliente_telefono = cliente.telefono or ''
+        cliente_correo = cliente.correo or ''
 
         venta = Venta.objects.create(
             vendedor=vendedor,
@@ -786,14 +826,16 @@ def venta_nueva(request):
     return render(request, 'inventario/venta_nueva.html', {
         'productos': productos,
         'vendedores': vendedores,
-        'clientes': clientes
+        'clientes': clientes,
+        'clientes_json': clientes_json
     })
 
 
 @login_required
 def venta_detalle(request, pk):
     venta = get_object_or_404(
-        Venta.objects.select_related('vendedor', 'cliente').prefetch_related('detalles'),
+        Venta.objects.select_related(
+            'vendedor', 'cliente').prefetch_related('detalles'),
         pk=pk
     )
 
@@ -808,9 +850,10 @@ def venta_detalle(request, pk):
 def venta_editar(request, pk):
     venta = get_object_or_404(Venta.objects.select_related('cliente'), pk=pk)
     clientes = Cliente.objects.all().order_by('nombre')
+    clientes_json = serializar_clientes_venta(clientes)
 
     if request.method == 'POST':
-        cliente_modo = request.POST.get('cliente_modo', 'nuevo')
+        cliente_modo = request.POST.get('cliente_modo', '')
         cliente_id = request.POST.get('cliente_id')
         cliente_nombre = request.POST.get('cliente_nombre', '').strip()
         cliente_documento = request.POST.get('cliente_documento', '').strip()
@@ -831,10 +874,23 @@ def venta_editar(request, pk):
         if descuento > venta.subtotal:
             descuento = venta.subtotal
 
+        if not cliente_documento:
+            messages.error(request, 'Debes ingresar el documento del cliente.')
+            return redirect('venta_editar', pk=venta.pk)
+
         cliente = None
-        if cliente_modo == 'existente' and cliente_id:
-            cliente = get_object_or_404(Cliente, pk=cliente_id)
-        elif cliente_modo == 'nuevo' and cliente_nombre and cliente_documento:
+        if cliente_modo == 'existente':
+            if cliente_id:
+                cliente = get_object_or_404(Cliente, pk=cliente_id)
+            else:
+                cliente = Cliente.objects.filter(
+                    documento=cliente_documento).first()
+        elif cliente_modo == 'nuevo':
+            if not cliente_nombre:
+                messages.error(
+                    request, 'Debes ingresar el nombre del nuevo cliente.')
+                return redirect('venta_editar', pk=venta.pk)
+
             cliente, creado = Cliente.objects.update_or_create(
                 documento=cliente_documento,
                 defaults={
@@ -843,12 +899,19 @@ def venta_editar(request, pk):
                     'correo': cliente_correo
                 }
             )
+        else:
+            cliente = Cliente.objects.filter(
+                documento=cliente_documento).first()
 
-        if cliente:
-            cliente_nombre = cliente.nombre
-            cliente_documento = cliente.documento
-            cliente_telefono = cliente.telefono or ''
-            cliente_correo = cliente.correo or ''
+            if not cliente:
+                messages.error(
+                    request, 'El cliente no existe. Usa el botón + Nuevo cliente para registrarlo antes de guardar la venta.')
+                return redirect('venta_editar', pk=venta.pk)
+
+        cliente_nombre = cliente.nombre
+        cliente_documento = cliente.documento
+        cliente_telefono = cliente.telefono or ''
+        cliente_correo = cliente.correo or ''
 
         venta.cliente = cliente
         venta.cliente_nombre = cliente_nombre or 'Consumidor final'
@@ -867,7 +930,8 @@ def venta_editar(request, pk):
 
     return render(request, 'inventario/venta_editar.html', {
         'venta': venta,
-        'clientes': clientes
+        'clientes': clientes,
+        'clientes_json': clientes_json
     })
 
 
@@ -875,7 +939,8 @@ def venta_editar(request, pk):
 @admin_required
 @transaction.atomic
 def venta_eliminar(request, pk):
-    venta = get_object_or_404(Venta.objects.prefetch_related('detalles'), pk=pk)
+    venta = get_object_or_404(
+        Venta.objects.prefetch_related('detalles'), pk=pk)
 
     if request.method == 'POST':
         for detalle in venta.detalles.select_related('producto'):
@@ -891,7 +956,8 @@ def venta_eliminar(request, pk):
                 )
 
         venta.delete()
-        messages.success(request, 'Venta eliminada correctamente y stock restaurado.')
+        messages.success(
+            request, 'Venta eliminada correctamente y stock restaurado.')
         return redirect('ventas_panel')
 
     return render(request, 'inventario/categoria_confirmar_eliminar.html', {
@@ -904,7 +970,8 @@ def venta_eliminar(request, pk):
 @login_required
 def factura_pdf(request, pk):
     venta = get_object_or_404(
-        Venta.objects.select_related('vendedor', 'cliente').prefetch_related('detalles'),
+        Venta.objects.select_related(
+            'vendedor', 'cliente').prefetch_related('detalles'),
         pk=pk
     )
 
@@ -1014,7 +1081,8 @@ def reporte_resumen_inventario_pdf(request):
     productos = Producto.objects.select_related('categoria', 'proveedor')
     total_productos = productos.count()
     productos_activos = productos.filter(activo=True).count()
-    stock_bajo = productos.filter(stock__gt=0, stock__lte=F('stock_minimo')).count()
+    stock_bajo = productos.filter(
+        stock__gt=0, stock__lte=F('stock_minimo')).count()
     agotados = productos.filter(stock=0).count()
     sin_movimiento = productos.annotate(
         total_movimientos=Count('movimientos')
@@ -1044,9 +1112,11 @@ def reporte_resumen_inventario_pdf(request):
         ['Valor total del inventario', formato_pesos_pdf(valor_inventario)],
     ]
 
-    elements.append(aplicar_estilo_tabla(Table(resumen, colWidths=[9 * cm, 7 * cm])))
+    elements.append(aplicar_estilo_tabla(
+        Table(resumen, colWidths=[9 * cm, 7 * cm])))
     elements.append(Spacer(1, 18))
-    elements.append(Paragraph('Productos con stock bajo o agotado', styles['Heading3']))
+    elements.append(
+        Paragraph('Productos con stock bajo o agotado', styles['Heading3']))
 
     productos_criticos = productos.filter(
         Q(stock=0) | Q(stock__lte=F('stock_minimo'))
@@ -1117,7 +1187,8 @@ def reporte_distribucion_categorias_pdf(request):
         colWidths=[9 * cm, 4 * cm, 4 * cm]
     )))
     elements.append(Spacer(1, 14))
-    elements.append(Paragraph(f'Total de productos registrados: {total_productos}', styles['Normal']))
+    elements.append(Paragraph(
+        f'Total de productos registrados: {total_productos}', styles['Normal']))
 
     doc.build(elements)
     return response
@@ -1127,7 +1198,8 @@ def reporte_distribucion_categorias_pdf(request):
 @admin_required
 def cliente_lista(request):
     query = request.GET.get('q', '').strip()
-    clientes = Cliente.objects.annotate(total_ventas=Count('ventas')).order_by('nombre')
+    clientes = Cliente.objects.annotate(
+        total_ventas=Count('ventas')).order_by('nombre')
 
     if query:
         clientes = clientes.filter(
@@ -1303,3 +1375,22 @@ def vendedor_eliminar(request, pk):
         'objeto': vendedor,
         'volver_url': reverse('vendedor_lista')
     })
+
+
+@login_required
+def buscar_cliente_por_documento(request):
+    documento = request.GET.get('documento', '').strip()
+
+    if not documento:
+        return JsonResponse({'existe': False})
+
+    cliente = Cliente.objects.filter(documento=documento).first()
+
+    if cliente:
+        return JsonResponse({
+            'existe': True,
+            'id': cliente.id,
+            'nombre': cliente.nombre
+        })
+
+    return JsonResponse({'existe': False})

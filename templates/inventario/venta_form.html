@@ -1,38 +1,172 @@
 {% extends 'base.html' %}
-{% load formato_pesos %}
+{% load static %}
 
-{% block page_title %}Registrar venta - FerroAgro{% endblock %}
-{% block header_title %}Registrar venta{% endblock %}
-{% block header_description %}Venta de producto disponible en inventario{% endblock %}
+{% block title %}Nueva venta{% endblock %}
 
 {% block content %}
-<section class="panel-card">
-    <header class="section-header">
+<div class="contenedor-principal">
+    <div class="encabezado-pagina">
         <div>
-            <h3>{{ producto.nombre }}</h3>
-            <p>Precio: <strong>{{ producto.precio|pesos }}</strong> | Stock disponible: <strong>{{ producto.stock }}</strong></p>
+            <h1>Nueva venta</h1>
+            <p>Registra los productos vendidos y valida los datos del cliente.</p>
         </div>
-        <a href="{% url 'ventas_panel' %}" class="btn-secondary">← Volver</a>
-    </header>
-    <form method="post" class="product-form">
+
+        <a href="{% url 'ventas_panel' %}" class="btn-secundario">Volver</a>
+    </div>
+
+    <nav class="breadcrumb">
+        <a href="{% url 'dashboard' %}">Inicio</a>
+        <span>/</span>
+        <a href="{% url 'ventas_panel' %}">Ventas</a>
+        <span>/</span>
+        <span>Nueva venta</span>
+    </nav>
+
+    {% if messages %}
+        <div class="mensajes">
+            {% for message in messages %}
+                <div class="alerta alerta-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" class="formulario-venta" id="formVenta">
         {% csrf_token %}
-        {% for field in form %}
-        <section class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }} <span class="field-required-status">{% if field.field.required %}(Obligatorio*){% else %}(opcional){% endif %}</span></label>
-            {{ field }}
-            {% if field.errors %}
-            <div class="field-error">
-                {% for error in field.errors %}
-                <span>{{ error }}</span>
-                {% endfor %}
+
+        <div class="tarjeta-formulario">
+            <div class="titulo-seccion">
+                <h2>Datos de factura</h2>
+                <p>Primero ingresa la cédula o documento del cliente.</p>
             </div>
-            {% endif %}
-        </section>
-        {% endfor %}
-        <section class="form-actions">
-            <button type="submit" class="btn-primary">✓ Registrar venta</button>
-            <a href="{% url 'ventas_panel' %}" class="btn-secondary">✕ Cancelar</a>
-        </section>
+
+            <div class="grid-formulario">
+                <div class="grupo-formulario">
+                    <label for="vendedor">Vendedor <span>(opcional)</span></label>
+                    <select name="vendedor" id="vendedor">
+                        <option value="">Usar mi usuario</option>
+                        {% for vendedor in vendedores %}
+                            <option value="{{ vendedor.id }}">
+                                {{ vendedor.get_full_name|default:vendedor.username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="cliente_documento">Documento del cliente <span>(Obligatorio*)</span></label>
+                    <input type="text" name="cliente_documento" id="cliente_documento" placeholder="Cédula o NIT" required autocomplete="off">
+                    <small id="clienteMensaje">Ingresa el documento para validar si el cliente ya existe.</small>
+                </div>
+            </div>
+
+            <div class="cliente-acciones">
+                <button type="button" id="btnNuevoCliente" class="btn-nuevo-cliente" hidden>
+                    + Nuevo cliente
+                </button>
+            </div>
+
+            <div class="grupo-formulario" id="clienteNombreBox" hidden>
+                <label for="cliente_nombre">Nombre del cliente <span>(Obligatorio*)</span></label>
+                <input type="text" name="cliente_nombre" id="cliente_nombre" placeholder="Nombre completo del cliente">
+            </div>
+
+            <div class="grid-formulario" id="clienteExtraBox" hidden>
+                <div class="grupo-formulario">
+                    <label for="cliente_telefono">Teléfono <span>(opcional)</span></label>
+                    <input type="text" name="cliente_telefono" id="cliente_telefono" placeholder="Teléfono del cliente">
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="cliente_correo">Correo <span>(opcional)</span></label>
+                    <input type="email" name="cliente_correo" id="cliente_correo" placeholder="Correo del cliente">
+                </div>
+            </div>
+
+            <div class="grid-formulario">
+                <div class="grupo-formulario">
+                    <label for="metodo_pago">Método de pago <span>(Obligatorio*)</span></label>
+                    <select name="metodo_pago" id="metodo_pago" required>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Tarjeta">Tarjeta</option>
+                        <option value="Crédito">Crédito</option>
+                    </select>
+                </div>
+
+                <div class="grupo-formulario">
+                    <label for="descuento">Descuento <span>(opcional)</span></label>
+                    <input type="number" name="descuento" id="descuento" min="0" value="0">
+                </div>
+            </div>
+
+            <div class="grupo-formulario">
+                <label for="observaciones">Observaciones <span>(opcional)</span></label>
+                <textarea name="observaciones" id="observaciones" rows="5" placeholder="Observaciones de la venta"></textarea>
+            </div>
+        </div>
+
+        <div class="tarjeta-formulario">
+            <div class="titulo-seccion">
+                <h2>Productos de la venta</h2>
+                <button type="button" id="btnAgregarProducto" class="btn-secundario">
+                    + Agregar producto
+                </button>
+            </div>
+
+            <div id="productosVenta">
+                <div class="producto-venta-item">
+                    <div class="grid-producto-venta">
+                        <div class="grupo-formulario">
+                            <label>Producto <span>(Obligatorio*)</span></label>
+                            <select name="producto[]" class="producto-select" required>
+                                <option value="">Selecciona un producto</option>
+                                {% for producto in productos %}
+                                    <option value="{{ producto.id }}" data-precio="{{ producto.precio }}" data-stock="{{ producto.stock }}">
+                                        {{ producto.nombre }} - Stock: {{ producto.stock }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="grupo-formulario">
+                            <label>Cantidad <span>(Obligatorio*)</span></label>
+                            <input type="number" name="cantidad[]" class="cantidad-input" min="1" value="1" required>
+                        </div>
+
+                        <div class="grupo-formulario">
+                            <label>Precio unitario</label>
+                            <input type="text" class="precio-input" readonly>
+                        </div>
+
+                        <div class="grupo-formulario">
+                            <label>Subtotal</label>
+                            <input type="text" class="subtotal-input" readonly>
+                        </div>
+
+                        <div class="grupo-formulario grupo-eliminar">
+                            <button type="button" class="btn-eliminar-producto">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resumen-venta">
+                <span>Total de la venta</span>
+                <strong id="totalVenta">$0</strong>
+                <input type="hidden" name="total" id="totalInput" value="0">
+            </div>
+        </div>
+
+        <div class="acciones-formulario">
+            <a href="{% url 'ventas_panel' %}" class="btn-cancelar">Cancelar</a>
+            <button type="submit" class="btn-principal">Registrar venta</button>
+        </div>
     </form>
-</section>
+</div>
+
+<script src="{% static 'js/clientes_venta.js' %}"></script>
 {% endblock %}

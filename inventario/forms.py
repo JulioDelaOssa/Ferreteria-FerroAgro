@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm, UserCreationForm
 from django.contrib.auth.models import User
 
 from .models import Categoria, Cliente, Producto, Proveedor
@@ -284,6 +284,32 @@ class VentaCarritoForm(forms.Form):
             'rows': 3
         })
     )
+
+
+class RecuperarContrasenaForm(PasswordResetForm):
+    email = forms.EmailField(
+        label='Correo electrónico',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-input',
+            'autocomplete': 'email',
+            'placeholder': 'correo@ejemplo.com'
+        })
+    )
+
+
+class NuevaContrasenaForm(SetPasswordForm):
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(user, *args, **kwargs)
+        self.fields['new_password1'].widget.attrs.update({
+            'class': 'form-input',
+            'autocomplete': 'new-password',
+            'placeholder': 'Nueva contraseña'
+        })
+        self.fields['new_password2'].widget.attrs.update({
+            'class': 'form-input',
+            'autocomplete': 'new-password',
+            'placeholder': 'Confirmar contraseña'
+        })
 
 
 class VendedorForm(UserCreationForm):

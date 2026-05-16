@@ -15,15 +15,6 @@
     <link rel="stylesheet" href="{% static 'css/tables.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
 
-<style>
-    .field-required-status { font-size: .78rem; font-weight: 600; color: #64748b; }
-    .table-pagination-control { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-    .per-page-control { display: flex; align-items: center; gap: .45rem; font-size: .9rem; color: #475569; }
-    .per-page-control select { border: 1px solid #cbd5e1; border-radius: .6rem; padding: .35rem .55rem; background: #fff; }
-    .pagination-links { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; }
-    .inline-form { display: inline-flex; margin: 0; }
-    .inline-form button { border: 0; cursor: pointer; }
-</style>
 </head>
 
 <body>
@@ -215,6 +206,22 @@
                 </div>
             </header>
 
+            {% if breadcrumb_items %}
+                <nav class="breadcrumbs" aria-label="Migas de pan">
+                    {% for item in breadcrumb_items %}
+                        {% if item.url %}
+                            <a href="{{ item.url }}">{{ item.label }}</a>
+                        {% else %}
+                            <span>{{ item.label }}</span>
+                        {% endif %}
+
+                        {% if not forloop.last %}
+                            <i class="ri-arrow-right-s-line"></i>
+                        {% endif %}
+                    {% endfor %}
+                </nav>
+            {% endif %}
+
             <section class="page-header">
                 <div>
                     <h1>{% block header_title %}Panel de control{% endblock %}</h1>
@@ -240,6 +247,14 @@
             <section class="content-area">
                 {% block content %}{% endblock %}
             </section>
+
+            <footer class="app-footer">
+                <span>Integrantes:</span>
+                <strong>Julio de la Ossa</strong>
+                <strong>Jorge Arrieta</strong>
+                <strong>Jose Reyes</strong>
+                <strong>Cleyver Espitia</strong>
+            </footer>
         </main>
     </div>
 
