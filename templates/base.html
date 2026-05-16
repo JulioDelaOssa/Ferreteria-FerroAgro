@@ -42,7 +42,12 @@
                 </a>
             {% endif %}
 
-            <nav class="sidebar-nav">
+            <button type="button" class="mobile-menu-toggle sidebar-menu-toggle" data-menu-toggle="sidebarNav" aria-controls="sidebarNav" aria-expanded="false">
+                <i class="ri-menu-line"></i>
+                <span>Menú</span>
+            </button>
+
+            <nav class="sidebar-nav" id="sidebarNav">
                 {% if request.user.is_staff or request.user.is_superuser %}
                     <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                         <i class="ri-dashboard-3-line"></i>

@@ -18,7 +18,12 @@
             <img src="{% static 'imagenes/logo.png' %}" alt="FerroAgro Ayapel">
         </a>
 
-        <nav class="landing-nav">
+        <button type="button" class="mobile-menu-toggle" data-menu-toggle="landingNav" aria-controls="landingNav" aria-expanded="false">
+            <i class="ri-menu-line"></i>
+            <span>Menú</span>
+        </button>
+
+        <nav class="landing-nav" id="landingNav">
             <a href="#inicio">Inicio</a>
             <a href="#nosotros">Nosotros</a>
             <a href="#servicios">Servicios</a>
@@ -375,5 +380,6 @@
         </div>
         <small>© 2026 FerroAgro Ayapel. Todos los derechos reservados.</small>
     </footer>
+    <script src="{% static 'js/base.js' %}"></script>
 </body>
 </html>

@@ -432,6 +432,86 @@ textarea.form-input {
     }
 }
 
+@media (max-width: 560px) {
+    .form-layout,
+    .sale-layout,
+    .sale-side-body,
+    .existing-client-box {
+        grid-template-columns: 1fr;
+    }
+
+    .form-card-header,
+    .form-card-body,
+    .form-side-card,
+    .invoice-box,
+    .sale-products-list,
+    .sale-side-body {
+        padding: 18px;
+    }
+
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .form-actions .btn-primary,
+    .form-actions .btn-lite,
+    .form-actions .btn-danger,
+    .form-actions .btn-warning,
+    .add-row-button,
+    .cliente-nuevo-accion .client-new-button {
+        width: 100%;
+    }
+
+    .file-upload-box,
+    .form-check-row {
+        align-items: flex-start;
+    }
+
+    .file-upload-box {
+        flex-direction: column;
+    }
+
+    .sale-product-row {
+        grid-template-columns: 1fr;
+        padding: 14px;
+    }
+
+    .invoice-total {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 18px;
+    }
+
+    .popup-page {
+        padding: 12px;
+    }
+
+    .popup-header {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .popup-header h1 {
+        font-size: 22px;
+        line-height: 1.15;
+    }
+
+    .popup-content .form-card-body {
+        padding: 16px;
+    }
+
+    .popup-content .form-actions {
+        align-items: stretch;
+    }
+
+    .popup-content .form-actions .btn-primary,
+    .popup-content .form-actions .btn-lite {
+        width: 100%;
+    }
+}
+
 .popup-body {
     margin: 0;
     background: #f8fafc;
@@ -540,4 +620,35 @@ textarea.form-input {
 
 .help-text {
     margin-top: 2px;
+}
+
+@media (max-width: 560px) {
+    .popup-page {
+        padding: 12px;
+    }
+
+    .popup-header {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .popup-header h1 {
+        font-size: 22px;
+        line-height: 1.15;
+    }
+
+    .popup-content .form-card-body {
+        padding: 16px;
+    }
+
+    .popup-content .form-actions {
+        align-items: stretch;
+        justify-content: stretch;
+    }
+
+    .popup-content .form-actions .btn-primary,
+    .popup-content .form-actions .btn-lite {
+        width: 100%;
+        min-width: 0;
+    }
 }

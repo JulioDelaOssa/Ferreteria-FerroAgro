@@ -128,3 +128,762 @@
         display: none;
     }
 }
+
+@media (max-width: 980px) {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .brand {
+        min-width: 0;
+    }
+
+    .brand strong,
+    .landing-brand strong {
+        overflow-wrap: anywhere;
+    }
+
+    .support-card {
+        display: none;
+    }
+
+    .sidebar {
+        gap: 18px;
+        padding: 20px 18px;
+    }
+
+    .sidebar-nav a {
+        min-width: 0;
+        justify-content: flex-start;
+    }
+
+    .main-area,
+    .content-area,
+    .page-header,
+    .module-card,
+    .panel-card,
+    .table-card,
+    .dash-card {
+        min-width: 0;
+    }
+
+    .topbar {
+        position: relative;
+    }
+
+    .search-box {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .topbar-user {
+        width: 100%;
+    }
+
+    .notification-wrapper {
+        position: static;
+    }
+
+    .notification-menu {
+        right: 18px;
+        width: min(340px, calc(100vw - 36px));
+    }
+
+    .page-header {
+        align-items: stretch;
+    }
+
+    .page-actions {
+        width: 100%;
+    }
+
+    .page-actions .btn-primary,
+    .page-actions .btn-outline,
+    .page-actions .btn-lite,
+    .page-actions .btn-danger,
+    .page-actions .btn-warning {
+        flex: 1 1 180px;
+    }
+
+    .breadcrumbs {
+        margin-left: 18px;
+        margin-right: 18px;
+    }
+
+    .landing-header {
+        min-height: auto;
+        padding-top: 16px;
+        padding-bottom: 16px;
+        align-items: stretch;
+    }
+
+    .landing-brand-image {
+        max-width: 220px;
+        min-width: 0;
+    }
+
+    .landing-nav {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .landing-nav a {
+        flex: 1 1 130px;
+        min-height: 40px;
+        padding: 0 10px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.08);
+        text-align: center;
+    }
+
+    .landing-nav .login-link {
+        flex-basis: 170px;
+        border-color: rgba(255, 255, 255, 0.28);
+    }
+}
+
+@media (max-width: 760px) {
+    .btn-primary,
+    .btn-outline,
+    .btn-lite,
+    .btn-danger,
+    .btn-warning {
+        min-width: 0;
+        min-height: 44px;
+        white-space: normal;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .table-toolbar,
+    .table-footer,
+    .table-pagination-control,
+    .pagination-box {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .table-search,
+    .table-filters,
+    .table-filters select,
+    .per-page-control,
+    .pagination,
+    .pagination-links {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .table-filters select {
+        flex: 1 1 180px;
+    }
+
+    .pagination,
+    .pagination-links,
+    .pagination-box {
+        justify-content: center;
+    }
+
+    .table-container,
+    .responsive-table,
+    .module-table-wrap,
+    .module-table-scroll,
+    .dash-table-wrap,
+    .invoice-table-wrap {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .module-toolbar,
+    .client-toolbar,
+    .inventory-movement-filter {
+        grid-template-columns: 1fr;
+    }
+
+    .module-toolbar .btn-primary,
+    .module-toolbar .btn-outline,
+    .module-toolbar .btn-lite,
+    .module-toolbar .btn-danger,
+    .module-toolbar .btn-warning,
+    .client-toolbar .btn-primary,
+    .client-toolbar .btn-outline,
+    .client-toolbar .btn-lite,
+    .client-toolbar .btn-danger,
+    .client-toolbar .btn-warning {
+        width: 100%;
+    }
+
+    .module-actions,
+    .action-buttons,
+    .table-actions {
+        flex-wrap: nowrap;
+    }
+
+    .recent-sales-card,
+    .low-stock-card,
+    .top-products-card,
+    .activity-card,
+    .inventory-summary-card,
+    .category-card {
+        height: auto;
+        min-height: 0;
+    }
+
+    .recent-sales-card .dash-table-wrap,
+    .low-stock-card .dash-table-wrap {
+        overflow-x: auto;
+    }
+
+    .recent-sales-card .dash-table,
+    .low-stock-card .dash-table {
+        table-layout: auto;
+        min-width: 680px;
+    }
+
+    .simple-chart {
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .chart-day {
+        min-width: 48px;
+    }
+}
+
+@media (max-width: 560px) {
+    .sidebar {
+        padding: 16px 14px;
+        border-radius: 0 0 18px 18px;
+    }
+
+    .brand-logo {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+        border-radius: 14px;
+    }
+
+    .brand strong,
+    .landing-brand strong {
+        font-size: 22px;
+        letter-spacing: 0;
+    }
+
+    .brand small,
+    .landing-brand small {
+        font-size: 14px;
+    }
+
+    .sidebar-nav {
+        gap: 7px;
+    }
+
+    .sidebar-nav a {
+        padding: 12px;
+        border-radius: 13px;
+        font-size: 14px;
+    }
+
+    .sidebar-nav a i {
+        font-size: 20px;
+    }
+
+    .topbar {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .topbar-user {
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .icon-link,
+    .logout-link,
+    .notification-dot,
+    .notification-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        flex: 0 0 40px;
+    }
+
+    .user-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .user-info > div:last-child {
+        min-width: 0;
+    }
+
+    .user-info strong,
+    .user-info small {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+    }
+
+    .page-header {
+        padding: 20px 14px 12px;
+        gap: 16px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+        line-height: 1.1;
+        letter-spacing: 0;
+    }
+
+    .page-header p {
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .content-area,
+    .messages {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .content-area {
+        padding-bottom: 28px;
+    }
+
+    .breadcrumbs {
+        margin: 16px 14px 0;
+        font-size: 13px;
+    }
+
+    .message {
+        align-items: flex-start;
+        font-size: 14px;
+    }
+
+    .compact-card,
+    .preview-card,
+    .form-card-body,
+    .sale-products-list,
+    .sale-side-body,
+    .invoice-box {
+        padding: 18px;
+    }
+
+    .module-card-header,
+    .form-card-header,
+    .invoice-header {
+        padding: 18px;
+    }
+
+    .module-card-header h2,
+    .form-card-header h2 {
+        font-size: 20px;
+        line-height: 1.15;
+    }
+
+    .module-stat-card,
+    .kpi-card,
+    .invoice-info-item {
+        align-items: flex-start;
+    }
+
+    .module-stat-card strong,
+    .kpi-info strong {
+        font-size: 26px;
+    }
+
+    .app-footer {
+        margin: auto 14px 18px;
+        padding: 16px;
+        justify-content: flex-start;
+        font-size: 13px;
+    }
+
+    .landing-header {
+        padding-left: 14px;
+        padding-right: 14px;
+        gap: 14px;
+    }
+
+    .landing-brand-image img {
+        width: min(180px, 72vw);
+    }
+
+    .landing-nav {
+        gap: 8px;
+    }
+
+    .landing-nav a {
+        flex-basis: calc(50% - 4px);
+        font-size: 13px;
+    }
+
+    .landing-nav .login-link {
+        flex-basis: 100%;
+    }
+
+    .hero-copy {
+        padding: 42px 14px;
+    }
+
+    .hero-copy h1 {
+        font-size: 36px;
+        line-height: 1.04;
+        letter-spacing: 0;
+    }
+
+    .hero-copy p {
+        font-size: 15px;
+        line-height: 1.55;
+    }
+
+    .hero-image {
+        min-height: 280px;
+    }
+
+    .about-section,
+    .services-section,
+    .products-section,
+    .contact-section,
+    .landing-footer {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .section-badge {
+        max-width: 100%;
+        white-space: normal;
+    }
+
+    .landing-product-card {
+        min-height: 0;
+    }
+
+    .product-image {
+        height: 190px;
+    }
+}
+
+@media (max-width: 420px) {
+    .page-actions .btn-primary,
+    .page-actions .btn-outline,
+    .page-actions .btn-lite,
+    .page-actions .btn-danger,
+    .page-actions .btn-warning,
+    .hero-actions .btn-primary,
+    .hero-actions .btn-outline {
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    .notification-menu {
+        right: 12px;
+        width: calc(100vw - 24px);
+    }
+
+    .landing-team strong,
+    .app-footer strong,
+    .auth-footer strong {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+}
+
+.mobile-menu-toggle {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .landing-header {
+        position: sticky;
+        padding: 12px 16px 14px;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+    }
+
+    .landing-brand-image {
+        width: auto;
+        max-width: none;
+        justify-content: flex-start;
+    }
+
+    .landing-brand-image img {
+        width: min(168px, 54vw);
+    }
+
+    .mobile-menu-toggle {
+        min-height: 40px;
+        padding: 0 14px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .mobile-menu-toggle i {
+        font-size: 18px;
+    }
+
+    .landing-nav {
+        grid-column: 1 / -1;
+        width: 100%;
+        margin: 0;
+        padding: 10px 0 0;
+        display: none;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .landing-header.menu-open .landing-nav {
+        display: grid;
+    }
+
+    .landing-nav a,
+    .landing-nav .login-link {
+        width: 100%;
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .landing-nav .login-link {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .hero-copy {
+        padding: 38px 20px 34px;
+    }
+
+    .section-badge {
+        padding: 7px 11px;
+        font-size: 12px;
+    }
+
+    .hero-copy h1 {
+        max-width: 11ch;
+        font-size: clamp(31px, 9vw, 38px);
+        line-height: 1.08;
+        letter-spacing: 0;
+    }
+
+    .hero-copy p {
+        margin-top: 18px;
+        font-size: 15px;
+        line-height: 1.55;
+    }
+
+    .hero-actions {
+        margin-top: 24px;
+        gap: 10px;
+    }
+
+    .hero-actions .btn-primary,
+    .hero-actions .btn-outline {
+        flex: 1 1 150px;
+        min-height: 46px;
+        border-radius: 12px;
+        padding: 10px 14px;
+    }
+
+    .hero-points {
+        margin-top: 24px;
+        gap: 10px;
+    }
+
+    .hero-points div,
+    .about-grid div,
+    .services-grid article {
+        border-radius: 14px;
+    }
+
+    .about-section,
+    .services-section,
+    .products-section,
+    .contact-section {
+        padding-top: 48px;
+        padding-bottom: 48px;
+    }
+
+    .about-copy h2,
+    .section-heading h2,
+    .contact-info h2 {
+        font-size: 28px;
+        line-height: 1.15;
+        letter-spacing: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .app-shell {
+        display: block;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        padding: 12px 14px 14px;
+        border-radius: 0;
+        gap: 12px;
+        box-shadow: 0 12px 28px rgba(2, 6, 23, 0.18);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+    }
+
+    .brand {
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .brand-logo {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+        border-radius: 13px;
+        padding: 5px;
+    }
+
+    .brand strong {
+        font-size: 23px;
+    }
+
+    .brand small {
+        margin-top: 1px;
+        font-size: 14px;
+    }
+
+    .sidebar-menu-toggle {
+        border-color: rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-nav {
+        grid-column: 1 / -1;
+        display: none;
+        width: 100%;
+        margin: 0;
+        padding: 4px 0 0;
+        gap: 8px;
+        overflow: visible;
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar.menu-open .sidebar-nav {
+        display: grid;
+    }
+
+    .sidebar-nav a {
+        width: 100%;
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 13px;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 13px;
+        white-space: nowrap;
+        transform: none;
+    }
+
+    .sidebar-nav a:hover {
+        transform: none;
+    }
+
+    .sidebar-nav a.active {
+        box-shadow: inset 4px 0 0 #ff7900;
+    }
+
+    .sidebar-nav a i {
+        font-size: 18px;
+    }
+
+    .topbar {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .search-box {
+        height: 42px;
+        border-radius: 13px;
+    }
+
+    .search-box input {
+        min-width: 0;
+        font-size: 13px;
+    }
+
+    .topbar-user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+
+    .user-info {
+        gap: 9px;
+    }
+
+    .icon-link,
+    .logout-link,
+    .notification-button {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
+
+    .avatar {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
+
+    .page-header {
+        padding-top: 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    .hero-copy {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .hero-copy h1 {
+        max-width: 10.5ch;
+        font-size: 33px;
+    }
+
+    .hero-actions .btn-primary,
+    .hero-actions .btn-outline {
+        width: auto;
+        flex-basis: calc(50% - 5px);
+    }
+}
